@@ -1,7 +1,7 @@
 import type { Config } from "./types";
 
 export const config = {
-	appName: "supastarter for Next.js Demo",
+	appName: "WebClarity",
 	// Internationalization
 	i18n: {
 		// Whether internationalization should be enabled (if disabled, you still need to define the locale you want to use below and set it as the default locale)
@@ -30,7 +30,7 @@ export const config = {
 		// Whether organizations are enabled in general
 		enable: true,
 		// Whether billing for organizations should be enabled (below you can enable it for users instead)
-		enableBilling: false,
+		enableBilling: true,
 		// Whether the organization should be hidden from the user (use this for multi-tenant applications)
 		hideOrganization: false,
 		// Should users be able to create new organizations? Otherwise only admin users can create them
@@ -49,7 +49,7 @@ export const config = {
 	// Users
 	users: {
 		// Whether billing should be enabled for users (above you can enable it for organizations instead)
-		enableBilling: true,
+		enableBilling: false,
 		// Whether you want the user to go through an onboarding form after signup (can be defined in the OnboardingForm.tsx)
 		enableOnboarding: true,
 	},
@@ -77,7 +77,7 @@ export const config = {
 	// Mails
 	mails: {
 		// the from address for mails
-		from: "noreply@supastarter.dev",
+		from: "noreply@webclarity.app",
 	},
 	// Frontend
 	ui: {
