@@ -1,3 +1,4 @@
+import { passkey } from "@better-auth/passkey";
 import { config } from "@repo/config";
 import {
 	db,
@@ -202,8 +203,7 @@ export const auth = betterAuth({
 	plugins: [
 		username(), // Keep username support
 		admin(), // Keep admin functionality
-		// passkey() - REMOVED: Not using passkeys
-		// magicLink() - REMOVED: Not using magic links
+		passkey(), // Keep plugin for TypeScript, disabled in UI via config
 		organization({
 			sendInvitationEmail: async (
 				{ email, id, organization },
