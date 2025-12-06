@@ -185,27 +185,13 @@
 			"title": "Verifiziere dein Konto"
 		}
 	},
-	"blog": {
-		"description": "In diesem Blog schreibe ich über alles mögliche.",
-		"title": "Mein toller Blog",
-		"back": "Zurück zum Blog"
-	},
-	"changelog": {
-		"description": "Bleibe über die neuesten Änderungen in unserem Produkt auf dem Laufenden.",
-		"title": "Changelog"
-	},
 	"common": {
 		"confirmation": {
 			"cancel": "Abbrechen",
 			"confirm": "Bestätigen"
 		},
 		"menu": {
-			"blog": "Blog",
-			"changelog": "Changelog",
-			"contact": "Kontakt",
 			"dashboard": "Dashboard",
-			"docs": "Dokumentation",
-			"faq": "FAQ",
 			"login": "Anmelden",
 			"pricing": "Preise"
 		},
@@ -216,24 +202,6 @@
 			"continue": "Weiter",
 			"verify": "Überprüfen Sie"
 		}
-	},
-	"contact": {
-		"description": "Wir sind hier, um dir zu helfen. Bitte verwende das untenstehende Formular, um mit uns in Kontakt zu treten.",
-		"form": {
-			"email": "E-Mail",
-			"message": "Nachricht",
-			"name": "Name",
-			"notifications": {
-				"error": "Es tut uns leid, aber wir konnten deine Nachricht nicht senden. Bitte versuche es später noch einmal.",
-				"success": "Deine Nachricht wurde erfolgreich abgeschickt. Wir werden uns so schnell wie möglich bei dir melden."
-			},
-			"submit": "Nachricht senden"
-		},
-		"title": "Kontakt"
-	},
-	"faq": {
-		"description": "Hast du irgendwelche Fragen? \nWir sind für dich da.",
-		"title": "Häufig gestellte Fragen"
 	},
 	"mail": {
 		"common": {
@@ -252,18 +220,14 @@
 			"subject": "Passwort zurücksetzen"
 		},
 		"magicLink": {
-			"body": "Hey,\ndu hast eine Anmelde-E-Mail von supastarter angefordert.\n\nKlicke auf den unten stehenden Link, um dich anzumelden.",
+			"body": "Hey,\ndu hast eine Anmelde-E-Mail von WebClarity angefordert.\n\nKlicke auf den unten stehenden Link, um dich anzumelden.",
 			"login": "Login",
-			"subject": "Login bei supastarter"
+			"subject": "Login bei WebClarity"
 		},
 		"newUser": {
-			"body": "Hallo,\n\nVielen Dank, dass du dich bei Supastarter angemeldet hast.\n\n\nUm mit der Nutzung unserer App zu beginnen, bestätige bitte deine E-Mail-Adresse, indem du auf den untenstehenden Link klickst.",
+			"body": "Hallo,\n\nVielen Dank, dass du dich bei WebClarity angemeldet hast.\n\n\nUm mit der Nutzung unserer App zu beginnen, bestätige bitte deine E-Mail-Adresse, indem du auf den untenstehenden Link klickst.",
 			"confirmEmail": "E-Mail bestätigen",
 			"subject": "E-Mail bestätigen"
-		},
-		"newsletterSignup": {
-			"body": "Vielen Dank, dass du dich für den supastarter-Newsletter angemeldet hast. \nWir halten dich mit den neuesten Nachrichten und Updates auf dem Laufenden.",
-			"subject": "Willkommen bei unserem Newsletter"
 		},
 		"organizationInvitation": {
 			"body": "Du wurdest eingeladen, der Organisation {organizationName} beizutreten. Klicke auf den Button unten oder kopiere den Link und füge ihn in den Browser deiner Wahl ein, um die Einladung anzunehmen und der Organisation beizutreten.",
@@ -271,21 +235,6 @@
 			"join": "Tritt der Organisation bei",
 			"subject": "Du wurdest eingeladen, einer Organisation beizutreten"
 		}
-	},
-	"newsletter": {
-		"email": "Email",
-		"hints": {
-			"error": {
-				"message": "Der Newsletter konnte nicht abonniert werden. Bitte versuche es später noch einmal."
-			},
-			"success": {
-				"message": "Danke, dass du unseren Newsletter abonniert hast. \nWir werden dich auf dem Laufenden halten.",
-				"title": "Erfolgreich angemeldet!"
-			}
-		},
-		"submit": "Abonnieren",
-		"subtitle": "Gehöre zu den Ersten, die Zugriff auf supastarter.nextjs erhalten.",
-		"title": "Erhalte frühen Zugang"
 	},
 	"onboarding": {
 		"account": {
@@ -815,9 +764,6 @@
 			"url": "URL",
 			"uuid": "Uuid"
 		}
-	},
-	"documentation": {
-		"title": "Dokumentation"
 	},
 	"choosePlan": {
 		"title": "Wähle einen Plan",

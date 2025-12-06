@@ -1,4 +1,3 @@
-import { withContentCollections } from "@content-collections/next";
 // @ts-expect-error - PrismaPlugin is not typed
 import { PrismaPlugin } from "@prisma/nextjs-monorepo-workaround-plugin";
 import type { NextConfig } from "next";
@@ -56,4 +55,4 @@ const nextConfig: NextConfig = {
 	},
 };
 
-export default withContentCollections(withNextIntl(nextConfig));
+export default withNextIntl(nextConfig);

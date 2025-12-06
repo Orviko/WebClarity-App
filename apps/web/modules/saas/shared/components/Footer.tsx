@@ -1,4 +1,3 @@
-import { LocaleLink } from "@i18n/routing";
 import { cn } from "@ui/lib";
 
 export function Footer() {
@@ -9,12 +8,8 @@ export function Footer() {
 			)}
 		>
 			<span>
-				<a href="https://supastarter.dev">Built with supastarter</a>
+				© {new Date().getFullYear()} WebClarity. All rights reserved.
 			</span>
-			<span className="opacity-50"> | </span>
-			<LocaleLink href="/legal/privacy-policy">Privacy policy</LocaleLink>
-			<span className="opacity-50"> | </span>
-			<LocaleLink href="/legal/terms">Terms and conditions</LocaleLink>
 		</footer>
 	);
 }

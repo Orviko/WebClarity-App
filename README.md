@@ -1,242 +1,546 @@
-# WebClarity - Web Application
+# WebClarity Web App
 
-> **A production-ready SaaS starter built on supastarter for Next.js**
+> A production-ready SaaS application for website analysis and optimization insights.
 
-WebClarity is a comprehensive web application for [your SaaS product description]. This repository contains the complete web application built with Next.js, TypeScript, and modern web technologies.
+WebClarity is a modern SaaS platform built with Next.js 16, TypeScript, and a monorepo architecture. The application provides comprehensive website analysis tools with AI-powered insights.
 
 ## 🚀 Quick Start
 
 ```bash
-# 1. Install dependencies
+# Install dependencies
 pnpm install
 
-# 2. Set up environment variables
+# Set up environment variables
 cp .env.example .env.local
 # Edit .env.local with your credentials
 
-# 3. Set up database
+# Push database schema
 pnpm --filter database push
+
+# Generate Prisma client
 pnpm --filter database generate
 
-# 4. Start development server
+# Start development server
 pnpm dev
 
-# 5. Open http://localhost:3000
+# Open http://localhost:3000
 ```
 
-## 📋 Documentation
+## 📁 Project Structure
 
-- **[Setup Guide](SETUP_GUIDE.md)** - Complete step-by-step setup instructions
-- **[Setup Checklist](SETUP_CHECKLIST.md)** - Track your setup progress
-- **[Project Overview](PROJECT_OVERVIEW.md)** - Architecture and tech stack details
-- **[Changelog](CHANGELOG.md)** - Version history and updates
-
-## 🛠️ Tech Stack
-
-### Core
-- **Next.js 16** - React framework with App Router
-- **TypeScript 5.9** - Type-safe JavaScript
-- **Tailwind CSS v4** - Utility-first styling
-- **Turborepo** - Monorepo build system
-
-### Backend
-- **Prisma** - Database ORM
-- **PostgreSQL** - Database (via Supabase)
-- **Better Auth** - Authentication
-- **oRPC** - Type-safe API
-
-### Features
-- **Supabase** - Database, Storage, Auth
-- **Stripe** - Payment processing
-- **Email Providers** - Transactional emails
-- **Analytics** - User tracking (configurable)
-
-## 📦 Project Structure
+This is a **monorepo** powered by **Turborepo** and **pnpm workspaces**:
 
 ```
 web-app/
-├── apps/web/          # Main Next.js application
-├── packages/          # Shared packages
-│   ├── api/           # API procedures
-│   ├── auth/          # Authentication
-│   ├── database/      # Database layer
-│   ├── storage/       # File storage
-│   ├── mail/          # Email system
-│   ├── payments/      # Payment processing
-│   └── ...
-├── config/            # App configuration
-└── tooling/           # Build tools
+├── apps/
+│   └── web/                    # Main Next.js application (SaaS only)
+│       ├── app/                # Next.js App Router
+│       │   ├── (saas)/         # SaaS application routes
+│       │   ├── api/            # API routes
+│       │   ├── auth/           # Authentication pages
+│       │   └── page.tsx        # Root redirect
+│       ├── modules/            # Feature modules
+│       │   ├── saas/           # SaaS components & features
+│       │   ├── shared/         # Shared components
+│       │   └── ui/             # UI component library
+│       ├── public/             # Static assets
+│       └── tests/              # E2E tests
+│
+├── packages/                   # Shared packages
+│   ├── api/                    # API procedures (oRPC)
+│   │   └── modules/            # API endpoints
+│   │       ├── admin/          # Admin operations
+│   │       ├── ai/             # AI chat features
+│   │       ├── organizations/  # Organization management
+│   │       ├── payments/       # Payment operations
+│   │       └── users/          # User operations
+│   ├── auth/                   # Authentication (Better Auth)
+│   ├── database/               # Database layer (Prisma)
+│   ├── storage/                # File storage (S3/Supabase)
+│   ├── mail/                   # Email templates & providers
+│   ├── payments/               # Payment processing (Stripe)
+│   ├── ai/                     # AI integrations
+│   ├── i18n/                   # Internationalization
+│   ├── logs/                   # Logging utilities
+│   └── utils/                  # Shared utilities
+│
+├── config/                     # Application configuration
+├── tooling/                    # Build tooling
+│   ├── tailwind/               # Tailwind CSS config
+│   ├── typescript/             # TypeScript configs
+│   └── scripts/                # Build scripts
+│
+└── [Configuration Files]
+    ├── package.json            # Root package with scripts
+    ├── pnpm-workspace.yaml     # Workspace configuration
+    ├── turbo.json              # Turborepo configuration
+    ├── tsconfig.json           # TypeScript config
+    └── biome.json              # Linter/formatter config
 ```
 
-## 🎯 Features
+## 🛠️ Tech Stack
 
-### Authentication
-- ✅ Email/password login
-- ✅ Magic link authentication
-- ✅ Social OAuth (Google, GitHub)
-- ✅ Two-factor authentication (2FA)
-- ✅ Passkey support (WebAuthn)
+### Core Technologies
 
-### Organizations
-- ✅ Multi-tenant teams
-- ✅ Role-based access control
-- ✅ Team invitations
-- ✅ Organization billing
+-   **Next.js 16** - React framework with App Router
+-   **React 19** - UI library
+-   **TypeScript 5.9** - Type-safe JavaScript
+-   **Turborepo** - Monorepo build system
+-   **pnpm** - Fast, efficient package manager
 
-### Payments
-- ✅ Subscription plans
-- ✅ One-time payments
-- ✅ Free tier
-- ✅ Trial periods
-- ✅ Customer portal
+### Backend & Database
 
-### Content
-- ✅ MDX blog
-- ✅ Documentation
-- ✅ Changelog
-- ✅ Legal pages
+-   **Prisma** - Type-safe ORM
+-   **PostgreSQL** - Database (Neon/Supabase)
+-   **Better Auth** - Authentication system
+-   **oRPC** - Type-safe API layer
 
-### UI/UX
-- ✅ Responsive design
-- ✅ Dark mode
-- ✅ Loading states
-- ✅ Toast notifications
-- ✅ Internationalization (i18n)
+### Frontend & UI
 
-## 🔧 Configuration
+-   **Tailwind CSS v4** - Utility-first styling
+-   **Shadcn UI** - Component library
+-   **Radix UI** - Accessible primitives
+-   **Lucide Icons** - Icon library
+-   **Next Themes** - Dark mode support
 
-The main configuration file is `config/index.ts`. Key settings:
+### Features & Integrations
+
+-   **Stripe** - Payment processing
+-   **OpenAI** - AI-powered features
+-   **Cloudflare R2** - File storage
+-   **Email Providers** - Transactional emails (Plunk/Resend)
+
+## 🎯 Key Features
+
+### Authentication & Authorization
+
+✅ Email/password authentication  
+✅ Google OAuth (social login)  
+✅ Two-factor authentication (2FA)  
+✅ Email verification  
+✅ Password reset flow  
+✅ Role-based access control (User, Admin)
+
+### Organization Management
+
+✅ Multi-tenant teams  
+✅ Organization invitations  
+✅ Role-based permissions (Owner, Admin, Member)  
+✅ Organization billing  
+✅ Logo uploads
+
+### Billing & Payments
+
+✅ Subscription plans (monthly/yearly)  
+✅ One-time payments  
+✅ Stripe integration  
+✅ Customer portal  
+✅ Seat-based pricing
+
+### AI Features
+
+✅ AI chatbot integration  
+✅ OpenAI-powered insights  
+✅ Conversation history
+
+### User Experience
+
+✅ Responsive design (mobile-first)  
+✅ Dark mode support  
+✅ Loading states & skeletons  
+✅ Toast notifications  
+✅ Internationalization (English, German)
+
+## ⚙️ Configuration
+
+### Main Configuration File
+
+All application settings are in `config/index.ts`:
 
 ```typescript
 export const config = {
-  appName: "WebClarity",
-  organizations: {
-    enable: true,
-    enableBilling: true,  // Organization-level billing
-  },
-  users: {
-    enableBilling: false, // User-level billing disabled
-    enableOnboarding: true,
-  },
-  auth: {
-    enableSignup: true,
-    enableMagicLink: true,
-    enableSocialLogin: true,
-  },
-  // ... more settings
-};
+	appName: "WebClarity",
+
+	// UI Configuration
+	ui: {
+		enabledThemes: ["light", "dark"],
+		defaultTheme: "light",
+		saas: {
+			enabled: true,
+			useSidebarLayout: true,
+		},
+		marketing: {
+			enabled: false, // Marketing pages disabled
+		},
+	},
+
+	// Organization Settings
+	organizations: {
+		enable: true,
+		enableBilling: true,
+		hideOrganization: false,
+	},
+
+	// User Settings
+	users: {
+		enableBilling: false,
+		enableOnboarding: true,
+	},
+
+	// Authentication
+	auth: {
+		enableSignup: true,
+		redirectAfterSignup: "/app",
+		redirectAfterLogin: "/app",
+		redirectAfterLogout: "/auth/login",
+	},
+
+	// Internationalization
+	i18n: {
+		locales: ["en", "de"],
+		defaultLocale: "en",
+	},
+
+	// Payment Plans
+	payments: {
+		plans: {
+			pro: {
+				monthly: { priceId: "..." },
+				yearly: { priceId: "..." },
+			},
+		},
+	},
+} as const satisfies Config;
 ```
 
-## 📝 Common Tasks
+### Environment Variables
 
-### Development
-```bash
-pnpm dev              # Start dev server
-pnpm build            # Build for production
-pnpm type-check       # Check TypeScript types
-pnpm lint             # Lint code
-pnpm format           # Format code
-```
-
-### Database
-```bash
-pnpm --filter database push       # Push schema changes
-pnpm --filter database generate   # Generate Prisma client
-pnpm --filter database migrate    # Create migration
-pnpm --filter database studio     # Open Prisma Studio
-```
-
-### Testing
-```bash
-pnpm --filter web e2e        # Run E2E tests
-pnpm --filter web e2e:ui     # Run tests in UI mode
-```
-
-## 🔐 Environment Variables
-
-Key environment variables (see `.env.example` for complete list):
+Create a `.env.local` file with the following variables:
 
 ```env
-# Database
+# Database (Neon/Supabase)
 DATABASE_URL="postgresql://..."
 DIRECT_URL="postgresql://..."
 
-# App
+# Application
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
-BETTER_AUTH_SECRET="..."
+BETTER_AUTH_SECRET="generate-with-openssl-rand-base64-32"
+BETTER_AUTH_URL="http://localhost:3000"
 
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL="..."
-NEXT_PUBLIC_SUPABASE_ANON_KEY="..."
-SUPABASE_SERVICE_ROLE_KEY="..."
+# Storage (Cloudflare R2 / Supabase)
+STORAGE_PROVIDER="s3"
+S3_ACCESS_KEY_ID="..."
+S3_SECRET_ACCESS_KEY="..."
+S3_ENDPOINT="https://...r2.cloudflarestorage.com"
+S3_REGION="auto"
+NEXT_PUBLIC_AVATARS_BUCKET_NAME="avatars"
+NEXT_PUBLIC_LOGOS_BUCKET_NAME="logos"
 
-# Mail Provider
+# Google OAuth
+GOOGLE_CLIENT_ID="..."
+GOOGLE_CLIENT_SECRET="..."
+
+# Email Provider
 MAIL_PROVIDER="plunk"
 PLUNK_API_KEY="..."
 
 # Payment Provider
 PAYMENT_PROVIDER="stripe"
-STRIPE_SECRET_KEY="..."
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="..."
+STRIPE_SECRET_KEY="sk_test_..."
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+NEXT_PUBLIC_PRICE_ID_PRO_MONTHLY="price_..."
+NEXT_PUBLIC_PRICE_ID_PRO_YEARLY="price_..."
+
+# AI (Optional)
+AI_PROVIDER="openai"
+OPENAI_API_KEY="sk-..."
 ```
 
-## 🚀 Deployment
-
-### Recommended: Vercel
-
-1. Push code to GitHub
-2. Import project in Vercel
-3. Set environment variables
-4. Deploy!
-
-### Other Platforms
-
-- **Netlify**: Deploy via Git integration
-- **Railway**: One-click deployment
-- **Self-hosted**: Use Docker
-
-See [deployment guide](SETUP_GUIDE.md#deployment) for details.
-
-## 🧪 Testing
+Generate the auth secret:
 
 ```bash
+openssl rand -base64 32
+```
+
+## 🔧 Available Commands
+
+### Development
+
+```bash
+# Start development server (all packages)
+pnpm dev
+
+# Start only the web app
+pnpm --filter web dev
+
 # Type checking
 pnpm type-check
 
 # Linting
 pnpm lint
 
-# E2E tests (Playwright)
-pnpm --filter web e2e
+# Format code
+pnpm format
 
-# E2E tests with UI
-pnpm --filter web e2e:ui
+# Clean build artifacts
+pnpm clean
 ```
 
-## 📚 Learn More
+### Database Operations
 
-### Documentation
-- [supastarter Docs](https://supastarter.dev/docs/nextjs)
-- [Next.js Docs](https://nextjs.org/docs)
-- [Prisma Docs](https://www.prisma.io/docs)
-- [Better Auth Docs](https://better-auth.com)
+```bash
+# Push schema changes to database
+pnpm --filter database push
 
-### Community
-- [supastarter Discord](https://discord.gg/supastarter)
-- [Next.js Discord](https://nextjs.org/discord)
+# Generate Prisma client
+pnpm --filter database generate
+
+# Create a new migration
+pnpm --filter database migrate
+
+# Open Prisma Studio (database GUI)
+pnpm --filter database studio
+
+# Reset database (caution!)
+pnpm --filter database reset
+```
+
+### Building
+
+```bash
+# Build all packages
+pnpm build
+
+# Build only the web app
+pnpm --filter web build
+
+# Start production server
+pnpm start
+```
+
+### Testing
+
+```bash
+# Run E2E tests
+pnpm --filter web e2e
+
+# Run E2E tests with UI
+pnpm --filter web e2e:ui
+
+# Run specific test
+pnpm --filter web e2e -- tests/home.spec.ts
+```
+
+### Scripts
+
+```bash
+# Create a new admin user
+pnpm --filter scripts create:user
+```
+
+## 🗄️ Database Schema
+
+Key database models (Prisma):
+
+```prisma
+model User {
+  id              String
+  email           String
+  name            String
+  role            String         // "user" | "admin"
+  emailVerified   Boolean
+  image           String?
+  sessions        Session[]
+  accounts        Account[]
+  members         Member[]
+  // ... more fields
+}
+
+model Organization {
+  id              String
+  name            String
+  slug            String
+  logo            String?
+  members         Member[]
+  purchases       Purchase[]
+  // ... more fields
+}
+
+model Member {
+  id              String
+  userId          String
+  organizationId  String
+  role            String         // "owner" | "admin" | "member"
+  user            User
+  organization    Organization
+}
+
+model Purchase {
+  id              String
+  provider        String
+  productId       String
+  organizationId  String?
+  userId          String?
+  // ... more fields
+}
+
+model AiChat {
+  id              String
+  title           String
+  messages        Json[]
+  userId          String
+  organizationId  String?
+  // ... more fields
+}
+```
+
+## 🚀 Deployment
+
+### Production Checklist
+
+-   [ ] Set up production database (Neon/Supabase)
+-   [ ] Configure production environment variables
+-   [ ] Set up Stripe webhooks for production
+-   [ ] Configure Google OAuth production URLs
+-   [ ] Set up custom domain (app.stepcaptor.com)
+-   [ ] Enable error tracking (Sentry)
+-   [ ] Set up monitoring & analytics
+-   [ ] Configure CDN & caching
+-   [ ] Test all authentication flows
+-   [ ] Test payment flows
+
+### Recommended Platforms
+
+**Vercel** (Recommended)
+
+-   Optimal for Next.js
+-   Automatic deployments
+-   Edge network
+-   Environment variables management
+
+**Alternatives:**
+
+-   Netlify
+-   Railway
+-   Fly.io
+-   Self-hosted (Docker)
+
+### Vercel Deployment
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+
+# Set environment variables in Vercel dashboard
+# Configure custom domain
+# Set up production webhooks
+```
+
+## 🧪 Testing Strategy
+
+### E2E Testing (Playwright)
+
+Tests are located in `apps/web/tests/`:
+
+```typescript
+// Example: Home page test
+test("should redirect to login", async ({ page }) => {
+	await page.goto("/");
+	await expect(page).toHaveURL(/.*\/auth\/login/);
+});
+```
+
+Run tests:
+
+```bash
+pnpm --filter web e2e
+```
+
+### Type Safety
+
+TypeScript ensures type safety across:
+
+-   API calls (oRPC)
+-   Database queries (Prisma)
+-   Component props
+-   Environment variables
+
+## 📚 Package Details
+
+### `@repo/api`
+
+Type-safe API layer using oRPC.
+
+**Key Modules:**
+
+-   `admin/` - Admin operations (user/org management)
+-   `ai/` - AI chat features
+-   `organizations/` - Team management
+-   `payments/` - Billing operations
+-   `users/` - User operations
+
+### `@repo/auth`
+
+Authentication system using Better Auth.
+
+**Features:**
+
+-   Email/password auth
+-   Google OAuth
+-   2FA (TOTP)
+-   Email verification
+-   Password reset
+-   Organization invitations
+
+### `@repo/database`
+
+Database layer using Prisma ORM.
+
+**Includes:**
+
+-   Type-safe queries
+-   Zod schema generation
+-   Migration management
+
+### `@repo/mail`
+
+Email system with React templates.
+
+**Templates:**
+
+-   Email verification
+-   Password reset
+-   Organization invitations
+-   New user welcome
+
+### `@repo/payments`
+
+Payment processing with Stripe.
+
+**Features:**
+
+-   Subscription management
+-   Customer portal
+-   Webhook handling
 
 ## 🐛 Troubleshooting
 
 ### Database Connection Issues
+
 ```bash
-# Verify connection string
+# Test connection
 echo $DATABASE_URL
 
-# Test connection
-pnpm --filter database studio
+# Regenerate Prisma client
+pnpm --filter database generate
 ```
 
-### Module Not Found
+### Module Not Found Errors
+
 ```bash
 # Clean and reinstall
 pnpm clean
@@ -245,6 +549,7 @@ pnpm install
 ```
 
 ### Port Already in Use
+
 ```bash
 # Kill process on port 3000
 lsof -ti:3000 | xargs kill -9
@@ -253,29 +558,65 @@ lsof -ti:3000 | xargs kill -9
 PORT=3001 pnpm dev
 ```
 
-See [SETUP_GUIDE.md](SETUP_GUIDE.md#troubleshooting) for more solutions.
+### Build Errors
+
+```bash
+# Clean build cache
+pnpm clean
+
+# Remove all node_modules
+rm -rf node_modules apps/*/node_modules packages/*/node_modules
+
+# Reinstall
+pnpm install
+
+# Rebuild
+pnpm build
+```
+
+## 🔐 Security Best Practices
+
+✅ Environment variables never committed  
+✅ CSRF protection enabled  
+✅ SQL injection prevention (Prisma)  
+✅ XSS protection (React)  
+✅ Rate limiting (configurable)  
+✅ Secure session management  
+✅ Email verification required  
+✅ 2FA available for enhanced security
+
+## 📖 Documentation
+
+### Official Resources
+
+-   [Next.js Documentation](https://nextjs.org/docs)
+-   [Prisma Documentation](https://www.prisma.io/docs)
+-   [Better Auth Documentation](https://better-auth.com)
+-   [Stripe Documentation](https://stripe.com/docs)
+
+### Learning Resources
+
+-   [Turborepo Handbook](https://turbo.build/repo/docs)
+-   [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+-   [Tailwind CSS Docs](https://tailwindcss.com/docs)
 
 ## 🤝 Contributing
 
-1. Follow existing code style (Biome)
-2. Write TypeScript (no JavaScript)
-3. Use functional components
-4. Add types for all functions
-5. Test thoroughly
+When contributing to this project:
 
-## 📄 License
+1. Follow the existing code style (enforced by Biome)
+2. Write TypeScript (no JavaScript files)
+3. Use functional components (no classes)
+4. Add proper type definitions
+5. Write descriptive commit messages
+6. Test thoroughly before committing
 
-This project is built on supastarter. See supastarter license for details.
+## 📝 License
 
-## 🎉 Getting Started
-
-Ready to begin? Follow these steps:
-
-1. ✅ Read [SETUP_GUIDE.md](SETUP_GUIDE.md)
-2. ✅ Use [SETUP_CHECKLIST.md](SETUP_CHECKLIST.md)
-3. ✅ Review [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md)
-4. ✅ Start building!
+This project is built on [supastarter for Next.js](https://supastarter.dev).
 
 ---
 
-**Built with ❤️ using [supastarter](https://supastarter.dev)**
+**WebClarity** - Built with Next.js, TypeScript, and modern web technologies.
+
+For questions or issues, please open an issue on GitHub.

@@ -87,15 +87,14 @@ export const config = {
 		defaultTheme: "light",
 		// the saas part of the application
 		saas: {
-			// whether the saas part should be enabled (otherwise all routes will be redirect to the marketing page)
+			// whether the saas part should be enabled
 			enabled: true,
 			// whether the sidebar layout should be used
 			useSidebarLayout: true,
 		},
-		// the marketing part of the application
+		// the marketing part of the application - REMOVED for SaaS-only deployment
 		marketing: {
-			// whether the marketing features should be enabled (otherwise all routes will be redirect to the saas part)
-			enabled: false, // ❌ DISABLE marketing pages
+			enabled: false,
 		},
 	},
 	// Storage
@@ -104,14 +103,6 @@ export const config = {
 		bucketNames: {
 			avatars: process.env.NEXT_PUBLIC_AVATARS_BUCKET_NAME ?? "avatars",
 		},
-	},
-	contactForm: {
-		// whether the contact form should be enabled
-		enabled: true,
-		// the email to which the contact form messages should be sent
-		to: "hello@your-domain.com",
-		// the subject of the email
-		subject: "Contact form message",
 	},
 	// Payments
 	payments: {

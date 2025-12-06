@@ -265,10 +265,10 @@ export function PricingTable({
 												variant="light"
 												asChild
 											>
-												<LocaleLink href="/contact">
+												<a href="mailto:hello@stepcaptor.com">
 													<PhoneIcon className="mr-2 size-4" />
 													{t("pricing.contactSales")}
-												</LocaleLink>
+												</a>
 											</Button>
 										) : (
 											<Button
