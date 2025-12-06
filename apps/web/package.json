@@ -71,7 +71,7 @@
 		"zod": "^4.1.12"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.3.5",
+		"@biomejs/biome": "2.3.8",
 		"@playwright/test": "^1.56.1",
 		"@repo/auth": "workspace:*",
 		"@repo/tailwind-config": "workspace:*",
@@ -80,7 +80,7 @@
 		"@types/js-cookie": "^3.0.4",
 		"@types/node": "24.10.1",
 		"@types/nprogress": "^0.2.3",
-		"@types/react": "19.2.5",
+		"@types/react": "19.2.7",
 		"@types/react-dom": "19.2.3",
 		"@types/uuid": "^11.0.0",
 		"autoprefixer": "10.4.22",
