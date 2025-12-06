@@ -1,4 +1,3 @@
-import { passkey } from "@better-auth/passkey";
 import { config } from "@repo/config";
 import {
 	db,
@@ -17,7 +16,6 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import {
 	admin,
 	createAuthMiddleware,
-	magicLink,
 	openAPI,
 	organization,
 	twoFactor,
@@ -56,7 +54,7 @@ export const auth = betterAuth({
 	account: {
 		accountLinking: {
 			enabled: true,
-			trustedProviders: ["google", "github"],
+			trustedProviders: ["google", "github"], // Google & GitHub OAuth
 		},
 	},
 	hooks: {
@@ -75,7 +73,7 @@ export const auth = betterAuth({
 				}
 
 				await updateSeatsInOrganizationSubscription(
-					invitation.organizationId,
+					invitation.organizationId
 				);
 			} else if (ctx.path.startsWith("/organization/remove-member")) {
 				const { organizationId } = ctx.body;
@@ -99,18 +97,18 @@ export const auth = betterAuth({
 					const purchases = organizationId
 						? await getPurchasesByOrganizationId(organizationId)
 						: // biome-ignore lint/style/noNonNullAssertion: This is a valid case
-							await getPurchasesByUserId(userId!);
+						  await getPurchasesByUserId(userId!);
 					const subscriptions = purchases.filter(
 						(purchase) =>
 							purchase.type === "SUBSCRIPTION" &&
-							purchase.subscriptionId !== null,
+							purchase.subscriptionId !== null
 					);
 
 					if (subscriptions.length > 0) {
 						for (const subscription of subscriptions) {
 							await cancelSubscription(
 								// biome-ignore lint/style/noNonNullAssertion: This is a valid case
-								subscription.subscriptionId!,
+								subscription.subscriptionId!
 							);
 						}
 					}
@@ -136,7 +134,7 @@ export const auth = betterAuth({
 			enabled: true,
 			sendChangeEmailVerification: async (
 				{ user: { email, name }, url },
-				request,
+				request
 			) => {
 				const locale = getLocaleFromRequest(request);
 				await sendEmail({
@@ -175,7 +173,7 @@ export const auth = betterAuth({
 		autoSignInAfterVerification: true,
 		sendVerificationEmail: async (
 			{ user: { email, name }, url },
-			request,
+			request
 		) => {
 			const locale = getLocaleFromRequest(request);
 			await sendEmail({
@@ -202,36 +200,21 @@ export const auth = betterAuth({
 		},
 	},
 	plugins: [
-		username(),
-		admin(),
-		passkey(),
-		magicLink({
-			disableSignUp: false,
-			sendMagicLink: async ({ email, url }, ctx) => {
-				const request = ctx?.request as Request;
-
-				const locale = getLocaleFromRequest(request);
-				await sendEmail({
-					to: email,
-					templateId: "magicLink",
-					context: {
-						url,
-					},
-					locale,
-				});
-			},
-		}),
+		username(), // Keep username support
+		admin(), // Keep admin functionality
+		// passkey() - REMOVED: Not using passkeys
+		// magicLink() - REMOVED: Not using magic links
 		organization({
 			sendInvitationEmail: async (
 				{ email, id, organization },
-				request,
+				request
 			) => {
 				const locale = getLocaleFromRequest(request);
 				const existingUser = await getUserByEmail(email);
 
 				const url = new URL(
 					existingUser ? "/auth/login" : "/auth/signup",
-					getBaseUrl(),
+					getBaseUrl()
 				);
 
 				url.searchParams.set("invitationId", id);
@@ -248,9 +231,9 @@ export const auth = betterAuth({
 				});
 			},
 		}),
-		openAPI(),
-		invitationOnlyPlugin(),
-		twoFactor(),
+		openAPI(), // Keep OpenAPI docs
+		invitationOnlyPlugin(), // Keep invitation system
+		twoFactor(), // ✅ ENABLED: Two-factor authentication for security
 	],
 	onAPIError: {
 		onError(error, ctx) {

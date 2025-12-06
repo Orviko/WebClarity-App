@@ -58,15 +58,15 @@ export const config = {
 		// Whether users should be able to create accounts (otherwise users can only be by admins)
 		enableSignup: true,
 		// Whether users should be able to sign in with a magic link
-		enableMagicLink: true,
+		enableMagicLink: false, // ❌ DISABLED - Not using magic links
 		// Whether users should be able to sign in with a social provider
-		enableSocialLogin: true,
+		enableSocialLogin: true, // ✅ ENABLED - Google OAuth only
 		// Whether users should be able to sign in with a passkey
-		enablePasskeys: true,
+		enablePasskeys: false, // ❌ DISABLED - Not using passkeys
 		// Whether users should be able to sign in with a password
-		enablePasswordLogin: true,
+		enablePasswordLogin: true, // ✅ ENABLED - Email/password auth
 		// Whether users should be activate two factor authentication
-		enableTwoFactor: true,
+		enableTwoFactor: true, // ✅ ENABLED - 2FA for security
 		// where users should be redirected after the sign in
 		redirectAfterSignIn: "/app",
 		// where users should be redirected after logout
@@ -77,7 +77,7 @@ export const config = {
 	// Mails
 	mails: {
 		// the from address for mails
-		from: "noreply@webclarity.app",
+		from: "notification@webclarity.ai",
 	},
 	// Frontend
 	ui: {
