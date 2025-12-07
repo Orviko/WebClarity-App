@@ -259,17 +259,17 @@ export function PricingTable({
 											</strong>
 										)}
 
-										{isEnterprise ? (
-											<Button
-												className="mt-4 w-full"
-												variant="light"
-												asChild
-											>
-												<a href="mailto:hello@stepcaptor.com">
-													<PhoneIcon className="mr-2 size-4" />
-													{t("pricing.contactSales")}
-												</a>
-											</Button>
+									{isEnterprise ? (
+										<Button
+											className="mt-4 w-full"
+											variant="outline"
+											asChild
+										>
+											<a href="mailto:hello@stepcaptor.com">
+												<PhoneIcon className="mr-2 size-4" />
+												{t("pricing.contactSales")}
+											</a>
+										</Button>
 										) : (
 											<Button
 												className="mt-4 w-full"

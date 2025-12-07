@@ -167,21 +167,21 @@ export function TwoFactorBlock() {
 					<div className="flex items-center gap-1.5">
 						<ShieldCheckIcon className="size-6 text-green-500" />
 						<p className="text-sm text-foreground">
-							{t("settings.account.security.twoFactor.enabled")}
-						</p>
-					</div>
-					<Button variant="light" onClick={verifyPassword}>
-						<XIcon className="mr-1.5 size-4" />
-						{t("settings.account.security.twoFactor.disable")}
-					</Button>
-				</div>
-			) : (
-				<div className="flex justify-start">
-					<Button variant="light" onClick={verifyPassword}>
-						<TabletSmartphoneIcon className="mr-1.5 size-4" />
-						{t("settings.account.security.twoFactor.enable")}
-					</Button>
-				</div>
+					{t("settings.account.security.twoFactor.enabled")}
+				</p>
+			</div>
+			<Button variant="outline" onClick={verifyPassword}>
+				<XIcon className="mr-1.5 size-4" />
+				{t("settings.account.security.twoFactor.disable")}
+			</Button>
+		</div>
+	) : (
+		<div className="flex justify-start">
+			<Button variant="outline" onClick={verifyPassword}>
+				<TabletSmartphoneIcon className="mr-1.5 size-4" />
+				{t("settings.account.security.twoFactor.enable")}
+			</Button>
+		</div>
 			)}
 
 			<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

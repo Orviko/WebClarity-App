@@ -30,21 +30,21 @@ export function ConsentBanner() {
 						This site doesn't use cookies yet, but we added this
 						banner to demo it to you.
 					</p>
-					<div className="mt-4 flex gap-2">
-						<Button
-							variant="light"
-							className="flex-1"
-							onClick={() => declineCookies()}
-						>
-							Decline
-						</Button>
-						<Button
-							className="flex-1"
-							onClick={() => allowCookies()}
-						>
-							Allow
-						</Button>
-					</div>
+				<div className="mt-4 flex gap-2">
+					<Button
+						variant="outline"
+						className="flex-1"
+						onClick={() => declineCookies()}
+					>
+						Decline
+					</Button>
+					<Button
+						className="flex-1"
+						onClick={() => allowCookies()}
+					>
+						Allow
+					</Button>
+				</div>
 				</div>
 			</div>
 		</div>

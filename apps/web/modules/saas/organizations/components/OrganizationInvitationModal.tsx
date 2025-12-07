@@ -89,19 +89,19 @@ export function OrganizationInvitationModal({
 				</div>
 			</div>
 
-			<div className="flex gap-2">
-				<Button
-					className="flex-1"
-					variant="light"
-					onClick={() => onSelectAnswer(false)}
-					disabled={!!submitting}
-					loading={submitting === "reject"}
-				>
-					<XIcon className="mr-1.5 size-4" />
-					{t("organizations.invitationModal.decline")}
-				</Button>
-				<Button
-					className="flex-1"
+		<div className="flex gap-2">
+			<Button
+				className="flex-1"
+				variant="outline"
+				onClick={() => onSelectAnswer(false)}
+				disabled={!!submitting}
+				loading={submitting === "reject"}
+			>
+				<XIcon className="mr-1.5 size-4" />
+				{t("organizations.invitationModal.decline")}
+			</Button>
+			<Button
+				className="flex-1"
 					onClick={() => onSelectAnswer(true)}
 					disabled={!!submitting}
 					loading={submitting === "accept"}

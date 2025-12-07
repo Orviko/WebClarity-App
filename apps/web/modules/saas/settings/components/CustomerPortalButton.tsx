@@ -33,7 +33,7 @@ export function CustomerPortalButton({ purchaseId }: { purchaseId: string }) {
 
 	return (
 		<Button
-			variant="light"
+			variant="outline"
 			size="sm"
 			onClick={() => createCustomerPortal()}
 			loading={createCustomerPortalMutation.isPending}

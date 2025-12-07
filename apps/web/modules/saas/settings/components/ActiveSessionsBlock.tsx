@@ -99,14 +99,14 @@ export function ActiveSessionsBlock() {
 									</small>
 								</div>
 							</div>
-							<Button
-								variant="light"
-								size="icon"
-								className="shrink-0"
-								onClick={() => revokeSession(session.token)}
-							>
-								<XIcon className="size-4" />
-							</Button>
+						<Button
+							variant="outline"
+							size="icon"
+							className="shrink-0"
+							onClick={() => revokeSession(session.token)}
+						>
+							<XIcon className="size-4" />
+						</Button>
 						</div>
 					))
 				)}
