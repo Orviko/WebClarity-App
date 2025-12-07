@@ -175,7 +175,7 @@ export function AiChat({ organizationId }: { organizationId?: string }) {
 			sidebar={
 				<div>
 					<Button
-						variant="light"
+						variant="outline"
 						size="sm"
 						className="mb-4 flex w-full items-center gap-2"
 						loading={createChatMutation.isPending}
