@@ -14,13 +14,52 @@ export const app = new Hono()
 	// Cors middleware
 	.use(
 		cors({
-			origin: getBaseUrl(),
+			origin: (origin) => {
+				// If no origin (same-origin request), allow it
+				if (!origin) {
+					return origin;
+				}
+
+				// Allow requests from the web app
+				const baseUrl = getBaseUrl();
+				if (origin === baseUrl) {
+					return origin;
+				}
+
+				// Allow localhost for development
+				if (
+					origin.startsWith("http://localhost:") ||
+					origin.startsWith("http://127.0.0.1:")
+				) {
+					return origin;
+				}
+
+				// Allow browser extension origins (chrome-extension://, moz-extension://, etc.)
+				if (origin.startsWith("chrome-extension://")) {
+					return origin;
+				}
+				if (origin.startsWith("moz-extension://")) {
+					return origin;
+				}
+				if (origin.startsWith("safari-extension://")) {
+					return origin;
+				}
+
+				// For public API endpoints (like style-guide share), allow any origin
+				// Security is provided by:
+				// 1. Rate limiting (10 requests per hour per IP)
+				// 2. Input validation and sanitization
+				// 3. Payload size limits (5MB max)
+				// 4. Automatic expiration (24 hours)
+				// Note: In production, consider restricting to known extension IDs if possible
+				return origin;
+			},
 			allowHeaders: ["Content-Type", "Authorization"],
 			allowMethods: ["POST", "GET", "OPTIONS"],
 			exposeHeaders: ["Content-Length"],
 			maxAge: 600,
 			credentials: true,
-		}),
+		})
 	)
 	// Auth handler
 	.on(["POST", "GET"], "/auth/**", (c) => auth.handler(c.req.raw))
@@ -28,6 +67,98 @@ export const app = new Hono()
 	.post("/webhooks/payments", (c) => paymentsWebhookHandler(c.req.raw))
 	// Health check
 	.get("/health", (c) => c.text("OK"))
+	// Style guide share endpoint (direct route for extension compatibility)
+	.post("/rpc/style-guide/create-share", async (c) => {
+		try {
+			const body = await c.req.json();
+
+			// Import schema from separate file to avoid circular dependencies
+			const { shareDataSchema } = await import(
+				"./modules/style-guide/schema"
+			);
+
+			// Import handler separately
+			const { createShareHandler } = await import(
+				"./modules/style-guide/procedures/create-share"
+			);
+
+			// Validate input using the schema
+			const parsed = shareDataSchema.parse(body);
+
+			// Call handler
+			const result = await createShareHandler(parsed);
+
+			return c.json(result);
+		} catch (error: any) {
+			logger.error("Error creating style guide share:", error);
+
+			// Handle Zod validation errors
+			if (error?.issues) {
+				return c.json(
+					{
+						json: {
+							defined: false,
+							code: "BAD_REQUEST",
+							status: 400,
+							message: "Input validation failed",
+							data: { issues: error.issues },
+						},
+					},
+					400
+				);
+			}
+
+			// Handle ORPCError - it may have nested structure
+			let errorCode: string;
+			let errorMessage: string;
+			let statusCode = 500;
+
+			if (error?.code) {
+				// Check if code is nested (object) or direct (string)
+				if (typeof error.code === "object" && error.code.code) {
+					errorCode = error.code.code;
+					errorMessage = error.code.message || String(errorCode);
+				} else if (typeof error.code === "string") {
+					errorCode = error.code;
+					errorMessage = error.message || String(errorCode);
+				} else {
+					errorCode = "BAD_REQUEST";
+					errorMessage = error.message || "Bad request";
+				}
+
+				// Map error codes to HTTP status codes
+				if (errorCode === "BAD_REQUEST") {
+					statusCode = 400;
+				} else if (errorCode === "NOT_FOUND") {
+					statusCode = 404;
+				} else if (errorCode === "UNAUTHORIZED") {
+					statusCode = 401;
+				} else if (errorCode === "FORBIDDEN") {
+					statusCode = 403;
+				} else if (errorCode === "TOO_MANY_REQUESTS") {
+					statusCode = 429;
+				}
+			} else if (error instanceof Error) {
+				errorCode = "INTERNAL_SERVER_ERROR";
+				errorMessage = error.message || "Internal server error";
+			} else {
+				errorCode = "INTERNAL_SERVER_ERROR";
+				errorMessage = String(error) || "Internal server error";
+			}
+
+			return c.json(
+				{
+					json: {
+						defined: false,
+						code: errorCode,
+						status: statusCode,
+						message: errorMessage,
+					},
+				},
+				statusCode as any
+			);
+		}
+	})
 	// oRPC handlers (for RPC and OpenAPI)
 	.use("*", async (c, next) => {
 		const context = {

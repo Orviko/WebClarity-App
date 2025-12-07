@@ -204,3 +204,28 @@ model Purchase {
   @@index([subscriptionId])
   @@map("purchase")
 }
+
+model StyleGuideData {
+  id            String          @id @default(cuid())
+  typographyData Json?
+  colorsData     Json?
+  exportOptions  Json
+  createdAt      DateTime        @default(now())
+  share          StyleGuideShare?
+
+  @@map("styleGuideData")
+}
+
+model StyleGuideShare {
+  id               String          @id @default(cuid())
+  shareId          String          @unique
+  expiresAt        DateTime
+  createdAt        DateTime        @default(now())
+  websiteUrl       String
+  styleGuideDataId String          @unique
+  styleGuideData   StyleGuideData  @relation(fields: [styleGuideDataId], references: [id], onDelete: Cascade)
+
+  @@index([shareId])
+  @@index([expiresAt])
+  @@map("styleGuideShare")
+}

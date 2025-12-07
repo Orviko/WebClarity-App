@@ -1,0 +1,412 @@
+"use client";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
+import { Badge } from "@ui/components/badge";
+import { ColorModeToggle } from "@shared/components/ColorModeToggle";
+
+interface FontFamily {
+	name: string;
+	weights: number[];
+	totalInstances: number;
+}
+
+interface FontSizeGroup {
+	category: "display" | "heading" | "body" | "button";
+	fontSize: string;
+	fontWeight: string;
+	fontFamily: string;
+	lineHeight: string;
+	letterSpacing: string;
+	colors: string[];
+	instanceCount: number;
+	htmlTag?: string;
+	label?: string;
+}
+
+interface StyleGateTypographyData {
+	fontFamilies: FontFamily[];
+	fontSizes: {
+		display: FontSizeGroup[];
+		heading: FontSizeGroup[];
+		body: FontSizeGroup[];
+		button: FontSizeGroup[];
+	};
+}
+
+interface ColorToken {
+	hex: string;
+	rgb: string;
+	colorName: string;
+	category: "background" | "text" | "border" | "icon";
+	usageCount: number;
+}
+
+interface StyleGateColorsData {
+	brandColors: unknown[];
+	colorTokens: {
+		background: ColorToken[];
+		text: ColorToken[];
+		border: ColorToken[];
+		icon: ColorToken[];
+	};
+}
+
+export interface ShareData {
+	typographyData: StyleGateTypographyData | null;
+	colorsData: StyleGateColorsData | null;
+	exportOptions: {
+		typography: {
+			all: boolean;
+			fontFamily: boolean;
+			display: boolean;
+			heading: boolean;
+			body: boolean;
+			button: boolean;
+		};
+		colors: {
+			all: boolean;
+			backgrounds: boolean;
+			text: boolean;
+			borders: boolean;
+			icons: boolean;
+		};
+		exportUnit: "px" | "rem";
+	};
+	websiteUrl: string;
+	createdAt: string;
+	expiresAt: string;
+}
+
+interface ShareStyleGuidePageProps {
+	data: ShareData;
+}
+
+export function ShareStyleGuidePage({ data }: ShareStyleGuidePageProps) {
+	const hasTypography =
+		data.typographyData &&
+		(data.exportOptions.typography.all ||
+			data.exportOptions.typography.fontFamily ||
+			data.exportOptions.typography.display ||
+			data.exportOptions.typography.heading ||
+			data.exportOptions.typography.body ||
+			data.exportOptions.typography.button);
+
+	const hasColors =
+		data.colorsData &&
+		(data.exportOptions.colors.all ||
+			data.exportOptions.colors.backgrounds ||
+			data.exportOptions.colors.text ||
+			data.exportOptions.colors.borders ||
+			data.exportOptions.colors.icons);
+
+	const pageTitle =
+		hasTypography && hasColors
+			? "Style Guide"
+			: hasTypography
+				? "Typography"
+				: "Colors";
+
+	return (
+		<div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
+			<div className="max-w-7xl mx-auto">
+				{/* Header */}
+				<div className="mb-8">
+					<div className="flex items-center justify-between mb-4">
+						<div>
+							<h1 className="text-3xl font-bold tracking-tight">
+								{pageTitle}
+							</h1>
+							<p className="text-muted-foreground mt-1">
+								Shared style guide from{" "}
+								<a
+									href={`https://${data.websiteUrl}`}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="text-primary hover:underline font-medium"
+								>
+									{data.websiteUrl}
+								</a>
+							</p>
+						</div>
+						<ColorModeToggle />
+					</div>
+					<div className="flex items-center gap-2 text-sm text-muted-foreground">
+						<Badge status="info">
+							Expires{" "}
+							{new Date(data.expiresAt).toLocaleDateString()}
+						</Badge>
+					</div>
+				</div>
+
+				{/* Typography Section */}
+				{hasTypography && data.typographyData && (
+					<div className="space-y-6 mb-8">
+						{/* Font Families */}
+						{(data.exportOptions.typography.all ||
+							data.exportOptions.typography.fontFamily) &&
+							data.typographyData?.fontFamilies &&
+							data.typographyData.fontFamilies.length > 0 && (
+								<Card>
+									<CardHeader>
+										<CardTitle>Font Family</CardTitle>
+									</CardHeader>
+									<CardContent>
+										<div className="space-y-4">
+											{data.typographyData.fontFamilies.map(
+												(font, index, array) => (
+													<div
+														key={index}
+														className={
+															index <
+															array.length - 1
+																? "pb-4 border-b border-border"
+																: ""
+														}
+													>
+														<h3 className="font-semibold text-base mb-1">
+															{font.name}
+														</h3>
+														<p className="text-sm text-muted-foreground">
+															{formatWeights(
+																font.weights,
+															)}
+														</p>
+													</div>
+												),
+											)}
+										</div>
+									</CardContent>
+								</Card>
+							)}
+
+						{/* Font Sizes */}
+						{(data.exportOptions.typography.all ||
+							data.exportOptions.typography.display ||
+							data.exportOptions.typography.heading ||
+							data.exportOptions.typography.body ||
+							data.exportOptions.typography.button) &&
+							data.typographyData.fontSizes && (
+								<Card>
+									<CardHeader>
+										<CardTitle>Font Sizes</CardTitle>
+									</CardHeader>
+									<CardContent>
+										<div className="space-y-4">
+											{[
+												...(data.exportOptions
+													.typography.all ||
+												data.exportOptions.typography
+													.display
+													? data.typographyData
+															.fontSizes
+															.display || []
+													: []),
+												...(data.exportOptions
+													.typography.all ||
+												data.exportOptions.typography
+													.heading
+													? data.typographyData
+															.fontSizes
+															.heading || []
+													: []),
+												...(data.exportOptions
+													.typography.all ||
+												data.exportOptions.typography
+													.body
+													? data.typographyData
+															.fontSizes.body ||
+														[]
+													: []),
+												...(data.exportOptions
+													.typography.all ||
+												data.exportOptions.typography
+													.button
+													? data.typographyData
+															.fontSizes.button ||
+														[]
+													: []),
+											].map((group, index) => (
+												<div
+													key={index}
+													className="p-4 bg-muted/50 rounded-lg border border-border"
+												>
+													{group.label && (
+														<div className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wide">
+															{group.label}
+														</div>
+													)}
+													<div
+														style={{
+															fontFamily:
+																group.fontFamily,
+															fontSize:
+																group.fontSize,
+															fontWeight:
+																group.fontWeight,
+															lineHeight:
+																group.lineHeight,
+															letterSpacing:
+																group.letterSpacing,
+														}}
+														className="mb-3 text-foreground"
+													>
+														{group.fontFamily} -{" "}
+														{group.fontSize} -{" "}
+														{getWeightName(
+															group.fontWeight,
+														)}
+													</div>
+													<div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+														<span className="flex items-center gap-1">
+															<span className="font-medium">
+																Line Height:
+															</span>
+															{group.lineHeight}
+														</span>
+														<span className="flex items-center gap-1">
+															<span className="font-medium">
+																Letter Spacing:
+															</span>
+															{
+																group.letterSpacing
+															}
+														</span>
+													</div>
+												</div>
+											))}
+										</div>
+									</CardContent>
+								</Card>
+							)}
+					</div>
+				)}
+
+				{/* Colors Section */}
+				{hasColors && data.colorsData && (
+					<div className="space-y-6 mb-8">
+						{[
+							{
+								key: "background" as const,
+								label: "Backgrounds Color",
+								optionKey: "backgrounds" as const,
+							},
+							{
+								key: "text" as const,
+								label: "Typography Color",
+								optionKey: "text" as const,
+							},
+							{
+								key: "border" as const,
+								label: "Border Color",
+								optionKey: "borders" as const,
+							},
+							{
+								key: "icon" as const,
+								label: "Icon Color",
+								optionKey: "icons" as const,
+							},
+						]
+							.filter(
+								({ optionKey }) =>
+									data.exportOptions.colors.all ||
+									data.exportOptions.colors[optionKey],
+							)
+							.map(({ key, label }) => {
+								const tokens =
+									data.colorsData?.colorTokens?.[key] || [];
+								if (tokens.length === 0) return null;
+
+								return (
+									<Card key={key}>
+										<CardHeader>
+											<CardTitle>{label}</CardTitle>
+										</CardHeader>
+										<CardContent>
+											<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+												{tokens.map((token, index) => (
+													<div
+														key={index}
+														className="flex flex-col items-center gap-2 group"
+													>
+														<div
+															className="w-full aspect-square rounded-lg border-2 border-border shadow-sm transition-all group-hover:scale-105 group-hover:shadow-md cursor-pointer"
+															style={{
+																backgroundColor:
+																	token.hex,
+															}}
+															title={
+																token.colorName ||
+																token.hex
+															}
+														/>
+														<div className="text-xs text-center text-muted-foreground font-mono">
+															{token.hex}
+														</div>
+														{token.colorName && (
+															<div className="text-xs text-center text-muted-foreground">
+																{
+																	token.colorName
+																}
+															</div>
+														)}
+													</div>
+												))}
+											</div>
+										</CardContent>
+									</Card>
+								);
+							})}
+					</div>
+				)}
+
+				{/* Footer */}
+				<div className="mt-12 pt-8 border-t border-border">
+					<div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+						<div>
+							©{new Date().getFullYear()} WebClarity. All rights
+							reserved.
+						</div>
+						<a
+							href="https://webclarity.ai"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="hover:text-foreground transition-colors font-medium"
+						>
+							webclarity.ai
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+function formatWeights(weights: number[]): string {
+	const weightMap: Record<number, string> = {
+		100: "Thin",
+		200: "Extra Light",
+		300: "Light",
+		400: "Regular",
+		500: "Medium",
+		600: "Semi-Bold",
+		700: "Bold",
+		800: "Extra Bold",
+		900: "Black",
+	};
+	return weights.map((w) => weightMap[w] || String(w)).join(", ");
+}
+
+function getWeightName(weight: string | number): string {
+	const weightMap: Record<string, string> = {
+		"100": "Thin",
+		"200": "Extra Light",
+		"300": "Light",
+		"400": "Regular",
+		"500": "Medium",
+		"600": "Semi-Bold",
+		"700": "Bold",
+		"800": "Extra Bold",
+		"900": "Black",
+	};
+	return weightMap[String(weight)] || String(weight);
+}

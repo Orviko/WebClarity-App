@@ -45,6 +45,7 @@ export default async function proxy(req: NextRequest) {
 		"/onboarding",
 		"/choose-plan",
 		"/organization-invitation",
+		"/share", // Public share pages don't need locale or auth
 	];
 
 	if (pathsWithoutLocale.some((path) => pathname.startsWith(path))) {
