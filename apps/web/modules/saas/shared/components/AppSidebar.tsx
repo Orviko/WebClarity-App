@@ -20,7 +20,6 @@ import {
 import {
 	ArchiveIcon,
 	BookOpenIcon,
-	BotMessageSquareIcon,
 	FolderKanbanIcon,
 	LayoutDashboardIcon,
 	LayoutListIcon,
@@ -86,15 +85,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			href: `${basePath}/archive`,
 			icon: ArchiveIcon,
 			isActive: pathname.includes("/archive"),
-			hasAction: false,
-		},
-		{
-			label: t("app.menu.aiChatbot"),
-			href: activeOrganization
-				? `/app/${activeOrganization.slug}/chatbot`
-				: "/app/chatbot",
-			icon: BotMessageSquareIcon,
-			isActive: pathname.includes("/chatbot"),
 			hasAction: false,
 		},
 		...(activeOrganization && isOrganizationAdmin

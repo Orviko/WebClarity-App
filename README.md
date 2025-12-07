@@ -2,7 +2,7 @@
 
 > A production-ready SaaS application for website analysis and optimization insights.
 
-WebClarity is a modern SaaS platform built with Next.js 16, TypeScript, and a monorepo architecture. The application provides comprehensive website analysis tools with AI-powered insights.
+WebClarity is a modern SaaS platform built with Next.js 16, TypeScript, and a monorepo architecture. The application provides comprehensive website analysis tools.
 
 ## 🚀 Quick Start
 
@@ -50,7 +50,6 @@ web-app/
 │   ├── api/                    # API procedures (oRPC)
 │   │   └── modules/            # API endpoints
 │   │       ├── admin/          # Admin operations
-│   │       ├── ai/             # AI chat features
 │   │       ├── organizations/  # Organization management
 │   │       ├── payments/       # Payment operations
 │   │       └── users/          # User operations
@@ -59,7 +58,6 @@ web-app/
 │   ├── storage/                # File storage (S3/Supabase)
 │   ├── mail/                   # Email templates & providers
 │   ├── payments/               # Payment processing (Stripe)
-│   ├── ai/                     # AI integrations
 │   ├── i18n/                   # Internationalization
 │   ├── logs/                   # Logging utilities
 │   └── utils/                  # Shared utilities
@@ -106,7 +104,6 @@ web-app/
 ### Features & Integrations
 
 -   **Stripe** - Payment processing
--   **OpenAI** - AI-powered features
 -   **Cloudflare R2** - File storage
 -   **Email Providers** - Transactional emails (Plunk/Resend)
 
@@ -136,12 +133,6 @@ web-app/
 ✅ Stripe integration  
 ✅ Customer portal  
 ✅ Seat-based pricing
-
-### AI Features
-
-✅ AI chatbot integration  
-✅ OpenAI-powered insights  
-✅ Conversation history
 
 ### User Experience
 
@@ -251,10 +242,6 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
 NEXT_PUBLIC_PRICE_ID_PRO_MONTHLY="price_..."
 NEXT_PUBLIC_PRICE_ID_PRO_YEARLY="price_..."
-
-# AI (Optional)
-AI_PROVIDER="openai"
-OPENAI_API_KEY="sk-..."
 ```
 
 Generate the auth secret:
@@ -384,15 +371,6 @@ model Purchase {
   userId          String?
   // ... more fields
 }
-
-model AiChat {
-  id              String
-  title           String
-  messages        Json[]
-  userId          String
-  organizationId  String?
-  // ... more fields
-}
 ```
 
 ## 🚀 Deployment
@@ -478,7 +456,6 @@ Type-safe API layer using oRPC.
 **Key Modules:**
 
 -   `admin/` - Admin operations (user/org management)
--   `ai/` - AI chat features
 -   `organizations/` - Team management
 -   `payments/` - Billing operations
 -   `users/` - User operations

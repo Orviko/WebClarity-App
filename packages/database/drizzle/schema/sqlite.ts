@@ -197,24 +197,6 @@ export const purchase = sqliteTable("purchase", {
 	),
 });
 
-export const aiChat = sqliteTable("aiChat", {
-	id: text("id")
-		.$defaultFn(() => cuid())
-		.primaryKey(),
-	organizationId: text("organizationId").references(() => organization.id, {
-		onDelete: "cascade",
-	}),
-	userId: text("userId").references(() => user.id, { onDelete: "cascade" }),
-	title: text("title"),
-	messages: blob("messages", { mode: "json" }),
-	createdAt: integer("createdAt", { mode: "timestamp" })
-		.notNull()
-		.default(sql`CURRENT_TIMESTAMP`),
-	updatedAt: integer("updatedAt", { mode: "timestamp" }).default(
-		sql`CURRENT_TIMESTAMP`,
-	),
-});
-
 // Relations
 export const userRelations = relations(user, ({ many }) => ({
 	sessions: many(session),
@@ -223,7 +205,6 @@ export const userRelations = relations(user, ({ many }) => ({
 	invitations: many(invitation),
 	purchases: many(purchase),
 	memberships: many(member),
-	aiChats: many(aiChat),
 	twoFactors: many(twoFactor),
 }));
 
@@ -231,7 +212,6 @@ export const organizationRelations = relations(organization, ({ many }) => ({
 	members: many(member),
 	invitations: many(invitation),
 	purchases: many(purchase),
-	aiChats: many(aiChat),
 }));
 
 export const memberRelations = relations(member, ({ one }) => ({
@@ -284,17 +264,6 @@ export const purchaseRelations = relations(purchase, ({ one }) => ({
 	}),
 	user: one(user, {
 		fields: [purchase.userId],
-		references: [user.id],
-	}),
-}));
-
-export const aiChatRelations = relations(aiChat, ({ one }) => ({
-	organization: one(organization, {
-		fields: [aiChat.organizationId],
-		references: [organization.id],
-	}),
-	user: one(user, {
-		fields: [aiChat.userId],
 		references: [user.id],
 	}),
 }));
