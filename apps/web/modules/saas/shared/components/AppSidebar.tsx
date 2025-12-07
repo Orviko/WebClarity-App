@@ -23,8 +23,10 @@ import {
 	FolderKanbanIcon,
 	LayoutDashboardIcon,
 	LayoutListIcon,
+	MessageSquareIcon,
 	PlusIcon,
 	SettingsIcon,
+	Share2Icon,
 	UserCog2Icon,
 	UserCogIcon,
 } from "lucide-react";
@@ -158,6 +160,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				</SidebarGroup>
 			</SidebarContent>
 			<SidebarFooter>
+				<div className="flex flex-col gap-2">
+					<div className="flex items-center gap-2 px-2">
+						<Link
+							href="#"
+							className="flex flex-1 items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+						>
+							<MessageSquareIcon className="size-4" />
+							<span>{t("app.sidebar.feedback")}</span>
+						</Link>
+					</div>
+					<div className="flex items-center gap-2 px-2">
+						<Link
+							href="#"
+							className="flex flex-1 items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+						>
+							<Share2Icon className="size-4" />
+							<span>{t("app.sidebar.share")}</span>
+						</Link>
+					</div>
+				</div>
 				<NavUser />
 			</SidebarFooter>
 			<SidebarRail />

@@ -264,7 +264,21 @@
 	},
 	"organizations": {
 		"createForm": {
-			"name": "Organization name",
+			"cancel": "Cancel",
+			"logo": {
+				"ariaLabel": "Upload organization logo",
+				"description": "Drag and drop or choose file to upload.",
+				"dropHere": "Drop here",
+				"formats": "Supported formats: PNG, JPG, WebP • Max file size: 1 MB",
+				"remove": "Remove logo",
+				"upload": "Upload",
+				"uploadErrors": {
+					"fileTooLarge": "File size must be less than 1 MB. Please choose a smaller image.",
+					"invalidType": "Invalid file type. Please upload a PNG, JPG, or WebP image.",
+					"uploadFailed": "Failed to upload image. Please try again."
+				}
+			},
+			"name": "Organization name*",
 			"notifications": {
 				"error": "We are sorry, but we were unable to create your organization. Please try again later.",
 				"success": "Your organization has been created. You can now invite members."

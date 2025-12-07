@@ -46,7 +46,7 @@ export function ConnectedAccountsBlock() {
 								className="flex h-14 items-center justify-between gap-2 py-2"
 							>
 								<div className="flex items-center gap-2">
-									<providerData.icon className="size-4 text-primary/50" />
+									<providerData.icon className="size-4 text-foreground" />
 									<span className="text-sm">
 										{providerData.name}
 									</span>

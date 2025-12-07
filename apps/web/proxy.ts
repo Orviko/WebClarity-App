@@ -43,7 +43,6 @@ export default async function proxy(req: NextRequest) {
 
 	const pathsWithoutLocale = [
 		"/onboarding",
-		"/new-organization",
 		"/choose-plan",
 		"/organization-invitation",
 	];

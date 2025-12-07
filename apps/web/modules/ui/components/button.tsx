@@ -54,13 +54,21 @@ const Button = ({
 	...props
 }: ButtonProps) => {
 	const Comp = asChild ? Slot : "button";
+	
+	// Determine spinner color based on variant
+	// For primary/default variant, use white; for others, use primary color
+	const spinnerClassName =
+		variant === "default" || variant === undefined
+			? "size-4 text-white"
+			: "size-4";
+	
 	return (
 		<Comp
 			className={cn(buttonVariants({ variant, size, className }))}
 			disabled={disabled || loading}
 			{...props}
 		>
-			{loading && <Spinner className="size-4" />}
+			{loading && <Spinner className={spinnerClassName} />}
 			<Slottable>{children}</Slottable>
 		</Comp>
 	);

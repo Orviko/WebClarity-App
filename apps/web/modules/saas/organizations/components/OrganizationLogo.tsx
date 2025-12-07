@@ -2,7 +2,7 @@
 
 import { config } from "@repo/config";
 import { Avatar, AvatarFallback, AvatarImage } from "@ui/components/avatar";
-import BoringAvatar from "boring-avatars";
+import { BuildingIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useIsClient } from "usehooks-ts";
 
@@ -17,18 +17,6 @@ export const OrganizationLogo = ({
 	className?: string;
 }) => {
 	const isClient = useIsClient();
-	const avatarColors = useMemo(() => {
-		if (typeof window === "undefined") {
-			return [];
-		}
-
-		const styles = getComputedStyle(window.document.documentElement);
-		return [
-			styles.getPropertyValue("--color-primary"),
-			styles.getPropertyValue("--color-accent"),
-			styles.getPropertyValue("--color-highlight"),
-		];
-	}, []);
 
 	const logoSrc = useMemo(
 		() =>
@@ -47,14 +35,8 @@ export const OrganizationLogo = ({
 	return (
 		<Avatar ref={ref} className={className}>
 			<AvatarImage src={logoSrc} />
-			<AvatarFallback>
-				<BoringAvatar
-					size={96}
-					name={name}
-					variant="sunset"
-					colors={avatarColors}
-					square
-				/>
+			<AvatarFallback className="flex items-center justify-center bg-muted">
+				<BuildingIcon className="size-2/3 text-muted-foreground" />
 			</AvatarFallback>
 		</Avatar>
 	);

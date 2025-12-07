@@ -89,9 +89,7 @@ export const useCreateOrganizationMutation = () => {
 			name: string;
 			metadata?: OrganizationMetadata;
 		}) => {
-			const { slug } = await orpcClient.organizations.generateSlug({
-				name,
-			});
+			const { slug } = await orpcClient.organizations.generateSlug({});
 
 			const { error, data } = await authClient.organization.create({
 				name,
@@ -127,11 +125,7 @@ export const useUpdateOrganizationMutation = () => {
 			updateSlug?: boolean;
 		}) => {
 			const slug = updateSlug
-				? (
-						await orpcClient.organizations.generateSlug({
-							name,
-						})
-					).slug
+				? (await orpcClient.organizations.generateSlug({})).slug
 				: undefined;
 
 			const { error, data } = await authClient.organization.update({

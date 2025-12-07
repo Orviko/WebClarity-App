@@ -3,6 +3,7 @@
 import { config } from "@repo/config";
 import { useSession } from "@saas/auth/hooks/use-session";
 import { useActiveOrganization } from "@saas/organizations/hooks/use-active-organization";
+import { CreateOrganizationDialog } from "@saas/organizations/components/CreateOrganizationDialog";
 import { useOrganizationListQuery } from "@saas/organizations/lib/api";
 import { ActivePlanBadge } from "@saas/payments/components/ActivePlanBadge";
 import { UserAvatar } from "@shared/components/UserAvatar";
@@ -25,8 +26,8 @@ import {
 	useSidebar,
 } from "@ui/components/sidebar";
 import { ChevronsUpDownIcon, PlusIcon } from "lucide-react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { OrganizationLogo } from "../../organizations/components/OrganizationLogo";
 
 export function WorkspaceSwitcher() {
@@ -37,6 +38,7 @@ export function WorkspaceSwitcher() {
 		useActiveOrganization();
 	const { data: allOrganizations } = useOrganizationListQuery();
 	const { isMobile } = useSidebar();
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
 
 	if (!user) {
 		return null;
@@ -65,7 +67,7 @@ export function WorkspaceSwitcher() {
 							size="lg"
 							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 						>
-							<div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground overflow-hidden">
+							<div className="flex aspect-square size-8 items-center justify-center rounded-lg overflow-hidden p-1.5">
 								{activeOrganization ? (
 									<OrganizationLogo
 										name={activeOrganization.name}
@@ -130,13 +132,13 @@ export function WorkspaceSwitcher() {
 										value={user.id}
 										className="gap-2 p-2"
 									>
-										<div className="flex size-6 items-center justify-center rounded-sm border overflow-hidden">
-											<UserAvatar
-												className="size-full"
-												name={user.name ?? ""}
-												avatarUrl={user.image}
-											/>
-										</div>
+									<div className="flex size-6 items-center justify-center rounded-sm border overflow-hidden p-0.5">
+										<UserAvatar
+											className="size-full"
+											name={user.name ?? ""}
+											avatarUrl={user.image}
+										/>
+									</div>
 										{user.name}
 									</DropdownMenuRadioItem>
 								</DropdownMenuRadioGroup>
@@ -161,7 +163,7 @@ export function WorkspaceSwitcher() {
 									value={organization.slug}
 									className="gap-2 p-2"
 								>
-									<div className="flex size-6 items-center justify-center rounded-sm border overflow-hidden">
+									<div className="flex size-6 items-center justify-center rounded-sm border overflow-hidden p-0.5">
 										<OrganizationLogo
 											className="size-full"
 											name={organization.name}
@@ -177,8 +179,10 @@ export function WorkspaceSwitcher() {
 							.enableUsersToCreateOrganizations && (
 							<>
 								<DropdownMenuSeparator />
-								<DropdownMenuItem asChild className="gap-2 p-2">
-									<Link href="/new-organization">
+								<DropdownMenuItem
+									onClick={() => setIsDialogOpen(true)}
+									className="gap-2 p-2"
+								>
 										<div className="flex size-6 items-center justify-center rounded-md border bg-background">
 											<PlusIcon className="size-4" />
 										</div>
@@ -187,13 +191,18 @@ export function WorkspaceSwitcher() {
 												"organizations.organizationSelect.createNewOrganization",
 											)}
 										</div>
-									</Link>
 								</DropdownMenuItem>
 							</>
 						)}
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</SidebarMenuItem>
+			{config.organizations.enableUsersToCreateOrganizations && (
+				<CreateOrganizationDialog
+					open={isDialogOpen}
+					onOpenChange={setIsDialogOpen}
+				/>
+			)}
 		</SidebarMenu>
 	);
 }

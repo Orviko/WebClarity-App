@@ -2,17 +2,19 @@
 
 import { config } from "@repo/config";
 import { OrganizationLogo } from "@saas/organizations/components/OrganizationLogo";
+import { CreateOrganizationDialog } from "@saas/organizations/components/CreateOrganizationDialog";
 import { useActiveOrganization } from "@saas/organizations/hooks/use-active-organization";
 import { useOrganizationListQuery } from "@saas/organizations/lib/api";
 import { Card } from "@ui/components/card";
 import { ChevronRightIcon, PlusCircleIcon } from "lucide-react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 export function OrganizationsGrid() {
 	const t = useTranslations();
 	const { setActiveOrganization } = useActiveOrganization();
 	const { data: allOrganizations } = useOrganizationListQuery();
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
 
 	return (
 		<div className="@container">
@@ -23,14 +25,16 @@ export function OrganizationsGrid() {
 				{allOrganizations?.map((organization) => (
 					<Card
 						key={organization.id}
-						className="flex cursor-pointer items-center gap-4 overflow-hidden p-4"
+						className="flex cursor-pointer items-center gap-2 overflow-hidden p-4"
 						onClick={() => setActiveOrganization(organization.slug)}
 					>
-						<OrganizationLogo
-							name={organization.name}
-							logoUrl={organization.logo}
-							className="size-12"
-						/>
+						<div className="flex size-16 items-center justify-center p-2">
+							<OrganizationLogo
+								name={organization.name}
+								logoUrl={organization.logo}
+								className="size-full"
+							/>
+						</div>
 						<span className="flex items-center gap-1 text-base leading-tight">
 							<span className="block font-medium">
 								{organization.name}
@@ -41,8 +45,9 @@ export function OrganizationsGrid() {
 				))}
 
 				{config.organizations.enableUsersToCreateOrganizations && (
-					<Link
-						href="/new-organization"
+					<button
+						type="button"
+						onClick={() => setIsDialogOpen(true)}
 						className="flex h-full items-center justify-center gap-2 rounded-2xl bg-primary/5 p-4 text-primary transition-colors duration-150 hover:bg-primary/10"
 					>
 						<PlusCircleIcon />
@@ -51,9 +56,15 @@ export function OrganizationsGrid() {
 								"organizations.organizationsGrid.createNewOrganization",
 							)}
 						</span>
-					</Link>
+					</button>
 				)}
 			</div>
+			{config.organizations.enableUsersToCreateOrganizations && (
+				<CreateOrganizationDialog
+					open={isDialogOpen}
+					onOpenChange={setIsDialogOpen}
+				/>
+			)}
 		</div>
 	);
 }

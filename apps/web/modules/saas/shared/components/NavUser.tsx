@@ -122,21 +122,6 @@ export function NavUser() {
 							</div>
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
-						<DropdownMenuGroup>
-							<DropdownMenuItem asChild>
-								<Link href="#" className="flex items-center gap-2">
-									<MessageSquareIcon className="size-4" />
-									{t("app.sidebar.feedback")}
-								</Link>
-							</DropdownMenuItem>
-							<DropdownMenuItem asChild>
-								<Link href="#" className="flex items-center gap-2">
-									<Share2Icon className="size-4" />
-									{t("app.sidebar.share")}
-								</Link>
-							</DropdownMenuItem>
-						</DropdownMenuGroup>
-						<DropdownMenuSeparator />
 						<DropdownMenuSub>
 							<DropdownMenuSubTrigger>
 								<SunIcon className="mr-2 size-4" />
@@ -158,7 +143,6 @@ export function NavUser() {
 								))}
 							</DropdownMenuSubContent>
 						</DropdownMenuSub>
-						<DropdownMenuSeparator />
 						<DropdownMenuGroup>
 							<DropdownMenuItem asChild>
 								<Link href="/app/settings/general" className="flex items-center gap-2">

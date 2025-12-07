@@ -32,7 +32,7 @@ export default async function Layout({ children }: PropsWithChildren) {
 			) || organizations[0];
 
 		if (!organization) {
-			redirect("/new-organization");
+			redirect("/app");
 		}
 	}
 

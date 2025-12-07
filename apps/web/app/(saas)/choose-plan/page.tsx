@@ -32,7 +32,7 @@ export default async function ChoosePlanPage() {
 		const organization = (await getOrganizationList()).at(0);
 
 		if (!organization) {
-			redirect("/new-organization");
+			redirect("/app");
 		}
 
 		organizationId = organization.id;

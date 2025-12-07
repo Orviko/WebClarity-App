@@ -85,7 +85,7 @@ export function ActiveSessionsBlock() {
 							className="flex justify-between gap-4"
 						>
 							<div className="flex gap-2">
-								<ComputerIcon className="size-6 shrink-0 text-primary/50" />
+								<ComputerIcon className="size-6 shrink-0 text-foreground" />
 								<div>
 									<strong className="block text-sm">
 										{session.id === currentSession?.id

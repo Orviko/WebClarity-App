@@ -2,6 +2,7 @@
 import { config } from "@repo/config";
 import { useSession } from "@saas/auth/hooks/use-session";
 import { useActiveOrganization } from "@saas/organizations/hooks/use-active-organization";
+import { CreateOrganizationDialog } from "@saas/organizations/components/CreateOrganizationDialog";
 import { useOrganizationListQuery } from "@saas/organizations/lib/api";
 import { ActivePlanBadge } from "@saas/payments/components/ActivePlanBadge";
 import { UserAvatar } from "@shared/components/UserAvatar";
@@ -19,8 +20,8 @@ import {
 	DropdownMenuTrigger,
 } from "@ui/components/dropdown-menu";
 import { ChevronsUpDownIcon, PlusIcon } from "lucide-react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { OrganizationLogo } from "./OrganizationLogo";
 
 export function OrganzationSelect({ className }: { className?: string }) {
@@ -30,6 +31,7 @@ export function OrganzationSelect({ className }: { className?: string }) {
 	const { activeOrganization, setActiveOrganization } =
 		useActiveOrganization();
 	const { data: allOrganizations } = useOrganizationListQuery();
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
 
 	if (!user) {
 		return null;
@@ -42,11 +44,13 @@ export function OrganzationSelect({ className }: { className?: string }) {
 					<div className="flex flex-1 items-center justify-start gap-2 text-sm overflow-hidden">
 						{activeOrganization ? (
 							<>
-								<OrganizationLogo
-									name={activeOrganization.name}
-									logoUrl={activeOrganization.logo}
-									className="hidden size-6 sm:block"
-								/>
+								<div className="hidden size-6 items-center justify-center p-0.5 sm:flex">
+									<OrganizationLogo
+										name={activeOrganization.name}
+										logoUrl={activeOrganization.logo}
+										className="size-full"
+									/>
+								</div>
 								<span className="block flex-1 truncate">
 									{activeOrganization.name}
 								</span>
@@ -58,11 +62,13 @@ export function OrganzationSelect({ className }: { className?: string }) {
 							</>
 						) : (
 							<>
-								<UserAvatar
-									className="hidden size-6 sm:block"
-									name={user.name ?? ""}
-									avatarUrl={user.image}
-								/>
+								<div className="hidden size-6 items-center justify-center p-0.5 sm:flex">
+									<UserAvatar
+										className="size-full"
+										name={user.name ?? ""}
+										avatarUrl={user.image}
+									/>
+								</div>
 								<span className="block truncate">
 									{t(
 										"organizations.organizationSelect.personalAccount",
@@ -99,11 +105,13 @@ export function OrganzationSelect({ className }: { className?: string }) {
 									className="flex cursor-pointer items-center justify-center gap-2 pl-3"
 								>
 									<div className="flex flex-1 items-center justify-start gap-2">
-										<UserAvatar
-											className="size-8"
-											name={user.name ?? ""}
-											avatarUrl={user.image}
-										/>
+										<div className="flex size-8 items-center justify-center p-1">
+											<UserAvatar
+												className="size-full"
+												name={user.name ?? ""}
+												avatarUrl={user.image}
+											/>
+										</div>
 										{user.name}
 									</div>
 								</DropdownMenuRadioItem>
@@ -130,11 +138,13 @@ export function OrganzationSelect({ className }: { className?: string }) {
 								className="flex cursor-pointer items-center justify-center gap-2 pl-3"
 							>
 								<div className="flex flex-1 items-center justify-start gap-2">
-									<OrganizationLogo
-										className="size-8"
-										name={organization.name}
-										logoUrl={organization.logo}
-									/>
+									<div className="flex size-8 items-center justify-center p-1">
+										<OrganizationLogo
+											className="size-full"
+											name={organization.name}
+											logoUrl={organization.logo}
+										/>
+									</div>
 									{organization.name}
 								</div>
 							</DropdownMenuRadioItem>
@@ -144,20 +154,24 @@ export function OrganzationSelect({ className }: { className?: string }) {
 					{config.organizations.enableUsersToCreateOrganizations && (
 						<DropdownMenuGroup>
 							<DropdownMenuItem
-								asChild
+								onClick={() => setIsDialogOpen(true)}
 								className="text-primary! cursor-pointer text-sm"
 							>
-								<Link href="/new-organization">
 									<PlusIcon className="mr-2 size-6 rounded-md bg-primary/20 p-1" />
 									{t(
 										"organizations.organizationSelect.createNewOrganization",
 									)}
-								</Link>
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 					)}
 				</DropdownMenuContent>
 			</DropdownMenu>
+			{config.organizations.enableUsersToCreateOrganizations && (
+				<CreateOrganizationDialog
+					open={isDialogOpen}
+					onOpenChange={setIsDialogOpen}
+				/>
+			)}
 		</div>
 	);
 }
