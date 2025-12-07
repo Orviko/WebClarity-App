@@ -73,7 +73,7 @@ const FormItem = ({
 
 	return (
 		<FormItemContext.Provider value={{ id }}>
-			<div className={cn("space-y-1.5", className)} {...props} />
+			<div className={cn("space-y-2", className)} {...props} />
 		</FormItemContext.Provider>
 	);
 };

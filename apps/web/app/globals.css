@@ -60,12 +60,7 @@ input[cmdk-input] {
 		@apply bg-background text-foreground;
 	}
 
-	/* Fix sidebar rail position for inset variant */
-	[data-variant="inset"] [data-sidebar="rail"] {
-		right: -0.5rem !important;
-	}
-
 	[data-variant="inset"][data-state="collapsed"] [data-sidebar="rail"] {
-		right: -0.5rem !important;
+		right: -0.75rem !important;
 	}
 }

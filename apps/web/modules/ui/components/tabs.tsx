@@ -12,7 +12,7 @@ const TabsList = ({
 }: React.ComponentProps<typeof TabsPrimitive.List>) => (
 	<TabsPrimitive.List
 		className={cn(
-			"inline-flex items-center justify-center border-b-2 text-card-foreground/80 text-sm",
+			"inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground",
 			className,
 		)}
 		{...props}
@@ -25,7 +25,7 @@ const TabsTrigger = ({
 }: React.ComponentProps<typeof TabsPrimitive.Trigger>) => (
 	<TabsPrimitive.Trigger
 		className={cn(
-			"-mb-0.5 inline-flex items-center justify-center whitespace-nowrap border-transparent border-b-2 px-3 py-2 font-medium text-foreground/60 text-sm ring-offset-background transition-all hover:text-foreground/80 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:border-primary data-[state=active]:text-card-foreground",
+			"inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
 			className,
 		)}
 		{...props}
@@ -38,7 +38,7 @@ const TabsContent = ({
 }: React.ComponentProps<typeof TabsPrimitive.Content>) => (
 	<TabsPrimitive.Content
 		className={cn(
-			"mt-2 ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+			"mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
 			className,
 		)}
 		{...props}

@@ -75,7 +75,14 @@
 			"admin": "Administration",
 			"aiChatbot": "AI Chatbot",
 			"organizationSettings": "Organisationseinstellungen",
-			"start": "Start"
+			"start": "Dashboard",
+			"dashboard": "Dashboard",
+			"projects": "Projekte",
+			"boards": "Boards",
+			"resources": "Ressourcen",
+			"archive": "Archiv",
+			"createProject": "Projekt erstellen",
+			"createBoard": "Board erstellen"
 		},
 		"userMenu": {
 			"accountSettings": "Kontoeinstellungen",

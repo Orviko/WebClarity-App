@@ -12,13 +12,19 @@ import {
 	SidebarGroupContent,
 	SidebarHeader,
 	SidebarMenu,
+	SidebarMenuAction,
 	SidebarMenuButton,
 	SidebarMenuItem,
 	SidebarRail,
 } from "@ui/components/sidebar";
 import {
+	ArchiveIcon,
+	BookOpenIcon,
 	BotMessageSquareIcon,
-	HomeIcon,
+	FolderKanbanIcon,
+	LayoutDashboardIcon,
+	LayoutListIcon,
+	PlusIcon,
 	SettingsIcon,
 	UserCog2Icon,
 	UserCogIcon,
@@ -26,14 +32,19 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { NavUser } from "./NavUser";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
+import { CreateProjectDialog } from "./CreateProjectDialog";
+import { CreateBoardDialog } from "./CreateBoardDialog";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	const t = useTranslations();
 	const pathname = usePathname();
 	const { user } = useSession();
 	const { activeOrganization, isOrganizationAdmin } = useActiveOrganization();
+	const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
+	const [isBoardDialogOpen, setIsBoardDialogOpen] = useState(false);
 
 	const basePath = activeOrganization
 		? `/app/${activeOrganization.slug}`
@@ -41,10 +52,41 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
 	const menuItems = [
 		{
-			label: t("app.menu.start"),
+			label: t("app.menu.dashboard"),
 			href: basePath,
-			icon: HomeIcon,
+			icon: LayoutDashboardIcon,
 			isActive: pathname === basePath,
+			hasAction: false,
+		},
+		{
+			label: t("app.menu.projects"),
+			href: `${basePath}/projects`,
+			icon: FolderKanbanIcon,
+			isActive: pathname.includes("/projects"),
+			hasAction: true,
+			onActionClick: () => setIsProjectDialogOpen(true),
+		},
+		{
+			label: t("app.menu.boards"),
+			href: `${basePath}/boards`,
+			icon: LayoutListIcon,
+			isActive: pathname.includes("/boards"),
+			hasAction: true,
+			onActionClick: () => setIsBoardDialogOpen(true),
+		},
+		{
+			label: t("app.menu.resources"),
+			href: `${basePath}/resources`,
+			icon: BookOpenIcon,
+			isActive: pathname.includes("/resources"),
+			hasAction: false,
+		},
+		{
+			label: t("app.menu.archive"),
+			href: `${basePath}/archive`,
+			icon: ArchiveIcon,
+			isActive: pathname.includes("/archive"),
+			hasAction: false,
 		},
 		{
 			label: t("app.menu.aiChatbot"),
@@ -53,6 +95,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				: "/app/chatbot",
 			icon: BotMessageSquareIcon,
 			isActive: pathname.includes("/chatbot"),
+			hasAction: false,
 		},
 		...(activeOrganization && isOrganizationAdmin
 			? [
@@ -61,6 +104,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 						href: `${basePath}/settings`,
 						icon: SettingsIcon,
 						isActive: pathname.startsWith(`${basePath}/settings/`),
+						hasAction: false,
 					},
 				]
 			: []),
@@ -69,6 +113,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			href: "/app/settings",
 			icon: UserCog2Icon,
 			isActive: pathname.startsWith("/app/settings/"),
+			hasAction: false,
 		},
 		...(user?.role === "admin"
 			? [
@@ -77,6 +122,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 						href: "/app/admin",
 						icon: UserCogIcon,
 						isActive: pathname.startsWith("/app/admin/"),
+						hasAction: false,
 					},
 				]
 			: []),
@@ -100,12 +146,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 										asChild
 										isActive={item.isActive}
 										tooltip={item.label}
+										className="h-10! px-3! py-1.5! text-base!"
 									>
 										<Link href={item.href}>
 											<item.icon />
 											<span>{item.label}</span>
 										</Link>
 									</SidebarMenuButton>
+									{item.hasAction && item.onActionClick && (
+										<SidebarMenuAction
+											onClick={item.onActionClick}
+											className="top-1/2! -translate-y-1/2! right-1! w-auto! h-auto! aspect-auto! p-1.5! rounded-md! hover:bg-sidebar-accent!"
+										>
+											<PlusIcon className="size-4" />
+										</SidebarMenuAction>
+									)}
 								</SidebarMenuItem>
 							))}
 						</SidebarMenu>
@@ -116,6 +171,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				<NavUser />
 			</SidebarFooter>
 			<SidebarRail />
+			<CreateProjectDialog
+				open={isProjectDialogOpen}
+				onOpenChange={setIsProjectDialogOpen}
+			/>
+			<CreateBoardDialog
+				open={isBoardDialogOpen}
+				onOpenChange={setIsBoardDialogOpen}
+			/>
 		</Sidebar>
 	);
 }

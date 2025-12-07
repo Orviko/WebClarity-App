@@ -31,7 +31,7 @@ export function SocialSigninButton({
 	return (
 		<Button
 			onClick={() => onSignin()}
-			variant="light"
+			variant="outline"
 			type="button"
 			className={className}
 		>

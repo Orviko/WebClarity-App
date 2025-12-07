@@ -75,7 +75,14 @@
 			"admin": "Admin",
 			"aiChatbot": "AI Chatbot",
 			"organizationSettings": "Organization settings",
-			"start": "Start"
+			"start": "Dashboard",
+			"dashboard": "Dashboard",
+			"projects": "Projects",
+			"boards": "Boards",
+			"resources": "Resources",
+			"archive": "Archive",
+			"createProject": "Create Project",
+			"createBoard": "Create Board"
 		},
 		"sidebar": {
 			"feedback": "Feedback",
