@@ -1,5 +1,6 @@
 import { Document } from "@shared/components/Document";
-import { getLocale } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import type { PropsWithChildren } from "react";
 
 /**
@@ -8,6 +9,13 @@ import type { PropsWithChildren } from "react";
  */
 export default async function ShareLayout({ children }: PropsWithChildren) {
 	const locale = await getLocale();
+	const messages = await getMessages();
 
-	return <Document locale={locale}>{children}</Document>;
+	return (
+		<Document locale={locale}>
+			<NextIntlClientProvider messages={messages}>
+				{children}
+			</NextIntlClientProvider>
+		</Document>
+	);
 }

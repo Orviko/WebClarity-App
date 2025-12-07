@@ -205,27 +205,46 @@ model Purchase {
   @@map("purchase")
 }
 
+enum ShareType {
+  STYLE_GUIDE
+  HEADING_STRUCTURE
+}
+
+model Share {
+  id                    String              @id @default(cuid())
+  shareId               String              @unique
+  type                  ShareType
+  expiresAt             DateTime
+  createdAt             DateTime            @default(now())
+  websiteUrl            String
+  styleGuideDataId      String?             @unique
+  headingStructureDataId String?            @unique
+  styleGuideData        StyleGuideData?     @relation(fields: [styleGuideDataId], references: [id], onDelete: Cascade)
+  headingStructureData  HeadingStructureData? @relation(fields: [headingStructureDataId], references: [id], onDelete: Cascade)
+
+  @@index([shareId])
+  @@index([expiresAt])
+  @@index([type])
+  @@map("share")
+}
+
 model StyleGuideData {
-  id            String          @id @default(cuid())
+  id            String   @id @default(cuid())
   typographyData Json?
   colorsData     Json?
   exportOptions  Json
-  createdAt      DateTime        @default(now())
-  share          StyleGuideShare?
+  createdAt      DateTime @default(now())
+  share          Share?
 
   @@map("styleGuideData")
 }
 
-model StyleGuideShare {
-  id               String          @id @default(cuid())
-  shareId          String          @unique
-  expiresAt        DateTime
-  createdAt        DateTime        @default(now())
-  websiteUrl       String
-  styleGuideDataId String          @unique
-  styleGuideData   StyleGuideData  @relation(fields: [styleGuideDataId], references: [id], onDelete: Cascade)
+model HeadingStructureData {
+  id            String   @id @default(cuid())
+  treeData      Json
+  exportOptions Json
+  createdAt     DateTime @default(now())
+  share         Share?
 
-  @@index([shareId])
-  @@index([expiresAt])
-  @@map("styleGuideShare")
+  @@map("headingStructureData")
 }

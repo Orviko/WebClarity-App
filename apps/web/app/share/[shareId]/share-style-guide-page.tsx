@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
 import { Badge } from "@ui/components/badge";
 import { ColorModeToggle } from "@shared/components/ColorModeToggle";
@@ -82,6 +83,7 @@ interface ShareStyleGuidePageProps {
 }
 
 export function ShareStyleGuidePage({ data }: ShareStyleGuidePageProps) {
+	const t = useTranslations();
 	const hasTypography =
 		data.typographyData &&
 		(data.exportOptions.typography.all ||
@@ -101,10 +103,10 @@ export function ShareStyleGuidePage({ data }: ShareStyleGuidePageProps) {
 
 	const pageTitle =
 		hasTypography && hasColors
-			? "Style Guide"
+			? t("share.styleGuide.title")
 			: hasTypography
-				? "Typography"
-				: "Colors";
+				? t("share.styleGuide.typography")
+				: t("share.styleGuide.colors");
 
 	return (
 		<div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
@@ -117,7 +119,7 @@ export function ShareStyleGuidePage({ data }: ShareStyleGuidePageProps) {
 								{pageTitle}
 							</h1>
 							<p className="text-muted-foreground mt-1">
-								Shared style guide from{" "}
+								{t("share.styleGuide.sharedFrom")}{" "}
 								<a
 									href={`https://${data.websiteUrl}`}
 									target="_blank"
@@ -132,7 +134,7 @@ export function ShareStyleGuidePage({ data }: ShareStyleGuidePageProps) {
 					</div>
 					<div className="flex items-center gap-2 text-sm text-muted-foreground">
 						<Badge status="info">
-							Expires{" "}
+							{t("share.styleGuide.expires")}{" "}
 							{new Date(data.expiresAt).toLocaleDateString()}
 						</Badge>
 					</div>
@@ -148,7 +150,7 @@ export function ShareStyleGuidePage({ data }: ShareStyleGuidePageProps) {
 							data.typographyData.fontFamilies.length > 0 && (
 								<Card>
 									<CardHeader>
-										<CardTitle>Font Family</CardTitle>
+										<CardTitle>{t("share.styleGuide.typographySection.fontFamily")}</CardTitle>
 									</CardHeader>
 									<CardContent>
 										<div className="space-y-4">
@@ -169,6 +171,7 @@ export function ShareStyleGuidePage({ data }: ShareStyleGuidePageProps) {
 														<p className="text-sm text-muted-foreground">
 															{formatWeights(
 																font.weights,
+																t,
 															)}
 														</p>
 													</div>
@@ -188,7 +191,7 @@ export function ShareStyleGuidePage({ data }: ShareStyleGuidePageProps) {
 							data.typographyData.fontSizes && (
 								<Card>
 									<CardHeader>
-										<CardTitle>Font Sizes</CardTitle>
+										<CardTitle>{t("share.styleGuide.typographySection.fontSizes")}</CardTitle>
 									</CardHeader>
 									<CardContent>
 										<div className="space-y-4">
@@ -254,18 +257,19 @@ export function ShareStyleGuidePage({ data }: ShareStyleGuidePageProps) {
 														{group.fontSize} -{" "}
 														{getWeightName(
 															group.fontWeight,
+															t,
 														)}
 													</div>
 													<div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
 														<span className="flex items-center gap-1">
 															<span className="font-medium">
-																Line Height:
+																{t("share.styleGuide.typographySection.lineHeight")}
 															</span>
 															{group.lineHeight}
 														</span>
 														<span className="flex items-center gap-1">
 															<span className="font-medium">
-																Letter Spacing:
+																{t("share.styleGuide.typographySection.letterSpacing")}
 															</span>
 															{
 																group.letterSpacing
@@ -287,22 +291,22 @@ export function ShareStyleGuidePage({ data }: ShareStyleGuidePageProps) {
 						{[
 							{
 								key: "background" as const,
-								label: "Backgrounds Color",
+								label: t("share.styleGuide.colorsSection.backgrounds"),
 								optionKey: "backgrounds" as const,
 							},
 							{
 								key: "text" as const,
-								label: "Typography Color",
+								label: t("share.styleGuide.colorsSection.typography"),
 								optionKey: "text" as const,
 							},
 							{
 								key: "border" as const,
-								label: "Border Color",
+								label: t("share.styleGuide.colorsSection.border"),
 								optionKey: "borders" as const,
 							},
 							{
 								key: "icon" as const,
-								label: "Icon Color",
+								label: t("share.styleGuide.colorsSection.icon"),
 								optionKey: "icons" as const,
 							},
 						]
@@ -363,8 +367,9 @@ export function ShareStyleGuidePage({ data }: ShareStyleGuidePageProps) {
 				<div className="mt-12 pt-8 border-t border-border">
 					<div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
 						<div>
-							©{new Date().getFullYear()} WebClarity. All rights
-							reserved.
+							{t("share.styleGuide.footer.copyright", {
+								year: new Date().getFullYear(),
+							})}
 						</div>
 						<a
 							href="https://webclarity.ai"
@@ -372,7 +377,7 @@ export function ShareStyleGuidePage({ data }: ShareStyleGuidePageProps) {
 							rel="noopener noreferrer"
 							className="hover:text-foreground transition-colors font-medium"
 						>
-							webclarity.ai
+							{t("share.styleGuide.footer.website")}
 						</a>
 					</div>
 				</div>
@@ -381,32 +386,40 @@ export function ShareStyleGuidePage({ data }: ShareStyleGuidePageProps) {
 	);
 }
 
-function formatWeights(weights: number[]): string {
-	const weightMap: Record<number, string> = {
-		100: "Thin",
-		200: "Extra Light",
-		300: "Light",
-		400: "Regular",
-		500: "Medium",
-		600: "Semi-Bold",
-		700: "Bold",
-		800: "Extra Bold",
-		900: "Black",
+function formatWeights(
+	weights: number[],
+	t: ReturnType<typeof useTranslations>,
+): string {
+	const weightMap: Record<string, string> = {
+		"100": t("share.styleGuide.fontWeights.100"),
+		"200": t("share.styleGuide.fontWeights.200"),
+		"300": t("share.styleGuide.fontWeights.300"),
+		"400": t("share.styleGuide.fontWeights.400"),
+		"500": t("share.styleGuide.fontWeights.500"),
+		"600": t("share.styleGuide.fontWeights.600"),
+		"700": t("share.styleGuide.fontWeights.700"),
+		"800": t("share.styleGuide.fontWeights.800"),
+		"900": t("share.styleGuide.fontWeights.900"),
 	};
-	return weights.map((w) => weightMap[w] || String(w)).join(", ");
+	return weights
+		.map((w) => weightMap[String(w)] || String(w))
+		.join(", ");
 }
 
-function getWeightName(weight: string | number): string {
+function getWeightName(
+	weight: string | number,
+	t: ReturnType<typeof useTranslations>,
+): string {
 	const weightMap: Record<string, string> = {
-		"100": "Thin",
-		"200": "Extra Light",
-		"300": "Light",
-		"400": "Regular",
-		"500": "Medium",
-		"600": "Semi-Bold",
-		"700": "Bold",
-		"800": "Extra Bold",
-		"900": "Black",
+		"100": t("share.styleGuide.fontWeights.100"),
+		"200": t("share.styleGuide.fontWeights.200"),
+		"300": t("share.styleGuide.fontWeights.300"),
+		"400": t("share.styleGuide.fontWeights.400"),
+		"500": t("share.styleGuide.fontWeights.500"),
+		"600": t("share.styleGuide.fontWeights.600"),
+		"700": t("share.styleGuide.fontWeights.700"),
+		"800": t("share.styleGuide.fontWeights.800"),
+		"900": t("share.styleGuide.fontWeights.900"),
 	};
 	return weightMap[String(weight)] || String(weight);
 }

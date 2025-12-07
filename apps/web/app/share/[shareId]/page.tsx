@@ -2,6 +2,9 @@ import { orpcClient } from "@shared/lib/orpc-client";
 import { notFound } from "next/navigation";
 import { ShareStyleGuidePage } from "./share-style-guide-page";
 import type { ShareData } from "./share-style-guide-page";
+import { ShareHeadingStructurePage } from "./share-heading-structure-page";
+import type { HeadingStructureShareData } from "./share-heading-structure-page";
+import { ShareType } from "@repo/database/prisma/generated/enums";
 
 export async function generateMetadata({
 	params,
@@ -10,10 +13,27 @@ export async function generateMetadata({
 }) {
 	const { shareId } = await params;
 
+	try {
+		const shareType = await orpcClient.shared.getShareType({ shareId });
+		const title =
+			shareType.type === ShareType.STYLE_GUIDE
+				? `Style Guide - ${shareId}`
+				: `Heading Structure - ${shareId}`;
+		const description =
+			shareType.type === ShareType.STYLE_GUIDE
+				? "Shared style guide with typography and colors"
+				: "Shared heading structure analysis";
+
+		return {
+			title,
+			description,
+		};
+	} catch {
 	return {
-		title: `Style Guide - ${shareId}`,
-		description: "Shared style guide with typography and colors",
+			title: `Share - ${shareId}`,
+			description: "Shared content",
 	};
+	}
 }
 
 export default async function SharePage({
@@ -24,13 +44,31 @@ export default async function SharePage({
 	const { shareId } = await params;
 
 	try {
+		// First, get the share type
+		const shareType = await orpcClient.shared.getShareType({ shareId });
+
+		// Then fetch the appropriate data based on type
+		if (shareType.type === ShareType.STYLE_GUIDE) {
 		const shareData = await orpcClient.styleGuide.getShare({
 			shareId,
 		});
 
-		// Type assertion: Prisma returns JsonValue, but we know the structure matches ShareData
-		// The data was validated when it was created, so it's safe to cast
-		return <ShareStyleGuidePage data={shareData as unknown as ShareData} />;
+			return (
+				<ShareStyleGuidePage data={shareData as unknown as ShareData} />
+			);
+		} else if (shareType.type === ShareType.HEADING_STRUCTURE) {
+			const shareData = await orpcClient.headingStructure.getShare({
+				shareId,
+			});
+
+			return (
+				<ShareHeadingStructurePage
+					data={shareData as unknown as HeadingStructureShareData}
+				/>
+			);
+		} else {
+			return notFound();
+		}
 	} catch (error) {
 		console.error("Failed to load share:", error);
 		return notFound();

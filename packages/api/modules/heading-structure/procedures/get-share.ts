@@ -8,9 +8,9 @@ export const getShare = publicProcedure
 	.route({
 		method: "GET",
 		path: "/get-share",
-		tags: ["Style Guide"],
-		summary: "Get style guide share data",
-		description: "Retrieves style guide data by share ID",
+		tags: ["Heading Structure"],
+		summary: "Get heading structure share data",
+		description: "Retrieves heading structure data by share ID",
 	})
 	.input(
 		z.object({
@@ -28,7 +28,7 @@ export const getShare = publicProcedure
 		const share = await db.share.findUnique({
 			where: { shareId: input.shareId },
 			include: {
-				styleGuideData: true,
+				headingStructureData: true,
 			},
 		});
 
@@ -37,7 +37,7 @@ export const getShare = publicProcedure
 		}
 
 		// Verify share type
-		if (share.type !== ShareType.STYLE_GUIDE) {
+		if (share.type !== ShareType.HEADING_STRUCTURE) {
 			throw new ORPCError("NOT_FOUND");
 		}
 
@@ -51,14 +51,13 @@ export const getShare = publicProcedure
 			throw new ORPCError("NOT_FOUND");
 		}
 
-		if (!share.styleGuideData) {
+		if (!share.headingStructureData) {
 			throw new ORPCError("NOT_FOUND");
 		}
 
 		return {
-			typographyData: share.styleGuideData.typographyData,
-			colorsData: share.styleGuideData.colorsData,
-			exportOptions: share.styleGuideData.exportOptions,
+			treeData: share.headingStructureData.treeData,
+			exportOptions: share.headingStructureData.exportOptions,
 			websiteUrl: share.websiteUrl,
 			createdAt: share.createdAt,
 			expiresAt: share.expiresAt,

@@ -794,5 +794,155 @@
 	"choosePlan": {
 		"title": "Choose your plan",
 		"description": "To continue, please select a plan."
+	},
+	"share": {
+		"headingStructure": {
+			"title": "Heading Structure",
+			"sharedFrom": "Shared heading structure from",
+			"expires": "Expires",
+			"summary": {
+				"title": "Summary",
+				"totalHeadings": "Total Headings",
+				"criticalIssues": "Critical Issues",
+				"warnings": "Warnings",
+				"noIssues": "No Issues"
+			},
+			"hierarchy": {
+				"title": "Heading Hierarchy",
+				"orphanedHeadings": "Orphaned Headings",
+				"orphanedHeadingsFound": "{count} found before H1",
+				"mainContentStructure": "Main Content Structure",
+				"noHeadingsFound": "No headings found on this page.",
+				"emptyHeading": "(Empty heading)",
+				"viewCssSelector": "View CSS selector",
+				"close": "Close"
+			},
+			"issues": {
+				"noIssues": "No issues",
+				"labels": {
+					"skip": "Level skip",
+					"orphan": "Orphaned",
+					"short": "Too short",
+					"long": "Too long",
+					"empty": "Empty",
+					"multipleH1": "Multiple H1",
+					"missingH1": "Missing H1"
+				}
+			},
+			"legend": {
+				"title": "Issue Legend",
+				"criticalIssues": {
+					"title": "Critical Issues",
+					"levelSkip": "Level skip: Heading levels should not skip",
+					"orphaned": "Orphaned: Heading without proper parent",
+					"empty": "Empty: Heading has no text content",
+					"multipleH1": "Multiple H1: Only one H1 per page recommended",
+					"missingH1": "Missing H1: Page should have exactly one H1"
+				},
+				"warnings": {
+					"title": "Warnings",
+					"tooShort": "Too short: Very short heading text",
+					"tooLong": "Too long: Very long heading text"
+				}
+			},
+			"infoModal": {
+				"title": "Understanding Heading Issues",
+				"subtitle": "Learn about heading structure issues and how to fix them",
+				"colorGuide": {
+					"title": "Color Guide",
+					"red": "Red",
+					"redDescription": "Critical errors that must be fixed (affects SEO and accessibility)",
+					"orange": "Orange",
+					"orangeDescription": "Warnings that should be reviewed (best practice issues)",
+					"green": "Green",
+					"greenDescription": "No issues detected (following best practices)"
+				},
+				"commonIssues": {
+					"title": "Common Heading Issues",
+					"fix": "How to Fix",
+					"empty": {
+						"title": "Empty Heading",
+						"description": "A heading tag exists but contains no text content. This provides no value to users or search engines.",
+						"fix": "Add descriptive text to the heading or remove the empty tag entirely."
+					},
+					"short": {
+						"title": "Short Heading (&lt; 10 characters)",
+						"description": "Heading text is too short to be descriptive. While not always wrong, very short headings may lack context.",
+						"fix": "Consider adding more descriptive text to clearly communicate the section's content."
+					},
+					"long": {
+						"title": "Long Heading (&gt; 70 characters)",
+						"description": "Heading text is very long. This can be hard to scan and may indicate the content should be split.",
+						"fix": "Break down into shorter, more scannable headings or move extra detail into paragraph text."
+					},
+					"skip": {
+						"title": "Skipped Heading Level",
+						"description": "Heading levels should follow sequential order (H1 → H2 → H3). Skipping levels (e.g., H1 → H3) breaks the document outline and confuses screen readers.",
+						"fix": "Adjust heading levels to follow proper hierarchy. Don't skip from H1 directly to H3 without an H2 in between."
+					},
+					"orphan": {
+						"title": "Orphaned Heading",
+						"description": "A heading appears before the H1 tag or without a proper parent in the hierarchy. This breaks the document outline that search engines use to understand your page structure.",
+						"fix": "For headings appearing before H1: Convert them to non-heading elements like &lt;div&gt;, &lt;p&gt;, or &lt;span&gt; and apply CSS classes to maintain styling. For headings without proper parents: Ensure H2s are under H1, H3s under H2, etc.",
+						"solution": {
+							"title": "SEO Solution",
+							"description": "These headings appear before your H1 and break the document outline. For better SEO, convert them to non-heading elements:",
+							"recommendedLabel": "Recommended conversion:",
+							"stylingNote": "Keep the styling: Apply CSS classes to maintain the visual appearance."
+						}
+					},
+					"multipleH1": {
+						"title": "Multiple H1 Tags",
+						"description": "Multiple H1 tags were found on the page. While technically valid in HTML5, having one H1 per page is an SEO best practice.",
+						"fix": "Use only one H1 tag for the main page title. Convert additional H1s to H2 or other appropriate levels."
+					}
+				},
+				"bestPractices": {
+					"title": "Best Practices",
+					"item1": "Use only one H1 per page (typically the page title or main heading)",
+					"item2": "Follow sequential heading levels (H1 → H2 → H3, don't skip)",
+					"item3": "Make headings descriptive and meaningful (10-70 characters is ideal)",
+					"item4": "Use headings to create a logical document outline for both users and search engines"
+				}
+			},
+			"footer": {
+				"copyright": "©{year} WebClarity. All rights reserved.",
+				"website": "webclarity.ai"
+			}
+		},
+		"styleGuide": {
+			"title": "Style Guide",
+			"typography": "Typography",
+			"colors": "Colors",
+			"sharedFrom": "Shared style guide from",
+			"expires": "Expires",
+			"typographySection": {
+				"fontFamily": "Font Family",
+				"fontSizes": "Font Sizes",
+				"lineHeight": "Line Height:",
+				"letterSpacing": "Letter Spacing:"
+			},
+			"colorsSection": {
+				"backgrounds": "Backgrounds Color",
+				"typography": "Typography Color",
+				"border": "Border Color",
+				"icon": "Icon Color"
+			},
+			"fontWeights": {
+				"100": "Thin",
+				"200": "Extra Light",
+				"300": "Light",
+				"400": "Regular",
+				"500": "Medium",
+				"600": "Semi-Bold",
+				"700": "Bold",
+				"800": "Extra Bold",
+				"900": "Black"
+			},
+			"footer": {
+				"copyright": "©{year} WebClarity. All rights reserved.",
+				"website": "webclarity.ai"
+			}
+		}
 	}
 }

@@ -1,7 +1,6 @@
 import { ORPCError } from "@orpc/server";
 import { db } from "@repo/database/prisma/client";
 import { ShareType } from "@repo/database/prisma/generated/enums";
-import { getBaseUrl } from "@repo/utils";
 import { z } from "zod";
 import { publicProcedure } from "../../../orpc/procedures";
 import { rateLimitMiddleware } from "../../../orpc/middleware/rate-limit";
@@ -10,7 +9,7 @@ import { validateShareData } from "../utils/validate-share-data";
 import { shareDataSchema } from "../schema";
 
 /**
- * Shared handler logic for creating a style guide share
+ * Shared handler logic for creating a heading structure share
  */
 export async function createShareHandler(
 	input: z.infer<typeof shareDataSchema>
@@ -25,14 +24,13 @@ export async function createShareHandler(
 	const expiresAt = new Date();
 	expiresAt.setHours(expiresAt.getHours() + 24);
 
-	// Create style guide data and share in a transaction
+	// Create heading structure data and share in a transaction
 	const result = await db.$transaction(async (tx) => {
-		// Create style guide data
+		// Create heading structure data
 		// Cast to any to satisfy Prisma's Json type requirements
-		const styleGuideData = await tx.styleGuideData.create({
+		const headingStructureData = await tx.headingStructureData.create({
 			data: {
-				typographyData: validated.typographyData as any,
-				colorsData: validated.colorsData as any,
+				treeData: validated.treeData as any,
 				exportOptions: validated.exportOptions as any,
 			},
 		});
@@ -41,10 +39,10 @@ export async function createShareHandler(
 		const share = await tx.share.create({
 			data: {
 				shareId,
-				type: ShareType.STYLE_GUIDE,
+				type: ShareType.HEADING_STRUCTURE,
 				expiresAt,
 				websiteUrl: validated.websiteUrl,
-				styleGuideDataId: styleGuideData.id,
+				headingStructureDataId: headingStructureData.id,
 			},
 		});
 
@@ -52,7 +50,6 @@ export async function createShareHandler(
 	});
 
 	// Generate share URL - use web app URL from environment variable
-	// NEXT_PUBLIC_SITE_URL should be set in .env.local with the web app URL
 	const webAppUrl =
 		process.env.NEXT_PUBLIC_SITE_URL ||
 		(process.env.NEXT_PUBLIC_VERCEL_URL
@@ -78,13 +75,14 @@ export const createShare = publicProcedure
 	.route({
 		method: "POST",
 		path: "/create-share",
-		tags: ["Style Guide"],
-		summary: "Create a public share for style guide data",
+		tags: ["Heading Structure"],
+		summary: "Create a public share for heading structure data",
 		description:
-			"Creates a temporary public share (24 hours) for style guide typography and color data",
+			"Creates a temporary public share (24 hours) for heading structure tree data",
 	})
 	.use(rateLimitMiddleware())
 	.input(shareDataSchema)
 	.handler(async ({ input }) => {
 		return createShareHandler(input);
 	});
+
