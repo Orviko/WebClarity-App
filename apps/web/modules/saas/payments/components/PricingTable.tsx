@@ -270,18 +270,18 @@ export function PricingTable({
 												{t("pricing.contactSales")}
 											</a>
 										</Button>
-										) : (
-											<Button
-												className="mt-4 w-full"
-												variant={
-													recommended
-														? "primary"
-														: "secondary"
-												}
-												onClick={() =>
-													onSelectPlan(
-														planId as PlanId,
-														price?.productId,
+									) : (
+										<Button
+											className="mt-4 w-full"
+											variant={
+												recommended
+													? "default"
+													: "secondary"
+											}
+											onClick={() =>
+												onSelectPlan(
+													planId as PlanId,
+													price?.productId,
 													)
 												}
 												loading={loading === planId}

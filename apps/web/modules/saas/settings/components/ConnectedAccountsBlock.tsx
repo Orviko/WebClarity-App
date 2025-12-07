@@ -53,20 +53,20 @@ export function ConnectedAccountsBlock() {
 								</div>
 								{isPending ? (
 									<Skeleton className="h-10 w-28" />
-								) : isLinked ? (
-									<CheckCircle2Icon className="size-6 text-success" />
-								) : (
-									<Button
-										variant={isLinked ? "outline" : "light"}
-										onClick={() =>
-											linkProvider(
-												provider as OAuthProvider,
-											)
-										}
-									>
-										<LinkIcon className="mr-1.5 size-4" />
-										<span>
-											{t(
+							) : isLinked ? (
+								<CheckCircle2Icon className="size-6 text-success" />
+							) : (
+								<Button
+									variant="outline"
+									onClick={() =>
+										linkProvider(
+											provider as OAuthProvider,
+										)
+									}
+								>
+									<LinkIcon className="mr-1.5 size-4" />
+									<span>
+										{t(
 												"settings.account.security.connectedAccounts.connect",
 											)}
 										</span>
