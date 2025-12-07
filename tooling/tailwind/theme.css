@@ -58,7 +58,7 @@
 @layer base {
 	:root {
 		/* Borders and Inputs */
-		--border: #e4e4e7;
+		--border: #e8e8e8;
 		--input: #e4e4e7;
 		--ring: #c55209;
 
@@ -85,7 +85,7 @@
 		--muted-foreground: #71717a;
 
 		/* Accent */
-		--accent: #f4f4f5;
+		--accent: #e8e8e8;
 		--accent-foreground: #171717;
 
 		/* Popovers & Cards */
@@ -107,8 +107,8 @@
 
 	.dark {
 		/* Borders and Inputs */
-		--border: #27272a;
-		--input: #27272a;
+		--border: #252525;
+		--input: #171717;
 		--ring: #ea580c;
 
 		/* Backgrounds */
@@ -120,7 +120,7 @@
 		--primary-foreground: #ffffff;
 
 		/* Secondary */
-		--secondary: #27272a;
+		--secondary: #171717;
 		--secondary-foreground: #fafafa;
 
 		/* States */
@@ -130,11 +130,11 @@
 		--success-foreground: #ffffff;
 
 		/* Muted */
-		--muted: #27272a;
+		--muted: #171717;
 		--muted-foreground: #a1a1aa;
 
 		/* Accent */
-		--accent: #27272a;
+		--accent: #252525;
 		--accent-foreground: #fafafa;
 
 		/* Popovers & Cards */
