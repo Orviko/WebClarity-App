@@ -77,6 +77,12 @@
 			"organizationSettings": "Organization settings",
 			"start": "Start"
 		},
+		"sidebar": {
+			"feedback": "Feedback",
+			"share": "Share",
+			"collapse": "Collapse sidebar",
+			"expand": "Expand sidebar"
+		},
 		"userMenu": {
 			"accountSettings": "Account settings",
 			"colorMode": "Color mode",
