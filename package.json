@@ -1,5 +1,5 @@
 {
-	"name": "webclarity",
+	"name": "webclarity-web-app",
 	"private": true,
 	"scripts": {
 		"build": "dotenv -c -- turbo build",
