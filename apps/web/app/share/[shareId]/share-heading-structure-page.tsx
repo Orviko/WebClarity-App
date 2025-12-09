@@ -87,9 +87,11 @@ function getPrimaryIssue(
 	if (issues.length === 0) return null;
 
 	const errorIssues = issues.filter((i) =>
-		["empty", "skip", "orphan", "multiple-h1", "missing-h1"].includes(i),
+		["empty", "skip", "multiple-h1", "missing-h1"].includes(i),
 	);
-	const warningIssues = issues.filter((i) => ["short", "long"].includes(i));
+	const warningIssues = issues.filter((i) =>
+		["orphan", "short", "long"].includes(i),
+	);
 
 	if (errorIssues.length > 0) {
 		return errorIssues.sort(
@@ -202,13 +204,9 @@ function StatusBadge({
 	}
 
 	const issueNumber = getIssueTypeNumber(primaryIssue);
-	const hasErrors = [
-		"skip",
-		"orphan",
-		"multiple-h1",
-		"empty",
-		"missing-h1",
-	].includes(primaryIssue);
+	const hasErrors = ["skip", "multiple-h1", "empty", "missing-h1"].includes(
+		primaryIssue,
+	);
 	const issueLabels = issues
 		.map((issue) => getIssueLabel(issue, t))
 		.join(", ");
@@ -491,7 +489,7 @@ function HeadingIssuesInfoModal({
 									<div
 										className={cn(
 											"flex items-center justify-center w-8 h-8 rounded-md text-xs font-semibold",
-											"bg-destructive/10 text-destructive border border-destructive/20",
+											"bg-yellow-500/10 text-yellow-600 border border-yellow-500/20",
 										)}
 									>
 										5
@@ -637,13 +635,9 @@ export function ShareHeadingStructurePage({
 					noIssues++;
 				} else {
 					const hasCritical = node.issues.some((i) =>
-						[
-							"skip",
-							"orphan",
-							"empty",
-							"multiple-h1",
-							"missing-h1",
-						].includes(i),
+						["skip", "empty", "multiple-h1", "missing-h1"].includes(
+							i,
+						),
 					);
 					if (hasCritical) {
 						critical++;
@@ -680,13 +674,9 @@ export function ShareHeadingStructurePage({
 						.map((issue) => getIssueLabel(issue, t))
 						.join(", ");
 					const isCritical = node.issues.some((i) =>
-						[
-							"skip",
-							"orphan",
-							"empty",
-							"multiple-h1",
-							"missing-h1",
-						].includes(i),
+						["skip", "empty", "multiple-h1", "missing-h1"].includes(
+							i,
+						),
 					);
 					const isWarning = hasIssues && !isCritical;
 
@@ -932,7 +922,7 @@ export function ShareHeadingStructurePage({
 											</span>
 										</div>
 									</AccordionTrigger>
-									<AccordionContent className="px-4 pb-4 pt-0">
+									<AccordionContent className="px-4 pt-0">
 										<div className="pt-4 space-y-4">
 											{/* Solution Info Section */}
 											<div className="bg-background/50 dark:bg-background/30 border border-yellow-500/30 rounded-lg p-4">
