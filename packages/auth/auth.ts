@@ -36,9 +36,29 @@ const getLocaleFromRequest = (request?: Request) => {
 
 const appUrl = getBaseUrl();
 
+// Allow Chrome extension to make authenticated requests
+// better-auth's trustedOrigins can be a function that returns origins based on the request
+const getTrustedOrigins = (request: Request): string[] => {
+	const origin = request.headers.get("origin");
+	const origins = [appUrl];
+
+	// Allow any browser extension origin (chrome, firefox, safari)
+	// Session cookie validation provides the actual security
+	if (
+		origin &&
+		(origin.startsWith("chrome-extension://") ||
+			origin.startsWith("moz-extension://") ||
+			origin.startsWith("safari-web-extension://"))
+	) {
+		origins.push(origin);
+	}
+
+	return origins;
+};
+
 export const auth = betterAuth({
 	baseURL: appUrl,
-	trustedOrigins: [appUrl],
+	trustedOrigins: getTrustedOrigins,
 	appName: config.appName,
 	database: prismaAdapter(db, {
 		provider: "postgresql",
