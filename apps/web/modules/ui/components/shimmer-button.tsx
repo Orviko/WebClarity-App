@@ -22,9 +22,6 @@ export function ShimmerButton({
 	onClick,
 	...props
 }: ShimmerButtonProps) {
-	const [ripples, setRipples] = React.useState<
-		Array<{ x: number; y: number; id: number }>
-	>([]);
 	const [borderRadius, setBorderRadius] = React.useState("0.375rem");
 	const buttonRef = React.useRef<HTMLButtonElement>(null);
 	const rotation = useMotionValue(0);
@@ -56,25 +53,6 @@ export function ShimmerButton({
 	const handleClick = (
 		event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
 	) => {
-		if (!buttonRef.current) return;
-
-		const rect = buttonRef.current.getBoundingClientRect();
-		const x = event.clientX - rect.left;
-		const y = event.clientY - rect.top;
-
-		const newRipple = {
-			x,
-			y,
-			id: Date.now(),
-		};
-
-		setRipples((prev) => [...prev, newRipple]);
-
-		// Remove ripple after animation
-		setTimeout(() => {
-			setRipples((prev) => prev.filter((r) => r.id !== newRipple.id));
-		}, 600);
-
 		onClick?.(event);
 	};
 
@@ -82,7 +60,7 @@ export function ShimmerButton({
 		<motion.button
 			ref={buttonRef}
 			className={cn(
-				"group relative inline-flex rounded-md bg-zinc-900 dark:bg-zinc-100",
+				"group relative inline-flex overflow-hidden rounded-md bg-zinc-900 dark:bg-zinc-100",
 				className,
 			)}
 			whileTap={{
@@ -105,34 +83,6 @@ export function ShimmerButton({
 					WebkitMaskComposite: "xor",
 				}}
 			/>
-
-			{/* Ripple effects */}
-			{ripples.map((ripple) => (
-				<motion.span
-					key={ripple.id}
-					className="absolute rounded-full bg-white/30"
-					initial={{
-						left: ripple.x,
-						top: ripple.y,
-						width: 0,
-						height: 0,
-						opacity: 1,
-					}}
-					animate={{
-						width: 300,
-						height: 300,
-						opacity: 0,
-					}}
-					transition={{
-						duration: 0.6,
-						ease: "easeOut",
-					}}
-					style={{
-						transform: "translate(-50%, -50%)",
-						zIndex: 2,
-					}}
-				/>
-			))}
 
 			{/* Content - Secondary button style with solid background */}
 			<span
