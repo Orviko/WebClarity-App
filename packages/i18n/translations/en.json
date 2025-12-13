@@ -87,7 +87,9 @@
 			"feedback": "Feedback",
 			"share": "Share",
 			"collapse": "Collapse sidebar",
-			"expand": "Expand sidebar"
+			"expand": "Expand sidebar",
+			"upgrade": "Upgrade",
+			"viewPlan": "View Plan"
 		},
 		"userMenu": {
 			"accountSettings": "Account settings",

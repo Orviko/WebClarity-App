@@ -38,6 +38,7 @@ import { NavUser } from "./NavUser";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { CreateProjectDialog } from "./CreateProjectDialog";
 import { CreateBoardDialog } from "./CreateBoardDialog";
+import { PlanUsageCard } from "./PlanUsageCard";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	const t = useTranslations();
@@ -187,6 +188,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 					</SidebarMenuItem>
 				</SidebarMenu>
 				<NavUser />
+				<PlanUsageCard />
 			</SidebarFooter>
 			<SidebarRail />
 			<CreateProjectDialog
