@@ -60,7 +60,7 @@ export function ShimmerButton({
 		<motion.button
 			ref={buttonRef}
 			className={cn(
-				"group relative inline-flex overflow-hidden rounded-md bg-zinc-900 dark:bg-zinc-100",
+				"group relative inline-flex cursor-pointer overflow-hidden rounded-md bg-zinc-900 dark:bg-zinc-100",
 				className,
 			)}
 			whileTap={{
