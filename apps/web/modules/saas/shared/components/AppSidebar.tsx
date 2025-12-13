@@ -160,26 +160,32 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				</SidebarGroup>
 			</SidebarContent>
 			<SidebarFooter>
-				<div className="flex flex-col gap-2">
-					<div className="flex items-center gap-2 px-2">
-						<Link
-							href="#"
-							className="flex flex-1 items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<SidebarMenuButton
+							asChild
+							tooltip={t("app.sidebar.feedback")}
+							className="h-10! px-3! py-1.5! text-base!"
 						>
-							<MessageSquareIcon className="size-4" />
-							<span>{t("app.sidebar.feedback")}</span>
-						</Link>
-					</div>
-					<div className="flex items-center gap-2 px-2">
-						<Link
-							href="#"
-							className="flex flex-1 items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+							<Link href="#">
+								<MessageSquareIcon className="size-4" />
+								<span>{t("app.sidebar.feedback")}</span>
+							</Link>
+						</SidebarMenuButton>
+					</SidebarMenuItem>
+					<SidebarMenuItem>
+						<SidebarMenuButton
+							asChild
+							tooltip={t("app.sidebar.share")}
+							className="h-10! px-3! py-1.5! text-base!"
 						>
-							<Share2Icon className="size-4" />
-							<span>{t("app.sidebar.share")}</span>
-						</Link>
-					</div>
-				</div>
+							<Link href="#">
+								<Share2Icon className="size-4" />
+								<span>{t("app.sidebar.share")}</span>
+							</Link>
+						</SidebarMenuButton>
+					</SidebarMenuItem>
+				</SidebarMenu>
 				<NavUser />
 			</SidebarFooter>
 			<SidebarRail />
