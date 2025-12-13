@@ -217,6 +217,7 @@ model Share {
   expiresAt             DateTime
   createdAt             DateTime            @default(now())
   websiteUrl            String
+  shareOgImageUrl       String?             // Share-specific Open Graph image URL
   styleGuideDataId      String?             @unique
   headingStructureDataId String?            @unique
   styleGuideData        StyleGuideData?     @relation(fields: [styleGuideDataId], references: [id], onDelete: Cascade)

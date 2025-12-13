@@ -24,6 +24,24 @@ export async function cleanupExpiredShares(): Promise<void> {
 			return;
 		}
 
+		logger.log(`Found ${expiredShares.length} expired shares to clean up`);
+
+		// Delete OG images for expired shares
+		const { deleteShareOGImage } = await import("@repo/share-og");
+		for (const share of expiredShares) {
+			if (share.shareOgImageUrl) {
+				try {
+					await deleteShareOGImage(share.shareId);
+					logger.log(`Deleted OG image for expired share: ${share.shareId}`);
+				} catch (error) {
+					logger.error(
+						`Failed to delete OG image for share ${share.shareId}:`,
+						error,
+					);
+				}
+			}
+		}
+
 		// Delete expired shares (cascade will delete related data)
 		const deletedCount = await db.share.deleteMany({
 			where: {

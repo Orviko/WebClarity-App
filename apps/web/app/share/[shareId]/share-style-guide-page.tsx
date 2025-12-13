@@ -74,6 +74,7 @@ export interface ShareData {
 		exportUnit: "px" | "rem";
 	};
 	websiteUrl: string;
+	shareOgImageUrl?: string | null;
 	createdAt: string;
 	expiresAt: string;
 }

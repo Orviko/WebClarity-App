@@ -15,24 +15,54 @@ export async function generateMetadata({
 
 	try {
 		const shareType = await orpcClient.shared.getShareType({ shareId });
+
+		// Fetch share data to get share OG image URL
+		let shareOgImageUrl: string | null | undefined;
+		let websiteUrl: string | undefined;
+
+		if (shareType.type === ShareType.STYLE_GUIDE) {
+			const data = await orpcClient.styleGuide.getShare({ shareId });
+			shareOgImageUrl = data.shareOgImageUrl;
+			websiteUrl = data.websiteUrl;
+		} else {
+			const data = await orpcClient.headingStructure.getShare({ shareId });
+			shareOgImageUrl = data.shareOgImageUrl;
+			websiteUrl = data.websiteUrl;
+		}
+
 		const title =
 			shareType.type === ShareType.STYLE_GUIDE
-				? `Style Guide - ${shareId}`
-				: `Heading Structure - ${shareId}`;
+				? `Style Guide - ${websiteUrl || shareId}`
+				: `Heading Structure Analysis - ${websiteUrl || shareId}`;
+
 		const description =
 			shareType.type === ShareType.STYLE_GUIDE
-				? "Shared style guide with typography and colors"
-				: "Shared heading structure analysis";
+				? `Explore the style guide for ${websiteUrl} - colors, typography, and design tokens`
+				: `Analyze the heading structure for ${websiteUrl} - SEO and accessibility insights`;
 
 		return {
 			title,
 			description,
+			openGraph: {
+				title,
+				description,
+				images: shareOgImageUrl
+					? [{ url: shareOgImageUrl, width: 1200, height: 630 }]
+					: [],
+				type: "website",
+			},
+			twitter: {
+				card: "summary_large_image",
+				title,
+				description,
+				images: shareOgImageUrl ? [shareOgImageUrl] : [],
+			},
 		};
 	} catch {
-	return {
+		return {
 			title: `Share - ${shareId}`,
 			description: "Shared content",
-	};
+		};
 	}
 }
 

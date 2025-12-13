@@ -1,0 +1,10 @@
+{
+	"extends": "@repo/tsconfig/base.json",
+	"compilerOptions": {
+		"jsx": "react",
+		"outDir": "dist"
+	},
+	"include": ["."],
+	"exclude": ["node_modules"]
+}
+

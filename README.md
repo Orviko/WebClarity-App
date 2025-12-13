@@ -242,6 +242,11 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."
 STRIPE_WEBHOOK_SECRET="whsec_..."
 NEXT_PUBLIC_PRICE_ID_PRO_MONTHLY="price_..."
 NEXT_PUBLIC_PRICE_ID_PRO_YEARLY="price_..."
+
+# Cron Jobs (for scheduled cleanup tasks)
+# Currently uses Vercel Cron Jobs (configured in vercel.json)
+# The endpoint /api/cron/cleanup-shares is vendor-agnostic and can be called by any HTTP scheduler
+CRON_SECRET="generate-with-openssl-rand-base64-32"
 ```
 
 Generate the auth secret:
@@ -249,6 +254,13 @@ Generate the auth secret:
 ```bash
 openssl rand -base64 32
 ```
+
+**Note on Scheduled Cleanup**:
+
+-   Currently configured for **Vercel Cron Jobs** (weekly schedule in `vercel.json`)
+-   The cleanup endpoint (`/api/cron/cleanup-shares`) is vendor-agnostic and works with any HTTP scheduler
+-   **Lazy deletion** (on user visits) will always work regardless of hosting provider
+-   If moving away from Vercel, scheduled weekly cleanup will stop, but the system won't break - only orphaned images may persist longer until manually cleaned or a new scheduler is configured
 
 ## 🔧 Available Commands
 

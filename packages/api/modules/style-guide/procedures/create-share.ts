@@ -1,6 +1,7 @@
 import { ORPCError } from "@orpc/server";
 import { db } from "@repo/database/prisma/client";
 import { ShareType } from "@repo/database/prisma/generated/enums";
+import { logger } from "@repo/logs";
 import { getBaseUrl } from "@repo/utils";
 import { z } from "zod";
 import { publicProcedure } from "../../../orpc/procedures";
@@ -48,7 +49,32 @@ export async function createShareHandler(
 			},
 		});
 
-		return share;
+		// Generate share OG image
+		let shareOgImageUrl: string | null = null;
+		try {
+			const { generateAndUploadShareOGImage } = await import("@repo/share-og");
+
+			shareOgImageUrl = await generateAndUploadShareOGImage(
+				shareId,
+				ShareType.STYLE_GUIDE,
+				{
+					websiteUrl: validated.websiteUrl,
+					colorsData: validated.colorsData,
+					typographyData: validated.typographyData,
+				},
+			);
+
+			// Update share with share OG image URL
+			await tx.share.update({
+				where: { id: share.id },
+				data: { shareOgImageUrl },
+			});
+		} catch (error) {
+			logger.error("Share OG image generation failed, continuing without it:", error);
+			// Don't fail the entire request if share OG generation fails
+		}
+
+		return { ...share, shareOgImageUrl };
 	});
 
 	// Generate share URL - use web app URL from environment variable

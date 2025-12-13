@@ -102,6 +102,7 @@ export const config = {
 		// define the name of the buckets for the different types of files
 		bucketNames: {
 			avatars: process.env.NEXT_PUBLIC_AVATARS_BUCKET_NAME ?? "avatars",
+			shareOg: process.env.NEXT_PUBLIC_SHARE_OG_BUCKET_NAME ?? "webclarity-share-og",
 		},
 	},
 	// Payments

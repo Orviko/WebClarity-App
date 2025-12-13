@@ -29,6 +29,8 @@ export const getShareType = publicProcedure
 			select: {
 				type: true,
 				expiresAt: true,
+				shareId: true,
+				shareOgImageUrl: true,
 			},
 		});
 
@@ -38,6 +40,22 @@ export const getShareType = publicProcedure
 
 		// Check if share has expired
 		if (new Date() > share.expiresAt) {
+			// Delete share OG image before deleting share
+			if (share.shareOgImageUrl) {
+				try {
+					const { deleteShareOGImage } = await import(
+						"@repo/share-og"
+					);
+					await deleteShareOGImage(share.shareId);
+				} catch (error) {
+					// Log but don't fail - cleanup failures shouldn't block deletion
+					console.error(
+						"Failed to delete share OG image during cleanup:",
+						error
+					);
+				}
+			}
+
 			// Delete expired share
 			await db.share.delete({
 				where: { shareId: input.shareId },
@@ -50,4 +68,3 @@ export const getShareType = publicProcedure
 			type: share.type,
 		};
 	});
-

@@ -59,6 +59,7 @@ export interface HeadingStructureShareData {
 		includeSummary?: boolean;
 	};
 	websiteUrl: string;
+	shareOgImageUrl?: string | null;
 	createdAt: string;
 	expiresAt: string;
 }

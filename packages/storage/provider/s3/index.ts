@@ -1,13 +1,18 @@
 import {
+	DeleteObjectCommand,
 	GetObjectCommand,
+	ListObjectsV2Command,
 	PutObjectCommand,
 	S3Client,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl as getS3SignedUrl } from "@aws-sdk/s3-request-presigner";
 import { logger } from "@repo/logs";
 import type {
+	DeleteObjectHandler,
 	GetSignedUploadUrlHandler,
 	GetSignedUrlHander,
+	ListObjectsHandler,
+	UploadBufferHandler,
 } from "../../types";
 
 let s3Client: S3Client | null = null;
@@ -49,7 +54,7 @@ const getS3Client = () => {
 
 export const getSignedUploadUrl: GetSignedUploadUrlHandler = async (
 	path,
-	{ bucket },
+	{ bucket }
 ) => {
 	const s3Client = getS3Client();
 	try {
@@ -62,7 +67,7 @@ export const getSignedUploadUrl: GetSignedUploadUrlHandler = async (
 			}),
 			{
 				expiresIn: 60,
-			},
+			}
 		);
 	} catch (e) {
 		logger.error(e);
@@ -73,17 +78,74 @@ export const getSignedUploadUrl: GetSignedUploadUrlHandler = async (
 
 export const getSignedUrl: GetSignedUrlHander = async (
 	path,
-	{ bucket, expiresIn },
+	{ bucket, expiresIn }
 ) => {
 	const s3Client = getS3Client();
 	try {
 		return getS3SignedUrl(
 			s3Client,
 			new GetObjectCommand({ Bucket: bucket, Key: path }),
-			{ expiresIn },
+			{ expiresIn }
 		);
 	} catch (e) {
 		logger.error(e);
 		throw new Error("Could not get signed url");
+	}
+};
+
+export const uploadBuffer: UploadBufferHandler = async (
+	path,
+	buffer,
+	{ bucket, contentType }
+) => {
+	const s3Client = getS3Client();
+	try {
+		await s3Client.send(
+			new PutObjectCommand({
+				Bucket: bucket,
+				Key: path,
+				Body: buffer,
+				ContentType: contentType,
+			})
+		);
+	} catch (e) {
+		logger.error(e);
+		throw new Error("Could not upload buffer to S3");
+	}
+};
+
+export const deleteObject: DeleteObjectHandler = async (path, { bucket }) => {
+	const s3Client = getS3Client();
+	try {
+		await s3Client.send(
+			new DeleteObjectCommand({
+				Bucket: bucket,
+				Key: path,
+			})
+		);
+	} catch (e) {
+		logger.error(e);
+		throw new Error("Could not delete object from S3");
+	}
+};
+
+export const listObjects: ListObjectsHandler = async ({ bucket, prefix }) => {
+	const s3Client = getS3Client();
+	try {
+		const command = new ListObjectsV2Command({
+			Bucket: bucket,
+			Prefix: prefix,
+		});
+
+		const response = await s3Client.send(command);
+
+		return (response.Contents || []).map((obj) => ({
+			key: obj.Key || "",
+			size: obj.Size || 0,
+			lastModified: obj.LastModified || new Date(),
+		}));
+	} catch (e) {
+		logger.error(e);
+		throw new Error("Could not list objects from S3");
 	}
 };
