@@ -6,6 +6,7 @@ import { CreateOrganizationDialog } from "@saas/organizations/components/CreateO
 import { useActiveOrganization } from "@saas/organizations/hooks/use-active-organization";
 import { useOrganizationListQuery } from "@saas/organizations/lib/api";
 import { Card } from "@ui/components/card";
+import { ShimmerButton } from "@ui/components/shimmer-button";
 import { ChevronRightIcon, PlusCircleIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -45,18 +46,17 @@ export function OrganizationsGrid() {
 				))}
 
 				{config.organizations.enableUsersToCreateOrganizations && (
-					<button
+					<ShimmerButton
 						type="button"
 						onClick={() => setIsDialogOpen(true)}
-						className="flex h-full items-center justify-center gap-2 rounded-2xl bg-primary/5 p-4 text-primary transition-colors duration-150 hover:bg-primary/10"
+						className="h-full w-full rounded-2xl"
+						innerClassName="rounded-2xl px-6 py-4 text-base"
 					>
-						<PlusCircleIcon />
-						<span className="font-medium text-sm">
-							{t(
-								"organizations.organizationsGrid.createNewOrganization",
-							)}
-						</span>
-					</button>
+						<PlusCircleIcon className="size-5" />
+						{t(
+							"organizations.organizationsGrid.createNewOrganization",
+						)}
+					</ShimmerButton>
 				)}
 			</div>
 			{config.organizations.enableUsersToCreateOrganizations && (
