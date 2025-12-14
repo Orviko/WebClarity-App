@@ -85,7 +85,7 @@ export function OrganizationForm({
 
 			if (!organization) {
 				router.replace(
-					getAdminPath(`/organizations/${newOrganization.id}`),
+					getAdminPath(`/workspaces/${newOrganization.id}`),
 				);
 			}
 		} catch {

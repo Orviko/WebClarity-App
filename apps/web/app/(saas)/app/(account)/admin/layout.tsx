@@ -53,7 +53,7 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
 													title: t(
 														"admin.menu.organizations",
 													),
-													href: "/app/admin/organizations",
+													href: "/app/admin/workspaces",
 													icon: (
 														<Building2Icon className="size-4 opacity-50" />
 													),

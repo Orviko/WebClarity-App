@@ -1,5 +1,5 @@
 import { OrganizationList } from "@saas/admin/component/organizations/OrganizationList";
 
-export default function AdminOrganizationsPage() {
+export default function AdminWorkspacesPage() {
 	return <OrganizationList />;
 }

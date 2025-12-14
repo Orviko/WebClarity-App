@@ -118,13 +118,15 @@ web-app/
 ✅ Password reset flow  
 ✅ Role-based access control (User, Admin)
 
-### Organization Management
+### Workspace Management
 
-✅ Multi-tenant teams  
-✅ Organization invitations  
+✅ Multi-tenant workspaces  
+✅ Workspace invitations  
 ✅ Role-based permissions (Owner, Admin, Member)  
-✅ Organization billing  
+✅ Workspace billing  
 ✅ Logo uploads
+
+**Note:** In the codebase, this feature is implemented using "organization" terminology (variables, functions, database models, API endpoints). However, all user-facing content (UI text, emails, URLs) displays as "workspace". See [Terminology Guide](doc/WORKSPACE_TERMINOLOGY.md) for details.
 
 ### Billing & Payments
 
@@ -165,7 +167,7 @@ export const config = {
 		},
 	},
 
-	// Organization Settings
+	// Workspace Settings (internally uses "organizations" in code)
 	organizations: {
 		enable: true,
 		enableBilling: true,
@@ -467,8 +469,8 @@ Type-safe API layer using oRPC.
 
 **Key Modules:**
 
--   `admin/` - Admin operations (user/org management)
--   `organizations/` - Team management
+-   `admin/` - Admin operations (user/workspace management)
+-   `organizations/` - Workspace management (code uses "organization", UI shows "workspace")
 -   `payments/` - Billing operations
 -   `users/` - User operations
 
@@ -483,7 +485,7 @@ Authentication system using Better Auth.
 -   2FA (TOTP)
 -   Email verification
 -   Password reset
--   Organization invitations
+-   Workspace invitations
 
 ### `@repo/database`
 
@@ -503,7 +505,7 @@ Email system with React templates.
 
 -   Email verification
 -   Password reset
--   Organization invitations
+-   Workspace invitations (user-facing)
 -   New user welcome
 
 ### `@repo/payments`
@@ -589,6 +591,34 @@ pnpm build
 -   [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 -   [Tailwind CSS Docs](https://tailwindcss.com/docs)
 
+## 📋 Important: Organization vs Workspace Terminology
+
+**Critical for Developers:** This codebase uses a dual terminology system:
+
+-   **Code/Backend:** Everything uses "organization" terminology
+
+    -   Database models: `Organization`, `organizationId`
+    -   API endpoints: `/api/organizations/*`
+    -   Functions: `getOrganization()`, `createOrganization()`
+    -   Variables: `activeOrganization`, `organizationSlug`
+    -   File/folder names: `organizations/`, `OrganizationSelect.tsx`
+
+-   **User-Facing:** Everything displays as "workspace"
+    -   UI text: "Create workspace", "Workspace settings"
+    -   URLs: `/app/admin/workspaces` (admin routes only)
+    -   Emails: "You've been invited to join a workspace"
+    -   Translations: All `organizations.*` keys show "workspace" text
+
+**When Developing:**
+
+-   ✅ Use `organization` functions, types, and variables in code
+-   ✅ Use `organizations.*` translation keys
+-   ✅ Display user-facing text as "workspace" via translations
+-   ❌ Don't rename code variables/functions to "workspace"
+-   ❌ Don't change database schema or API endpoints
+
+See [Workspace Terminology Guide](doc/WORKSPACE_TERMINOLOGY.md) for complete details.
+
 ## 🤝 Contributing
 
 When contributing to this project:
@@ -599,6 +629,7 @@ When contributing to this project:
 4. Add proper type definitions
 5. Write descriptive commit messages
 6. Test thoroughly before committing
+7. **Use "organization" in code, "workspace" in user-facing content** (see [Terminology Guide](doc/WORKSPACE_TERMINOLOGY.md))
 
 ## 📝 License
 

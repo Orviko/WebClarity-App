@@ -1,38 +1,38 @@
 {
 	"admin": {
 		"menu": {
-			"organizations": "Organisationen",
+			"organizations": "Arbeitsbereiche",
 			"users": "Benutzer"
 		},
 		"organizations": {
-			"backToList": "Zurück zu Organisationen",
+			"backToList": "Zurück zu Arbeitsbereichen",
 			"confirmDelete": {
 				"confirm": "Löschen",
-				"message": "Bist du sicher, dass du diese Organisation löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.",
-				"title": "Organisation löschen"
+				"message": "Bist du sicher, dass du diesen Arbeitsbereich löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.",
+				"title": "Arbeitsbereich löschen"
 			},
 			"create": "Erstellen",
 			"delete": "Löschen",
 			"deleteOrganization": {
-				"deleted": "Die Organisation wurde erfolgreich gelöscht!",
-				"deleting": "Löschung der Organisation...",
-				"notDeleted": "Organisation konnte nicht gelöscht werden. Bitte versuche es erneut."
+				"deleted": "Der Arbeitsbereich wurde erfolgreich gelöscht!",
+				"deleting": "Löschung des Arbeitsbereichs...",
+				"notDeleted": "Arbeitsbereich konnte nicht gelöscht werden. Bitte versuche es erneut."
 			},
 			"edit": "bearbeiten",
 			"form": {
-				"createTitle": "Erstellen eine Organisation",
-				"name": "Name der Organisation",
+				"createTitle": "Erstellen einen Arbeitsbereich",
+				"name": "Name des Arbeitsbereichs",
 				"notifications": {
-					"error": "Die Organisation konnte nicht gespeichert werden. Bitte versuche es später noch einmal.",
-					"success": "Die Organisation wurde erfolgreich gespeichert."
+					"error": "Der Arbeitsbereich konnte nicht gespeichert werden. Bitte versuche es später noch einmal.",
+					"success": "Der Arbeitsbereich wurde erfolgreich gespeichert."
 				},
 				"save": "Speichern",
-				"updateTitle": "Organisation bearbeiten"
+				"updateTitle": "Arbeitsbereich bearbeiten"
 			},
-			"loading": "Organisationen laden...",
+			"loading": "Arbeitsbereiche laden...",
 			"membersCount": "{count} {count, plural, one {Mitglied} other {Mitglieder}}",
-			"search": "Suche nach einer Organisation...",
-			"title": "Verwalten von Organisationen"
+			"search": "Suche nach einem Arbeitsbereich...",
+			"title": "Verwalten von Arbeitsbereichen"
 		},
 		"title": "Administration",
 		"users": {
@@ -73,7 +73,7 @@
 		"menu": {
 			"accountSettings": "Kontoeinstellungen",
 			"admin": "Administration",
-			"organizationSettings": "Organisationseinstellungen",
+			"organizationSettings": "Arbeitsbereichseinstellungen",
 			"start": "Dashboard",
 			"dashboard": "Dashboard",
 			"projects": "Projekte",
@@ -236,10 +236,10 @@
 			"subject": "E-Mail bestätigen"
 		},
 		"organizationInvitation": {
-			"body": "Du wurdest eingeladen, der Organisation {organizationName} beizutreten. Klicke auf den Button unten oder kopiere den Link und füge ihn in den Browser deiner Wahl ein, um die Einladung anzunehmen und der Organisation beizutreten.",
-			"headline": "Einladung zur Organisation {organizationName}",
-			"join": "Tritt der Organisation bei",
-			"subject": "Du wurdest eingeladen, einer Organisation beizutreten"
+			"body": "Du wurdest eingeladen, dem Arbeitsbereich {organizationName} beizutreten. Klicke auf den Button unten oder kopiere den Link und füge ihn in den Browser deiner Wahl ein, um die Einladung anzunehmen und dem Arbeitsbereich beizutreten.",
+			"headline": "Einladung zum Arbeitsbereich {organizationName}",
+			"join": "Tritt dem Arbeitsbereich bei",
+			"subject": "Du wurdest eingeladen, einem Arbeitsbereich beizutreten"
 		}
 	},
 	"onboarding": {
@@ -258,33 +258,33 @@
 	},
 	"organizations": {
 		"createForm": {
-			"name": "Name der Organisation",
+			"name": "Name des Arbeitsbereichs",
 			"notifications": {
-				"error": "Es tut uns leid, aber wir konnten deine Organisation nicht erstellen. Bitte versuche es später noch einmal.",
-				"success": "Deine Organisation wurde erstellt. Du kannst nun Mitglieder einladen."
+				"error": "Es tut uns leid, aber wir konnten deinen Arbeitsbereich nicht erstellen. Bitte versuche es später noch einmal.",
+				"success": "Dein Arbeitsbereich wurde erstellt. Du kannst nun Mitglieder einladen."
 			},
-			"submit": "Organisation erstellen",
-			"subtitle": "Gib einen Namen für deine Organisation ein, um loszulegen. Du kannst den Namen später in den Organisationseinstellungen ändern.",
-			"title": "Erstelle eine Organisation"
+			"submit": "Arbeitsbereich erstellen",
+			"subtitle": "Gib einen Namen für deinen Arbeitsbereich ein, um loszulegen. Du kannst den Namen später in den Arbeitsbereichseinstellungen ändern.",
+			"title": "Erstelle einen Arbeitsbereich"
 		},
 		"invitationAlert": {
-			"description": "Du bist eingeladen worden, einer Organisation beizutreten. Wenn du dich anmeldest oder registrierst, akzeptierst du automatisch die Einladung und trittst der Organisation bei.",
-			"title": "Einladung der Organisation annehmen"
+			"description": "Du bist eingeladen worden, einem Arbeitsbereich beizutreten. Wenn du dich anmeldest oder registrierst, akzeptierst du automatisch die Einladung und trittst dem Arbeitsbereich bei.",
+			"title": "Einladung des Arbeitsbereichs annehmen"
 		},
 		"invitationModal": {
 			"accept": "Annehmen",
 			"decline": "Ablehnen",
-			"description": "Du wurdest eingeladen, der Organisation {organizationName} beizutreten. Möchtest du die Einladung annehmen und der Organisation beitreten?",
-			"title": "Organisation beitreten"
+			"description": "Du wurdest eingeladen, dem Arbeitsbereich {organizationName} beizutreten. Möchtest du die Einladung annehmen und dem Arbeitsbereich beitreten?",
+			"title": "Arbeitsbereich beitreten"
 		},
 		"organizationSelect": {
-			"createNewOrganization": "Neue Organisation erstellen",
-			"organizations": "Organisationen",
+			"createNewOrganization": "Neuen Arbeitsbereich erstellen",
+			"organizations": "Arbeitsbereiche",
 			"personalAccount": "Persönliches Konto"
 		},
 		"organizationsGrid": {
-			"createNewOrganization": "Neue Organisation erstellen",
-			"title": "Deine Organisationen"
+			"createNewOrganization": "Neuen Arbeitsbereich erstellen",
+			"title": "Deine Arbeitsbereiche"
 		},
 		"roles": {
 			"admin": "Administration",
@@ -293,21 +293,21 @@
 		},
 		"settings": {
 			"changeName": {
-				"title": "Name der Organisation"
+				"title": "Name des Arbeitsbereichs"
 			},
 			"deleteOrganization": {
-				"confirmation": "Bist du sicher, dass du deine Organisation löschen möchtest?",
-				"description": "Lösche deine Organisation dauerhaft. Sobald du deine Organisation gelöscht hast, gibt es kein Zurück mehr. Zur Bestätigung gib bitte unten dein Passwort ein:",
-				"submit": "Organisation löschen",
-				"title": "Organisation löschen"
+				"confirmation": "Bist du sicher, dass du deinen Arbeitsbereich löschen möchtest?",
+				"description": "Lösche deinen Arbeitsbereich dauerhaft. Sobald du deinen Arbeitsbereich gelöscht hast, gibt es kein Zurück mehr. Zur Bestätigung gib bitte unten dein Passwort ein:",
+				"submit": "Arbeitsbereich löschen",
+				"title": "Arbeitsbereich löschen"
 			},
 			"logo": {
-				"description": "Lade ein Logo für deine Organisation hoch.",
-				"title": "Logo der Organisation"
+				"description": "Lade ein Logo für deinen Arbeitsbereich hoch.",
+				"title": "Logo des Arbeitsbereichs"
 			},
 			"members": {
 				"activeMembers": "Aktive Mitglieder",
-				"description": "Sieh dir alle aktiven Mitglieder und die ausstehenden Einladungen deiner Organisation an.",
+				"description": "Sieh dir alle aktiven Mitglieder und die ausstehenden Einladungen deines Arbeitsbereichs an.",
 				"invitations": {
 					"empty": "Es wurden noch keine Mitglieder eingeladen.",
 					"expiresAt": "Läuft am {date} ab",
@@ -337,17 +337,17 @@
 					"submit": "Einladen",
 					"title": "Mitglied einladen"
 				},
-				"leaveOrganization": "Organisation verlassen",
+				"leaveOrganization": "Arbeitsbereich verlassen",
 				"notifications": {
 					"removeMember": {
 						"error": {
-							"description": "Das Mitglied konnte nicht aus deiner Organisation entfernt werden. Bitte versuche es erneut."
+							"description": "Das Mitglied konnte nicht aus deinem Arbeitsbereich entfernt werden. Bitte versuche es erneut."
 						},
 						"loading": {
-							"description": "Mitglied aus der Organisation entfernen..."
+							"description": "Mitglied aus dem Arbeitsbereich entfernen..."
 						},
 						"success": {
-							"description": "Das Mitglied wurde erfolgreich aus deiner Organisation entfernt."
+							"description": "Das Mitglied wurde erfolgreich aus deinem Arbeitsbereich entfernt."
 						}
 					},
 					"revokeInvitation": {
@@ -363,7 +363,7 @@
 					},
 					"updateMembership": {
 						"error": {
-							"description": "Die Mitgliedschaft in der Organisation konnte nicht aktualisiert werden. Bitte versuche es erneut."
+							"description": "Die Mitgliedschaft im Arbeitsbereich konnte nicht aktualisiert werden. Bitte versuche es erneut."
 						},
 						"loading": {
 							"description": "Aktualisierung der Mitgliedschaft..."
@@ -389,19 +389,19 @@
 				"title": "Mitglieder"
 			},
 			"notifications": {
-				"organizationDeleted": "Deine Organisation wurde gelöscht.",
-				"organizationNameNotUpdated": "Wir konnten den Namen deiner Organisation nicht aktualisieren. Bitte versuche es später noch einmal.",
-				"organizationNameUpdated": "Der Name deiner Organisation wurde aktualisiert.",
-				"organizationNotDeleted": "Wir konnten deine Organisation nicht löschen. Bitte versuche es später noch einmal."
+				"organizationDeleted": "Dein Arbeitsbereich wurde gelöscht.",
+				"organizationNameNotUpdated": "Wir konnten den Namen deines Arbeitsbereichs nicht aktualisieren. Bitte versuche es später noch einmal.",
+				"organizationNameUpdated": "Der Name deines Arbeitsbereichs wurde aktualisiert.",
+				"organizationNotDeleted": "Wir konnten deinen Arbeitsbereich nicht löschen. Bitte versuche es später noch einmal."
 			},
-			"subtitle": "Verwalte die Einstellungen der Organisation.",
-			"title": "Organisation",
+			"subtitle": "Verwalte die Einstellungen des Arbeitsbereichs.",
+			"title": "Arbeitsbereich",
 			"dangerZone": {
 				"title": "Gefahrenzone"
 			}
 		},
 		"start": {
-			"subtitle": "Willkommen auf der Startseite dieser Organisation!"
+			"subtitle": "Willkommen auf der Startseite dieses Arbeitsbereichs!"
 		}
 	},
 	"pricing": {
@@ -646,7 +646,7 @@
 				"billing": "Abrechnung",
 				"general": "Allgemein",
 				"members": "Mitglieder",
-				"title": "Organisation",
+				"title": "Arbeitsbereich",
 				"dangerZone": "Gefahrenzone"
 			}
 		},

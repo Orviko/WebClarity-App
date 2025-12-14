@@ -67,7 +67,7 @@ export function OrganizationList() {
 	};
 
 	const getOrganizationEditPath = (id: string) => {
-		return getPathWithBackToParemeter(getAdminPath(`/organizations/${id}`));
+		return getPathWithBackToParemeter(getAdminPath(`/workspaces/${id}`));
 	};
 
 	useEffect(() => {
@@ -229,7 +229,7 @@ export function OrganizationList() {
 				</h2>
 
 				<Button asChild>
-					<Link href={getAdminPath("/organizations/new")}>
+					<Link href={getAdminPath("/workspaces/new")}>
 						<PlusIcon className="mr-1.5 size-4" />
 						{t("admin.organizations.create")}
 					</Link>
