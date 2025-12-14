@@ -33,12 +33,14 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavUser } from "./NavUser";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { CreateProjectDialog } from "./CreateProjectDialog";
 import { CreateBoardDialog } from "./CreateBoardDialog";
 import { PlanUsageCard } from "./PlanUsageCard";
+import { SearchTrigger } from "./SearchTrigger";
+import { SearchModal } from "./SearchModal";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	const t = useTranslations();
@@ -47,6 +49,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	const { activeOrganization, isOrganizationAdmin } = useActiveOrganization();
 	const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
 	const [isBoardDialogOpen, setIsBoardDialogOpen] = useState(false);
+	const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+
+	// Handle CMD+K keyboard shortcut
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (
+				(event.metaKey || event.ctrlKey) &&
+				event.key === "k" &&
+				!event.shiftKey
+			) {
+				event.preventDefault();
+				setIsSearchModalOpen((open) => !open);
+			}
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, []);
 
 	const basePath = activeOrganization
 		? `/app/${activeOrganization.slug}`
@@ -126,7 +146,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			<SidebarHeader>
 				{config.organizations.enable &&
 					!config.organizations.hideOrganization && (
-						<WorkspaceSwitcher />
+						<>
+							<WorkspaceSwitcher />
+							<SearchTrigger
+								onClick={() => setIsSearchModalOpen(true)}
+								className="mt-2"
+							/>
+						</>
 					)}
 			</SidebarHeader>
 			<SidebarContent>
@@ -198,6 +224,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			<CreateBoardDialog
 				open={isBoardDialogOpen}
 				onOpenChange={setIsBoardDialogOpen}
+			/>
+			<SearchModal
+				open={isSearchModalOpen}
+				onOpenChange={setIsSearchModalOpen}
 			/>
 		</Sidebar>
 	);

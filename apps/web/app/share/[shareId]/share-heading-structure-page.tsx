@@ -242,7 +242,7 @@ function FadeOnlyDialogContent({
 			<DialogPrimitive.Overlay className="data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-background/80 backdrop-blur-xs data-[state=closed]:animate-out data-[state=open]:animate-in" />
 			<DialogPrimitive.Content
 				className={cn(
-					"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed top-[50%] left-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in rounded-lg",
+					"data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed top-[50%] left-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 bg-background p-6 shadow-2xl duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in rounded-xl border-none ring-4 ring-neutral-200/80 dark:bg-neutral-900 dark:ring-neutral-800",
 					className,
 				)}
 				{...props}
