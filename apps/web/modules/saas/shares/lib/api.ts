@@ -33,8 +33,16 @@ export const sharesApi = {
 		return orpcClient.shares.checkShareLimit({ organizationId });
 	},
 
-	searchShares: async (organizationId: string, query: string) => {
-		return orpcClient.shares.searchShares({ organizationId, query });
+	searchShares: async (
+		organizationId: string,
+		query: string,
+		type?: "all" | "STYLE_GUIDE" | "HEADING_STRUCTURE",
+	) => {
+		return orpcClient.shares.searchShares({
+			organizationId,
+			query,
+			type: type ?? "all",
+		});
 	},
 };
 

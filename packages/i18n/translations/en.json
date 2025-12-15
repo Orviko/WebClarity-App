@@ -983,6 +983,14 @@
 		"createdBy": "Created by {name}",
 		"styleGuide": "Style Guide",
 		"headingStructure": "Heading Structure",
-		"searchPlaceholder": "Search shares..."
+		"searchPlaceholder": "Search shares...",
+		"searchTabs": {
+			"all": "All",
+			"shares": "Shares"
+		},
+		"searchMinChars": "Type at least 2 characters to search",
+		"recentShares": "Recent Shares",
+		"noResults": "No results found",
+		"searchInShares": "Search in shares..."
 	}
 }

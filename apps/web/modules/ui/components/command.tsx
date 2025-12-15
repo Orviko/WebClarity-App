@@ -70,7 +70,7 @@ const CommandInput = React.forwardRef<
 	<div className="relative">
 		<div
 			data-slot="command-input-wrapper"
-			className="flex h-9 items-center gap-2 border px-3 pr-9 rounded-md"
+			className="flex h-9 items-center gap-2 border px-3 py-2 pr-9 rounded-md"
 		>
 			<SearchIcon className="size-4 shrink-0 opacity-50 flex items-center justify-center" />
 			<CommandPrimitive.Input
