@@ -89,7 +89,7 @@ export function ShareCard({ share, onUpdate }: ShareCardProps) {
 		<>
 			<div
 				className={cn(
-					"group relative flex items-center gap-4 p-2 pr-4 rounded-2xl border bg-card hover:shadow-md transition-all",
+					"group relative flex items-center gap-4 p-3 pr-4 rounded-2xl border bg-card hover:shadow-md transition-all",
 					share.isExpired && "opacity-60",
 				)}
 			>
