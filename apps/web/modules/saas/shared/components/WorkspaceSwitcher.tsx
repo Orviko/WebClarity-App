@@ -67,7 +67,7 @@ export function WorkspaceSwitcher() {
 							size="lg"
 							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 						>
-							<div className="flex aspect-square size-8 items-center justify-center rounded-lg overflow-hidden p-1.5">
+							<div className="flex aspect-square size-8 items-center justify-center rounded-lg overflow-hidden">
 								{activeOrganization ? (
 									<OrganizationLogo
 										name={activeOrganization.name}
@@ -132,13 +132,13 @@ export function WorkspaceSwitcher() {
 										value={user.id}
 										className="gap-2 p-2"
 									>
-									<div className="flex size-6 items-center justify-center rounded-sm border overflow-hidden p-0.5">
-										<UserAvatar
-											className="size-full"
-											name={user.name ?? ""}
-											avatarUrl={user.image}
-										/>
-									</div>
+										<div className="flex size-6 items-center justify-center rounded-sm border overflow-hidden p-0.5">
+											<UserAvatar
+												className="size-full"
+												name={user.name ?? ""}
+												avatarUrl={user.image}
+											/>
+										</div>
 										{user.name}
 									</DropdownMenuRadioItem>
 								</DropdownMenuRadioGroup>
@@ -183,14 +183,14 @@ export function WorkspaceSwitcher() {
 									onClick={() => setIsDialogOpen(true)}
 									className="gap-2 p-2"
 								>
-										<div className="flex size-6 items-center justify-center rounded-md border bg-background">
-											<PlusIcon className="size-4" />
-										</div>
-										<div className="font-medium text-muted-foreground">
-											{t(
-												"organizations.organizationSelect.createNewOrganization",
-											)}
-										</div>
+									<div className="flex size-6 items-center justify-center rounded-md border bg-background">
+										<PlusIcon className="size-4" />
+									</div>
+									<div className="font-medium text-muted-foreground">
+										{t(
+											"organizations.organizationSelect.createNewOrganization",
+										)}
+									</div>
 								</DropdownMenuItem>
 							</>
 						)}
