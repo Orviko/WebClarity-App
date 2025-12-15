@@ -40,6 +40,7 @@ model User {
   purchases          Purchase[]
   members            Member[]
   twofactors         TwoFactor[]
+  shares             Share[]
 
   @@unique([email])
   @@unique([username])
@@ -141,9 +142,11 @@ model Organization {
   createdAt          DateTime
   metadata           String?
   paymentsCustomerId String?
+  shareLimit         Int?
   members            Member[]
   invitations        Invitation[]
   purchases          Purchase[]
+  shares             Share[]
 
   @@unique([slug])
   @@map("organization")
@@ -211,21 +214,32 @@ enum ShareType {
 }
 
 model Share {
-  id                    String              @id @default(cuid())
-  shareId               String              @unique
-  type                  ShareType
-  expiresAt             DateTime
-  createdAt             DateTime            @default(now())
-  websiteUrl            String
-  shareOgImageUrl       String?             // Share-specific Open Graph image URL
-  styleGuideDataId      String?             @unique
-  headingStructureDataId String?            @unique
-  styleGuideData        StyleGuideData?     @relation(fields: [styleGuideDataId], references: [id], onDelete: Cascade)
-  headingStructureData  HeadingStructureData? @relation(fields: [headingStructureDataId], references: [id], onDelete: Cascade)
+  id                     String                @id @default(cuid())
+  shareId                String                @unique
+  type                   ShareType
+  title                  String?
+  viewCount              Int                   @default(0)
+  isExpired              Boolean               @default(false)
+  expiresAt              DateTime
+  createdAt              DateTime              @default(now())
+  updatedAt              DateTime              @updatedAt
+  websiteUrl             String
+  shareOgImageUrl         String?
+  userId                 String?
+  user                   User?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId         String?
+  organization           Organization?         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  styleGuideDataId       String?               @unique
+  headingStructureDataId String?               @unique
+  styleGuideData         StyleGuideData?       @relation(fields: [styleGuideDataId], references: [id], onDelete: Cascade)
+  headingStructureData   HeadingStructureData? @relation(fields: [headingStructureDataId], references: [id], onDelete: Cascade)
 
   @@index([shareId])
   @@index([expiresAt])
   @@index([type])
+  @@index([userId])
+  @@index([organizationId])
+  @@index([isExpired])
   @@map("share")
 }
 

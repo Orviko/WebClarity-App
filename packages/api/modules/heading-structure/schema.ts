@@ -45,5 +45,7 @@ export const shareDataSchema = z.object({
 		includeSummary: z.boolean().optional().default(true),
 	}),
 	websiteUrl: z.string(),
+	userId: z.string().optional(),
+	organizationId: z.string().optional(),
 });
 

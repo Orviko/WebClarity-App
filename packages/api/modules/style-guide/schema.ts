@@ -9,4 +9,6 @@ export const shareDataSchema = z.object({
 	colorsData: z.unknown().nullable(),
 	exportOptions: z.record(z.string(), z.any()),
 	websiteUrl: z.string(),
+	userId: z.string().optional(),
+	organizationId: z.string().optional(),
 });

@@ -5,6 +5,8 @@ import type { ShareData } from "./share-style-guide-page";
 import { ShareHeadingStructurePage } from "./share-heading-structure-page";
 import type { HeadingStructureShareData } from "./share-heading-structure-page";
 import { ShareType } from "@repo/database/prisma/generated/enums";
+import { ExpiredShareView } from "./expired-share-view";
+import { auth } from "@repo/auth";
 
 export async function generateMetadata({
 	params,
@@ -74,14 +76,22 @@ export default async function SharePage({
 	const { shareId } = await params;
 
 	try {
+		// Get share details to check expiry and workspace membership
+		const shareDetails = await orpcClient.shares.getShareDetails({ shareId });
+
+		// If share is expired, show expired view
+		if (shareDetails.isExpired) {
+			return <ExpiredShareView shareId={shareId} shareDetails={shareDetails} />;
+		}
+
 		// First, get the share type
 		const shareType = await orpcClient.shared.getShareType({ shareId });
 
 		// Then fetch the appropriate data based on type
 		if (shareType.type === ShareType.STYLE_GUIDE) {
-		const shareData = await orpcClient.styleGuide.getShare({
-			shareId,
-		});
+			const shareData = await orpcClient.styleGuide.getShare({
+				shareId,
+			});
 
 			return (
 				<ShareStyleGuidePage data={shareData as unknown as ShareData} />

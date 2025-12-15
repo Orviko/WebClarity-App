@@ -78,6 +78,7 @@
 			"dashboard": "Dashboard",
 			"projects": "Projekte",
 			"boards": "Boards",
+			"shares": "Freigaben",
 			"resources": "Ressourcen",
 			"archive": "Archiv",
 			"createProject": "Projekt erstellen",
@@ -192,6 +193,9 @@
 		}
 	},
 	"common": {
+		"cancel": "Abbrechen",
+		"save": "Speichern",
+		"delete": "Löschen",
 		"confirmation": {
 			"cancel": "Abbrechen",
 			"confirm": "Bestätigen"
@@ -774,5 +778,44 @@
 	"choosePlan": {
 		"title": "Wähle einen Plan",
 		"description": "Um weiterzumachen, wähle bitte einen Plan aus."
+	},
+	"shares": {
+		"title": "Freigaben",
+		"description": "Verwalte alle Freigaben, die von deinem Arbeitsbereich erstellt wurden",
+		"createShare": "Freigabe erstellen",
+		"myShares": "Meine Freigaben",
+		"allShares": "Alle Freigaben",
+		"allTypes": "Alle Typen",
+		"noShares": "Noch keine Freigaben",
+		"noSharesDescription": "Erstelle deine erste Freigabe mit der Browser-Erweiterung",
+		"viewCount": "{count, plural, =0 {Keine Aufrufe} =1 {1 Aufruf} other {# Aufrufe}}",
+		"expiresIn": "Läuft ab in {time}",
+		"expired": "Abgelaufen",
+		"active": "Aktiv",
+		"renew": "Freigabe erneuern",
+		"renewDescription": "Ablauf um 7 Tage verlängern",
+		"rename": "Umbenennen",
+		"renameDescription": "Den Titel dieser Freigabe ändern",
+		"titlePlaceholder": "Freigabetitel eingeben",
+		"delete": "Freigabe löschen",
+		"confirmDelete": "Bist du sicher, dass du \"{title}\" löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.",
+		"copyLink": "Link kopieren",
+		"linkCopied": "Link in die Zwischenablage kopiert",
+		"view": "Ansehen",
+		"copy": "Kopieren",
+		"copied": "Kopiert",
+		"limitReached": "Freigabelimit erreicht ({current}/{limit}). Upgrade, um mehr zu erstellen.",
+		"expiredMessage": "Diese Freigabe ist am {date} abgelaufen.",
+		"expiredAction": "Kontaktiere den Besitzer des Arbeitsbereichs, um sie zu erneuern.",
+		"renewSuccess": "Freigabe erfolgreich erneuert. Läuft in 7 Tagen ab.",
+		"createdBy": "Erstellt von {name}",
+		"styleGuide": "Styleguide",
+		"headingStructure": "Überschriftenstruktur",
+		"searchPlaceholder": "Freigaben suchen..."
+	},
+	"common": {
+		"cancel": "Abbrechen",
+		"save": "Speichern",
+		"delete": "Löschen"
 	}
 }

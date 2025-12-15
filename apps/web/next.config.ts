@@ -19,6 +19,11 @@ const nextConfig: NextConfig = {
 				protocol: "https",
 				hostname: "avatars.githubusercontent.com",
 			},
+			{
+				// share OG images
+				protocol: "https",
+				hostname: "share-og.webclarity.ai",
+			},
 		],
 	},
 	async redirects() {

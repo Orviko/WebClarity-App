@@ -31,6 +31,9 @@ export const getShareType = publicProcedure
 				expiresAt: true,
 				shareId: true,
 				shareOgImageUrl: true,
+				userId: true,
+				organizationId: true,
+				isExpired: true,
 			},
 		});
 
@@ -40,28 +43,41 @@ export const getShareType = publicProcedure
 
 		// Check if share has expired
 		if (new Date() > share.expiresAt) {
-			// Delete share OG image before deleting share
-			if (share.shareOgImageUrl) {
-				try {
-					const { deleteShareOGImage } = await import(
-						"@repo/share-og"
-					);
-					await deleteShareOGImage(share.shareId);
-				} catch (error) {
-					// Log but don't fail - cleanup failures shouldn't block deletion
-					console.error(
-						"Failed to delete share OG image during cleanup:",
-						error
-					);
+			// Only delete anonymous shares (userId IS NULL)
+			// Workspace shares should be marked as expired but not deleted
+			if (!share.userId && !share.organizationId) {
+				// Delete share OG image before deleting anonymous share
+				if (share.shareOgImageUrl) {
+					try {
+						const { deleteShareOGImage } = await import(
+							"@repo/share-og"
+						);
+						await deleteShareOGImage(share.shareId);
+					} catch (error) {
+						// Log but don't fail - cleanup failures shouldn't block deletion
+						console.error(
+							"Failed to delete share OG image during cleanup:",
+							error
+						);
+					}
 				}
+
+				// Delete expired anonymous share
+				await db.share.delete({
+					where: { shareId: input.shareId },
+				});
+
+				throw new ORPCError("NOT_FOUND");
+			} else {
+				// Mark workspace share as expired if not already marked
+				if (!share.isExpired) {
+					await db.share.update({
+						where: { shareId: input.shareId },
+						data: { isExpired: true },
+					});
+				}
+				// Still return the share type even if expired (for display purposes)
 			}
-
-			// Delete expired share
-			await db.share.delete({
-				where: { shareId: input.shareId },
-			});
-
-			throw new ORPCError("NOT_FOUND");
 		}
 
 		return {

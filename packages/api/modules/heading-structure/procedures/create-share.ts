@@ -8,22 +8,75 @@ import { rateLimitMiddleware } from "../../../orpc/middleware/rate-limit";
 import { generateShareId } from "../../shared/utils/generate-share-id";
 import { validateShareData } from "../utils/validate-share-data";
 import { shareDataSchema } from "../schema";
+import { checkShareLimit } from "../../shares/lib/check-limits";
+
+/**
+ * Extended schema with optional auth fields
+ */
+const createShareInputSchema = shareDataSchema.extend({
+	userId: z.string().optional(),
+	organizationId: z.string().optional(),
+});
 
 /**
  * Shared handler logic for creating a heading structure share
  */
 export async function createShareHandler(
-	input: z.infer<typeof shareDataSchema>
+	input: z.infer<typeof createShareInputSchema>
 ) {
+	const { userId, organizationId, ...shareData } = input;
+
+	// Validation: both userId and organizationId must be provided together, or neither
+	if ((userId && !organizationId) || (!userId && organizationId)) {
+		const error = new Error(
+			"Both userId and organizationId must be provided for authenticated shares"
+		);
+		(error as any).code = "BAD_REQUEST";
+		throw error;
+	}
+
+	// Check workspace membership if authenticated
+	if (userId && organizationId) {
+		const membership = await db.member.findFirst({
+			where: { userId, organizationId },
+		});
+
+		if (!membership) {
+			const error = new Error("User is not a member of this workspace");
+			(error as any).code = "FORBIDDEN";
+			throw error;
+		}
+
+		// Check share limit
+		const limitCheck = await checkShareLimit(organizationId);
+		if (!limitCheck.canCreate) {
+			const error = new Error(
+				`Share limit reached (${limitCheck.currentCount}/${limitCheck.limit}). Upgrade to create more.`
+			);
+			(error as any).code = "FORBIDDEN";
+			throw error;
+		}
+	}
+
 	// Validate and sanitize input data
-	const validated = validateShareData(input);
+	const validated = validateShareData(shareData);
 
 	// Generate unique share ID
 	const shareId = await generateShareId();
 
-	// Calculate expiration (24 hours from now)
+	// Calculate expiration based on auth status
 	const expiresAt = new Date();
-	expiresAt.setHours(expiresAt.getHours() + 24);
+	if (userId && organizationId) {
+		// 7 days for workspace shares
+		expiresAt.setDate(expiresAt.getDate() + 7);
+	} else {
+		// 24 hours for anonymous shares
+		expiresAt.setHours(expiresAt.getHours() + 24);
+	}
+
+	// Default title format: "Heading Structure Analysis - {websiteUrl}"
+	// This is the full title that will be stored and editable by users
+	const title = `Heading Structure Analysis - ${validated.websiteUrl}`;
 
 	// Create heading structure data and share in a transaction
 	const result = await db.$transaction(async (tx) => {
@@ -42,7 +95,10 @@ export async function createShareHandler(
 				shareId,
 				type: ShareType.HEADING_STRUCTURE,
 				expiresAt,
+				title,
 				websiteUrl: validated.websiteUrl,
+				userId,
+				organizationId,
 				headingStructureDataId: headingStructureData.id,
 			},
 		});
@@ -50,7 +106,9 @@ export async function createShareHandler(
 		// Generate share OG image
 		let shareOgImageUrl: string | null = null;
 		try {
-			const { generateAndUploadShareOGImage } = await import("@repo/share-og");
+			const { generateAndUploadShareOGImage } = await import(
+				"@repo/share-og"
+			);
 
 			shareOgImageUrl = await generateAndUploadShareOGImage(
 				shareId,
@@ -58,7 +116,7 @@ export async function createShareHandler(
 				{
 					websiteUrl: validated.websiteUrl,
 					treeData: validated.treeData as any, // Type cast to satisfy inference
-				},
+				}
 			);
 
 			// Update share with share OG image URL
@@ -67,7 +125,10 @@ export async function createShareHandler(
 				data: { shareOgImageUrl },
 			});
 		} catch (error) {
-			logger.error("Share OG image generation failed, continuing without it:", error);
+			logger.error(
+				"Share OG image generation failed, continuing without it:",
+				error
+			);
 			// Don't fail the entire request if share OG generation fails
 		}
 
@@ -75,6 +136,7 @@ export async function createShareHandler(
 	});
 
 	// Generate share URL - use web app URL from environment variable
+	// NEXT_PUBLIC_SITE_URL should be set in .env.local with the web app URL
 	const webAppUrl =
 		process.env.NEXT_PUBLIC_SITE_URL ||
 		(process.env.NEXT_PUBLIC_VERCEL_URL
@@ -103,11 +165,10 @@ export const createShare = publicProcedure
 		tags: ["Heading Structure"],
 		summary: "Create a public share for heading structure data",
 		description:
-			"Creates a temporary public share (24 hours) for heading structure tree data",
+			"Creates a share for heading structure data. Authenticated users get 7 days, anonymous users get 24 hours.",
 	})
 	.use(rateLimitMiddleware())
-	.input(shareDataSchema)
+	.input(createShareInputSchema)
 	.handler(async ({ input }) => {
 		return createShareHandler(input);
 	});
-

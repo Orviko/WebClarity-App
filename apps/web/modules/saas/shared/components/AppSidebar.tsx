@@ -96,6 +96,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			hasAction: true,
 			onActionClick: () => setIsBoardDialogOpen(true),
 		},
+		...(activeOrganization
+			? [
+					{
+						label: t("app.menu.shares"),
+						href: `${basePath}/shares`,
+						icon: Share2Icon,
+						isActive: pathname.includes("/shares"),
+						hasAction: false,
+					},
+				]
+			: []),
 		{
 			label: t("app.menu.resources"),
 			href: `${basePath}/resources`,

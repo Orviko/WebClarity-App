@@ -6,6 +6,7 @@ import { styleGuideRouter } from "../modules/style-guide/router";
 import { headingStructureRouter } from "../modules/heading-structure/router";
 import { sharedRouter } from "../modules/shared/router";
 import { usersRouter } from "../modules/users/router";
+import { sharesRouter } from "../modules/shares/router";
 import { publicProcedure } from "./procedures";
 
 export const router = publicProcedure.router({
@@ -16,6 +17,7 @@ export const router = publicProcedure.router({
 	styleGuide: styleGuideRouter,
 	headingStructure: headingStructureRouter,
 	shared: sharedRouter,
+	shares: sharesRouter,
 });
 
 export type ApiRouterClient = RouterClient<typeof router>;

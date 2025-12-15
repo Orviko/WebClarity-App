@@ -9,22 +9,71 @@ import { rateLimitMiddleware } from "../../../orpc/middleware/rate-limit";
 import { generateShareId } from "../../shared/utils/generate-share-id";
 import { validateShareData } from "../utils/validate-share-data";
 import { shareDataSchema } from "../schema";
+import { checkShareLimit } from "../../shares/lib/check-limits";
+
+/**
+ * Extended schema with optional auth fields
+ */
+const createShareInputSchema = shareDataSchema.extend({
+	userId: z.string().optional(),
+	organizationId: z.string().optional(),
+});
 
 /**
  * Shared handler logic for creating a style guide share
  */
 export async function createShareHandler(
-	input: z.infer<typeof shareDataSchema>
+	input: z.infer<typeof createShareInputSchema>
 ) {
+	const { userId, organizationId, ...shareData } = input;
+
+	// Validation: both userId and organizationId must be provided together, or neither
+	if ((userId && !organizationId) || (!userId && organizationId)) {
+		const error = new Error("Both userId and organizationId must be provided for authenticated shares");
+		(error as any).code = "BAD_REQUEST";
+		throw error;
+	}
+
+	// Check workspace membership if authenticated
+	if (userId && organizationId) {
+		const membership = await db.member.findFirst({
+			where: { userId, organizationId },
+		});
+
+		if (!membership) {
+			const error = new Error("User is not a member of this workspace");
+			(error as any).code = "FORBIDDEN";
+			throw error;
+		}
+
+		// Check share limit
+		const limitCheck = await checkShareLimit(organizationId);
+		if (!limitCheck.canCreate) {
+			const error = new Error(`Share limit reached (${limitCheck.currentCount}/${limitCheck.limit}). Upgrade to create more.`);
+			(error as any).code = "FORBIDDEN";
+			throw error;
+		}
+	}
+
 	// Validate and sanitize input data
-	const validated = validateShareData(input);
+	const validated = validateShareData(shareData);
 
 	// Generate unique share ID
 	const shareId = await generateShareId();
 
-	// Calculate expiration (24 hours from now)
+	// Calculate expiration based on auth status
 	const expiresAt = new Date();
-	expiresAt.setHours(expiresAt.getHours() + 24);
+	if (userId && organizationId) {
+		// 7 days for workspace shares
+		expiresAt.setDate(expiresAt.getDate() + 7);
+	} else {
+		// 24 hours for anonymous shares
+		expiresAt.setHours(expiresAt.getHours() + 24);
+	}
+
+	// Default title format: "Style Guide - {websiteUrl}"
+	// This is the full title that will be stored and editable by users
+	const title = `Style Guide - ${validated.websiteUrl}`;
 
 	// Create style guide data and share in a transaction
 	const result = await db.$transaction(async (tx) => {
@@ -44,7 +93,10 @@ export async function createShareHandler(
 				shareId,
 				type: ShareType.STYLE_GUIDE,
 				expiresAt,
+				title,
 				websiteUrl: validated.websiteUrl,
+				userId,
+				organizationId,
 				styleGuideDataId: styleGuideData.id,
 			},
 		});
@@ -107,10 +159,10 @@ export const createShare = publicProcedure
 		tags: ["Style Guide"],
 		summary: "Create a public share for style guide data",
 		description:
-			"Creates a temporary public share (24 hours) for style guide typography and color data",
+			"Creates a share for style guide data. Authenticated users get 7 days, anonymous users get 24 hours.",
 	})
 	.use(rateLimitMiddleware())
-	.input(shareDataSchema)
+	.input(createShareInputSchema)
 	.handler(async ({ input }) => {
 		return createShareHandler(input);
 	});

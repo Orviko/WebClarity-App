@@ -78,6 +78,7 @@
 			"dashboard": "Dashboard",
 			"projects": "Projects",
 			"boards": "Boards",
+			"shares": "Shares",
 			"resources": "Resources",
 			"archive": "Archive",
 			"createProject": "Create Project",
@@ -200,6 +201,9 @@
 		}
 	},
 	"common": {
+		"cancel": "Cancel",
+		"save": "Save",
+		"delete": "Delete",
 		"confirmation": {
 			"cancel": "Cancel",
 			"confirm": "Confirm"
@@ -946,5 +950,39 @@
 				"website": "webclarity.ai"
 			}
 		}
+	},
+	"shares": {
+		"title": "Shares",
+		"description": "Manage all shares created by your workspace",
+		"createShare": "Create Share",
+		"myShares": "My Shares",
+		"allShares": "All Shares",
+		"allTypes": "All Types",
+		"noShares": "No shares yet",
+		"noSharesDescription": "Create your first share using the browser extension",
+		"viewCount": "{count, plural, =0 {No views} =1 {1 view} other {# views}}",
+		"expiresIn": "Expires in {time}",
+		"expired": "Expired",
+		"active": "Active",
+		"renew": "Renew Share",
+		"renewDescription": "Extend expiry by 7 days",
+		"rename": "Rename",
+		"renameDescription": "Change the title of this share",
+		"titlePlaceholder": "Enter share title",
+		"delete": "Delete Share",
+		"confirmDelete": "Are you sure you want to delete \"{title}\"? This action cannot be undone.",
+		"copyLink": "Copy Link",
+		"linkCopied": "Link copied to clipboard",
+		"view": "View",
+		"copy": "Copy",
+		"copied": "Copied",
+		"limitReached": "Share limit reached ({current}/{limit}). Upgrade to create more.",
+		"expiredMessage": "This share expired on {date}.",
+		"expiredAction": "Contact your workspace owner to renew it.",
+		"renewSuccess": "Share renewed successfully. Expires in 7 days.",
+		"createdBy": "Created by {name}",
+		"styleGuide": "Style Guide",
+		"headingStructure": "Heading Structure",
+		"searchPlaceholder": "Search shares..."
 	}
 }

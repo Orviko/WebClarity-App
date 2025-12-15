@@ -17,13 +17,14 @@ export function PlanUsageCard() {
 	const { activeOrganization } = useActiveOrganization();
 	const { state } = useSidebar();
 
+	// All hooks must be called before any conditional returns
+	const { activePlan } = usePurchases(activeOrganization?.id);
+	const { planData } = usePlanData();
+
 	// Only show for workspace, not personal account
 	if (!activeOrganization) {
 		return null;
 	}
-
-	const { activePlan } = usePurchases(activeOrganization.id);
-	const { planData } = usePlanData();
 
 	// Hide card when sidebar is collapsed to icon mode
 	if (state === "collapsed") {
