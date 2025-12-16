@@ -147,6 +147,7 @@ model Organization {
   invitations        Invitation[]
   purchases          Purchase[]
   shares             Share[]
+  usageMetrics       UsageMetric[]
 
   @@unique([slug])
   @@map("organization")
@@ -262,4 +263,37 @@ model HeadingStructureData {
   share         Share?
 
   @@map("headingStructureData")
+}
+
+model UsageMetric {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  // Metric type: "shares", "projects", "ai_analyses", etc.
+  metricType     String
+  
+  // Current usage count
+  currentUsage   Int          @default(0)
+  
+  // Soft limit (triggers warning at this threshold)
+  softLimit      Int?
+  
+  // Hard limit (blocks creation)
+  hardLimit      Int?
+  
+  // Metadata for additional context (JSON)
+  metadata       Json?
+  
+  // Period tracking (for monthly limits, if needed later)
+  periodStart    DateTime?
+  periodEnd      DateTime?
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  
+  @@unique([organizationId, metricType])
+  @@index([organizationId])
+  @@index([metricType])
+  @@map("usageMetric")
 }

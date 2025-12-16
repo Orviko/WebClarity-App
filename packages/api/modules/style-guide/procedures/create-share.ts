@@ -10,6 +10,7 @@ import { generateShareId } from "../../shared/utils/generate-share-id";
 import { validateShareData } from "../utils/validate-share-data";
 import { shareDataSchema } from "../schema";
 import { checkShareLimit } from "../../shares/lib/check-limits";
+import { incrementUsage } from "../../usage/lib/usage-helper";
 
 /**
  * Extended schema with optional auth fields
@@ -100,6 +101,12 @@ export async function createShareHandler(
 				styleGuideDataId: styleGuideData.id,
 			},
 		});
+
+		// Increment usage metric for workspace shares INSIDE transaction
+		// This prevents race conditions where multiple requests bypass the limit
+		if (organizationId) {
+			await incrementUsage(organizationId, "shares", tx);
+		}
 
 		// Generate share OG image
 		let shareOgImageUrl: string | null = null;

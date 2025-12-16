@@ -112,9 +112,16 @@ export const config = {
 			// The free plan is treated differently. It will automatically be assigned if the user has no other plan.
 			free: {
 				isFree: true,
+				limits: {
+					shares: 25,
+					// Future: projects, aiAnalyses, etc.
+				},
 			},
 			pro: {
 				recommended: true,
+				limits: {
+					shares: null, // null = unlimited
+				},
 				prices: [
 					{
 						type: "recurring",
@@ -139,6 +146,9 @@ export const config = {
 				],
 			},
 			lifetime: {
+				limits: {
+					shares: null, // unlimited
+				},
 				prices: [
 					{
 						type: "one-time",
@@ -151,6 +161,9 @@ export const config = {
 			},
 			enterprise: {
 				isEnterprise: true,
+				limits: {
+					shares: null, // unlimited
+				},
 			},
 		},
 	},

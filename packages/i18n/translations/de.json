@@ -77,12 +77,10 @@
 			"start": "Dashboard",
 			"dashboard": "Dashboard",
 			"projects": "Projekte",
-			"boards": "Boards",
+			"reports": "Berichte",
 			"shares": "Freigaben",
 			"resources": "Ressourcen",
-			"archive": "Archiv",
-			"createProject": "Projekt erstellen",
-			"createBoard": "Board erstellen"
+			"createProject": "Projekt erstellen"
 		},
 		"userMenu": {
 			"accountSettings": "Kontoeinstellungen",

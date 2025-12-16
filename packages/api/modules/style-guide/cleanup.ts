@@ -1,5 +1,6 @@
 import { db } from "@repo/database/prisma/client";
 import { logger } from "@repo/logs";
+import { decrementUsage } from "../usage/lib/usage-helper";
 
 /**
  * Cleans up expired shares from the unified Share table
@@ -12,6 +13,26 @@ export async function cleanupExpiredShares(): Promise<void> {
 		const now = new Date();
 
 		// 1. Mark workspace shares as expired (don't delete)
+		// First, find shares that will be marked as expired
+		const sharesToExpire = await db.share.findMany({
+			where: {
+				expiresAt: {
+					lt: now,
+				},
+				userId: {
+					not: null,
+				},
+				organizationId: {
+					not: null,
+				},
+				isExpired: false,
+			},
+			select: {
+				organizationId: true,
+			},
+		});
+
+		// Mark as expired
 		const workspaceSharesResult = await db.share.updateMany({
 			where: {
 				expiresAt: {
@@ -30,6 +51,28 @@ export async function cleanupExpiredShares(): Promise<void> {
 		logger.log(
 			`Marked ${workspaceSharesResult.count} workspace shares as expired`,
 		);
+
+		// Decrement usage for each organization
+		const orgUsageMap = new Map<string, number>();
+		for (const share of sharesToExpire) {
+			if (share.organizationId) {
+				const count = orgUsageMap.get(share.organizationId) || 0;
+				orgUsageMap.set(share.organizationId, count + 1);
+			}
+		}
+
+		for (const [organizationId, count] of orgUsageMap.entries()) {
+			try {
+				for (let i = 0; i < count; i++) {
+					await decrementUsage(organizationId, "shares");
+				}
+			} catch (error) {
+				logger.error(
+					`Failed to decrement usage for organization ${organizationId}:`,
+					error,
+				);
+			}
+		}
 
 		// 2. Find anonymous shares to delete
 		const anonymousShares = await db.share.findMany({

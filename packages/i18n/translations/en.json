@@ -77,12 +77,10 @@
 			"start": "Dashboard",
 			"dashboard": "Dashboard",
 			"projects": "Projects",
-			"boards": "Boards",
+			"reports": "Reports",
 			"shares": "Shares",
 			"resources": "Resources",
-			"archive": "Archive",
-			"createProject": "Create Project",
-			"createBoard": "Create Board"
+			"createProject": "Create Project"
 		},
 		"sidebar": {
 			"feedback": "Feedback",
@@ -673,10 +671,38 @@
 				"general": "General",
 				"members": "Members",
 				"title": "Workspace",
-				"dangerZone": "Danger zone"
+				"dangerZone": "Danger zone",
+				"usage": "Usage & Limits"
 			}
 		},
 		"save": "Save"
+	},
+	"usage": {
+		"title": "Usage & Limits",
+		"description": "Track your workspace usage across all features.",
+		"metrics": {
+			"shares": "Shares",
+			"projects": "Projects",
+			"aiAnalyses": "AI Analyses"
+		},
+		"unlimited": "Unlimited",
+		"current": "{current} of {limit}",
+		"currentUnlimited": "{current} used",
+		"percentage": "{percentage}% used",
+		"upgrade": "Upgrade",
+		"blocked": {
+			"badge": "Limit Reached",
+			"title": "Usage Limit Reached",
+			"message": "You've reached your {metricType} limit ({limit}). Upgrade your plan to create more.",
+			"upgrade": "Upgrade Plan",
+			"viewUsage": "View Usage Details"
+		},
+		"warning": {
+			"title": "Approaching Usage Limit",
+			"message": "You've used {percentage}% of your {metricType} limit. Consider upgrading to avoid interruptions.",
+			"continue": "Continue Anyway",
+			"upgrade": "Upgrade Plan"
+		}
 	},
 	"start": {
 		"subtitle": "See the latest stats of your awesome business.",

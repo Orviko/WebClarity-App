@@ -57,6 +57,11 @@ export type Config = {
 				isFree?: boolean;
 				isEnterprise?: boolean;
 				recommended?: boolean;
+				limits?: {
+					shares?: number | null; // null = unlimited
+					projects?: number | null;
+					// Add more as features expand
+				};
 				prices?: Array<
 					{
 						productId: string;

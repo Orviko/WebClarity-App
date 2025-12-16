@@ -18,16 +18,14 @@ import {
 	SidebarRail,
 } from "@ui/components/sidebar";
 import {
-	ArchiveIcon,
 	BookOpenIcon,
+	FileTextIcon,
 	FolderKanbanIcon,
 	LayoutDashboardIcon,
-	LayoutListIcon,
 	MessageSquareIcon,
 	PlusIcon,
 	SettingsIcon,
 	Share2Icon,
-	UserCog2Icon,
 	UserCogIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -37,7 +35,6 @@ import { useState, useEffect } from "react";
 import { NavUser } from "./NavUser";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { CreateProjectDialog } from "./CreateProjectDialog";
-import { CreateBoardDialog } from "./CreateBoardDialog";
 import { PlanUsageCard } from "./PlanUsageCard";
 import { SearchTrigger } from "./SearchTrigger";
 import { SearchModal } from "./SearchModal";
@@ -48,7 +45,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	const { user } = useSession();
 	const { activeOrganization, isOrganizationAdmin } = useActiveOrganization();
 	const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
-	const [isBoardDialogOpen, setIsBoardDialogOpen] = useState(false);
 	const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
 	// Handle CMD+K keyboard shortcut
@@ -88,16 +84,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			hasAction: true,
 			onActionClick: () => setIsProjectDialogOpen(true),
 		},
-		{
-			label: t("app.menu.boards"),
-			href: `${basePath}/boards`,
-			icon: LayoutListIcon,
-			isActive: pathname.includes("/boards"),
-			hasAction: true,
-			onActionClick: () => setIsBoardDialogOpen(true),
-		},
 		...(activeOrganization
 			? [
+					{
+						label: t("app.menu.reports"),
+						href: `${basePath}/reports`,
+						icon: FileTextIcon,
+						isActive: pathname.includes("/reports"),
+						hasAction: false,
+					},
 					{
 						label: t("app.menu.shares"),
 						href: `${basePath}/shares`,
@@ -114,13 +109,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			isActive: pathname.includes("/resources"),
 			hasAction: false,
 		},
-		{
-			label: t("app.menu.archive"),
-			href: `${basePath}/archive`,
-			icon: ArchiveIcon,
-			isActive: pathname.includes("/archive"),
-			hasAction: false,
-		},
 		...(activeOrganization && isOrganizationAdmin
 			? [
 					{
@@ -132,13 +120,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 					},
 				]
 			: []),
-		{
-			label: t("app.menu.accountSettings"),
-			href: "/app/settings",
-			icon: UserCog2Icon,
-			isActive: pathname.startsWith("/app/settings/"),
-			hasAction: false,
-		},
 		...(user?.role === "admin"
 			? [
 					{
@@ -231,10 +212,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			<CreateProjectDialog
 				open={isProjectDialogOpen}
 				onOpenChange={setIsProjectDialogOpen}
-			/>
-			<CreateBoardDialog
-				open={isBoardDialogOpen}
-				onOpenChange={setIsBoardDialogOpen}
 			/>
 			<SearchModal
 				open={isSearchModalOpen}

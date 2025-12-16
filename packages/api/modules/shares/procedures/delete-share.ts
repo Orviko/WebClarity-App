@@ -1,7 +1,9 @@
 import { db } from "@repo/database/prisma/client";
+import { logger } from "@repo/logs";
 import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures";
 import { canManageShare } from "../lib/permissions";
+import { decrementUsage } from "../../usage/lib/usage-helper";
 
 const deleteShareSchema = z.object({
 	shareId: z.string(),
@@ -44,6 +46,16 @@ export const deleteShare = protectedProcedure
 		await db.share.delete({
 			where: { shareId },
 		});
+
+		// Decrement usage metric for workspace shares (only if not expired)
+		if (share.organizationId && !share.isExpired) {
+			try {
+				await decrementUsage(share.organizationId, "shares");
+			} catch (error) {
+				logger.error("Failed to decrement usage metric:", error);
+				// Don't fail the request if usage tracking fails
+			}
+		}
 
 		return { success: true };
 	});
