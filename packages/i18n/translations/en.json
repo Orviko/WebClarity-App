@@ -1,8 +1,33 @@
 {
 	"admin": {
+		"backToWorkspace": "Back to Workspace",
 		"menu": {
+			"dashboard": "Dashboard",
 			"organizations": "Workspaces",
+			"workspaces": "Workspaces",
 			"users": "Users"
+		},
+		"dashboard": {
+			"title": "Admin Dashboard",
+			"description": "Overview of your application statistics",
+			"stats": {
+				"totalUsers": "Total Users",
+				"totalUsersDesc": "Total registered users",
+				"freeUsers": "Free Users",
+				"freeUsersDesc": "Users on free plan",
+				"paidUsers": "Paid Users",
+				"paidUsersDesc": "Users with active payments",
+				"lifetimeUsers": "Lifetime Users",
+				"lifetimeUsersDesc": "Users with lifetime access",
+				"subscriptionUsers": "Subscription Users",
+				"subscriptionUsersDesc": "Users with active subscriptions"
+			},
+			"filters": {
+				"last24h": "Last 24 hours",
+				"last7d": "Last 7 days",
+				"last30d": "Last 30 days",
+				"allTime": "All time"
+			}
 		},
 		"organizations": {
 			"backToList": "Back to workspaces",

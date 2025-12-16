@@ -227,7 +227,7 @@ export function CreateOrganizationDialog({
 			setLogoBlob(null);
 			setImage(null);
 			onOpenChange(false);
-			router.replace(`/app/${newOrganization.slug}`);
+			router.replace(`/workspace/${newOrganization.slug}`);
 		} catch {
 			toast.error(t("organizations.createForm.notifications.error"));
 		}

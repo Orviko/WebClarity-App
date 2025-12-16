@@ -31,11 +31,11 @@ export default async function SettingsLayout({
 	const organization = await getActiveOrganization(organizationSlug);
 
 	if (!organization) {
-		redirect("/app");
+		redirect("/onboarding");
 	}
 
 	if (!session) {
-		redirect("/app");
+		redirect("/auth/login");
 	}
 
 	const userIsOrganizationAdmin = isOrganizationAdmin(
@@ -43,7 +43,7 @@ export default async function SettingsLayout({
 		session.user,
 	);
 
-	const organizationSettingsBasePath = `/app/${organizationSlug}/settings`;
+	const organizationSettingsBasePath = `/workspace/${organizationSlug}/settings`;
 
 	const menuItems = [
 		// Section 1: Personal/Account Settings

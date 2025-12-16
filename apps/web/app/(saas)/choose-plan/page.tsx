@@ -32,7 +32,7 @@ export default async function ChoosePlanPage() {
 		const organization = (await getOrganizationList()).at(0);
 
 		if (!organization) {
-			redirect("/app");
+			redirect("/onboarding");
 		}
 
 		organizationId = organization.id;
@@ -49,7 +49,11 @@ export default async function ChoosePlanPage() {
 	const { activePlan } = createPurchasesHelper(purchases);
 
 	if (activePlan) {
-		redirect("/app");
+		const organization = (await getOrganizationList()).at(0);
+		if (organization) {
+			redirect(`/workspace/${organization.slug}`);
+		}
+		redirect("/onboarding");
 	}
 
 	return (

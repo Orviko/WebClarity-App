@@ -53,7 +53,7 @@ export function UsageCard({
 						asChild
 						className="h-8 text-xs"
 					>
-						<Link href={`/app/${organizationId}/settings/billing`}>
+						<Link href={`/workspace/${organizationId}/settings/billing`}>
 							{t("usage.upgrade")}
 							<ArrowUpRightIcon className="ml-1 h-3 w-3" />
 						</Link>

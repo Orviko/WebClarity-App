@@ -47,10 +47,10 @@ export function NavUser() {
 	const [theme, setTheme] = useState<string>(currentTheme ?? "system");
 	const { isMobile } = useSidebar();
 
-	// Settings link - use active workspace if available, otherwise /app
+	// Settings link - use active workspace if available
 	const settingsHref = organizationSlug
-		? `/app/${organizationSlug}/settings/general`
-		: "/app";
+		? `/workspace/${organizationSlug}/settings/account/general`
+		: "/workspace";
 
 	const colorModeOptions = [
 		{

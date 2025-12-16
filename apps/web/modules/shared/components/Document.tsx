@@ -26,11 +26,12 @@ export async function Document({
 			suppressHydrationWarning
 			className={sansFont.className}
 		>
-			<body
-				className={cn(
-					"min-h-screen bg-background text-foreground antialiased",
-				)}
-			>
+		<body
+			className={cn(
+				"min-h-screen bg-background text-foreground antialiased",
+			)}
+			suppressHydrationWarning
+		>
 				<NuqsAdapter>
 					<ConsentProvider
 						initialConsent={consentCookie?.value === "true"}

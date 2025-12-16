@@ -35,8 +35,8 @@ export const OrganizationLogo = ({
 	return (
 		<Avatar ref={ref} className={className}>
 			<AvatarImage src={logoSrc} />
-			<AvatarFallback className="flex items-center justify-center bg-muted">
-				<BuildingIcon className="size-2/3 text-muted-foreground" />
+			<AvatarFallback className="flex items-center justify-center bg-sidebar-accent">
+				<BuildingIcon className="size-2/3 text-sidebar-accent-foreground" />
 			</AvatarFallback>
 		</Avatar>
 	);

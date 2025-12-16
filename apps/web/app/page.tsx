@@ -7,9 +7,16 @@ export default async function RootPage() {
 	});
 
 	if (session) {
-		redirect("/app");
+		// Redirect to first workspace or onboarding
+		const { getOrganizationList } = await import("@saas/auth/lib/server");
+		const organizations = await getOrganizationList();
+		const firstOrg = organizations[0];
+
+		if (firstOrg) {
+			redirect(`/workspace/${firstOrg.slug}`);
+		}
+		redirect("/onboarding");
 	}
 
 	redirect("/auth/login");
 }
-

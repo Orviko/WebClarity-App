@@ -49,7 +49,7 @@ export function PlanUsageCard() {
 	const totalAmount = 50;
 	const progressPercentage = (usedAmount / totalAmount) * 100;
 
-	const billingUrl = `/app/${activeOrganization.slug}/settings/billing`;
+	const billingUrl = `/workspace/${activeOrganization.slug}/settings/billing`;
 
 	return (
 		<Card className="mt-2 border-sidebar-border bg-sidebar">

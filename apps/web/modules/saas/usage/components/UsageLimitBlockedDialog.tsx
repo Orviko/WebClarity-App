@@ -79,7 +79,7 @@ export function UsageLimitBlockedDialog({
 						asChild
 						className="w-full sm:w-auto"
 					>
-						<Link href={`/app/${organizationId}/settings/billing`}>
+						<Link href={`/workspace/${organizationId}/settings/billing`}>
 							{t("usage.blocked.upgrade")}
 							<ArrowUpRightIcon className="ml-2 h-4 w-4" />
 						</Link>

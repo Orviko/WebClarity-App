@@ -17,19 +17,10 @@ function generateBreadcrumbs(pathname: string) {
 	const segments = pathname.split("/").filter(Boolean);
 	const breadcrumbs: { label: string; href: string }[] = [];
 
-	// Always start with "App"
-	breadcrumbs.push({ label: "App", href: "/app" });
-
-	// Build breadcrumbs from segments, skipping "app" since we already added it
-	let currentPath = "/app";
+	// Build breadcrumbs from segments
+	let currentPath = "";
 	for (let i = 0; i < segments.length; i++) {
 		const segment = segments[i];
-
-		// Skip the "app" segment as we already added it
-		if (segment === "app") {
-			continue;
-		}
-
 		currentPath += `/${segment}`;
 
 		// Format segment name (capitalize, replace hyphens with spaces)
@@ -48,8 +39,13 @@ export function DashboardHeader() {
 	const pathname = usePathname();
 	const t = useTranslations();
 
-	// Don't show breadcrumb on the main app page
-	if (pathname === "/app" || pathname === "/app/") {
+	// Don't show breadcrumb on the main workspace pages
+	if (
+		pathname === "/workspace" ||
+		pathname === "/workspace/" ||
+		pathname === "/admin" ||
+		pathname === "/admin/"
+	) {
 		return (
 			<header className="flex h-16 shrink-0 items-center gap-2">
 				<div className="flex items-center gap-2 px-4">
@@ -74,10 +70,19 @@ export function DashboardHeader() {
 						{breadcrumbs.map((crumb, index) => {
 							const isLast = index === breadcrumbs.length - 1;
 							return (
-								<div key={crumb.href} className="flex items-center gap-2">
-									<BreadcrumbItem className={index === 0 ? "hidden md:block" : ""}>
+								<div
+									key={crumb.href}
+									className="flex items-center gap-2"
+								>
+									<BreadcrumbItem
+										className={
+											index === 0 ? "hidden md:block" : ""
+										}
+									>
 										{isLast ? (
-											<BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+											<BreadcrumbPage>
+												{crumb.label}
+											</BreadcrumbPage>
 										) : (
 											<BreadcrumbLink href={crumb.href}>
 												{crumb.label}
@@ -85,7 +90,13 @@ export function DashboardHeader() {
 										)}
 									</BreadcrumbItem>
 									{!isLast && (
-										<BreadcrumbSeparator className={index === 0 ? "hidden md:block" : ""} />
+										<BreadcrumbSeparator
+											className={
+												index === 0
+													? "hidden md:block"
+													: ""
+											}
+										/>
 									)}
 								</div>
 							);
@@ -96,4 +107,3 @@ export function DashboardHeader() {
 		</header>
 	);
 }
-

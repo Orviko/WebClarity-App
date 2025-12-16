@@ -45,7 +45,7 @@ export function OrganizationInvitationModal({
 					queryKey: organizationListQueryKey,
 				});
 
-				router.replace(`/app/${organizationSlug}`);
+				router.replace(`/workspace/${organizationSlug}`);
 			} else {
 				const { error } =
 					await authClient.organization.rejectInvitation({
@@ -56,7 +56,7 @@ export function OrganizationInvitationModal({
 					throw error;
 				}
 
-				router.replace("/app");
+				router.replace("/onboarding");
 			}
 		} catch {
 			// TODO: handle error

@@ -29,19 +29,26 @@ const nextConfig: NextConfig = {
 	async redirects() {
 		return [
 			{
-				source: "/app/settings",
-				destination: "/app/settings/general",
+				source: "/workspace/:organizationSlug/settings",
+				destination: "/workspace/:organizationSlug/settings/general",
+				permanent: true,
+			},
+			// Legacy redirects for old URLs
+			{
+				source: "/app/admin/:path*",
+				destination: "/admin/:path*",
 				permanent: true,
 			},
 			{
-				source: "/app/:organizationSlug/settings",
-				destination: "/app/:organizationSlug/settings/general",
+				source: "/app/:organizationSlug/:path*",
+				destination: "/workspace/:organizationSlug/:path*",
 				permanent: true,
 			},
+			// Catch-all redirect for /app without params (from old verification emails)
 			{
-				source: "/app/admin",
-				destination: "/app/admin/users",
-				permanent: true,
+				source: "/app",
+				destination: "/workspace",
+				permanent: false, // Use temporary redirect since this is for migration
 			},
 		];
 	},

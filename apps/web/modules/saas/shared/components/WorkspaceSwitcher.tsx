@@ -6,8 +6,6 @@ import { useActiveOrganization } from "@saas/organizations/hooks/use-active-orga
 import { CreateOrganizationDialog } from "@saas/organizations/components/CreateOrganizationDialog";
 import { useOrganizationListQuery } from "@saas/organizations/lib/api";
 import { ActivePlanBadge } from "@saas/payments/components/ActivePlanBadge";
-import { UserAvatar } from "@shared/components/UserAvatar";
-import { useRouter } from "@shared/hooks/router";
 import { clearCache } from "@shared/lib/cache";
 import {
 	DropdownMenu,
@@ -33,30 +31,22 @@ import { OrganizationLogo } from "../../organizations/components/OrganizationLog
 export function WorkspaceSwitcher() {
 	const t = useTranslations();
 	const { user } = useSession();
-	const router = useRouter();
 	const { activeOrganization, setActiveOrganization } =
 		useActiveOrganization();
 	const { data: allOrganizations } = useOrganizationListQuery();
 	const { isMobile } = useSidebar();
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-	if (!user) {
+	if (!user || !activeOrganization) {
 		return null;
 	}
 
-	const currentWorkspace = activeOrganization
-		? {
-				name: activeOrganization.name,
-				logo: activeOrganization.logo,
-				plan: activeOrganization,
-				type: "organization" as const,
-			}
-		: {
-				name: t("organizations.organizationSelect.personalAccount"),
-				logo: user.image,
-				plan: null,
-				type: "personal" as const,
-			};
+	const currentWorkspace = {
+		name: activeOrganization.name,
+		logo: activeOrganization.logo,
+		plan: activeOrganization,
+		type: "organization" as const,
+	};
 
 	return (
 		<SidebarMenu>
@@ -68,38 +58,23 @@ export function WorkspaceSwitcher() {
 							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 						>
 							<div className="flex aspect-square size-8 items-center justify-center rounded-lg overflow-hidden">
-								{activeOrganization ? (
-									<OrganizationLogo
-										name={activeOrganization.name}
-										logoUrl={activeOrganization.logo}
-										className="size-full"
-									/>
-								) : (
-									<UserAvatar
-										name={user.name ?? ""}
-										avatarUrl={user.image}
-										className="size-full"
-									/>
-								)}
+								<OrganizationLogo
+									name={activeOrganization.name}
+									logoUrl={activeOrganization.logo}
+									className="size-full"
+								/>
 							</div>
 							<div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
 								<span className="truncate font-semibold">
 									{currentWorkspace.name}
 								</span>
-								{(activeOrganization &&
-									config.organizations.enableBilling) ||
-								(!activeOrganization &&
-									config.users.enableBilling) ? (
+								{config.organizations.enableBilling ? (
 									<span className="truncate text-xs flex items-center">
-										{activeOrganization ? (
-											<ActivePlanBadge
-												organizationId={
-													activeOrganization.id
-												}
-											/>
-										) : (
-											<ActivePlanBadge />
-										)}
+										<ActivePlanBadge
+											organizationId={
+												activeOrganization.id
+											}
+										/>
 									</span>
 								) : null}
 							</div>
@@ -112,39 +87,6 @@ export function WorkspaceSwitcher() {
 						side={isMobile ? "bottom" : "right"}
 						sideOffset={4}
 					>
-						{!config.organizations.requireOrganization && (
-							<>
-								<DropdownMenuLabel className="text-xs text-muted-foreground">
-									{t(
-										"organizations.organizationSelect.personalAccount",
-									)}
-								</DropdownMenuLabel>
-								<DropdownMenuRadioGroup
-									value={activeOrganization?.id ?? user.id}
-									onValueChange={async (value: string) => {
-										if (value === user.id) {
-											await clearCache();
-											router.replace("/app");
-										}
-									}}
-								>
-									<DropdownMenuRadioItem
-										value={user.id}
-										className="gap-2 p-2"
-									>
-										<div className="flex size-6 items-center justify-center rounded-sm border overflow-hidden p-0.5">
-											<UserAvatar
-												className="size-full"
-												name={user.name ?? ""}
-												avatarUrl={user.image}
-											/>
-										</div>
-										{user.name}
-									</DropdownMenuRadioItem>
-								</DropdownMenuRadioGroup>
-								<DropdownMenuSeparator />
-							</>
-						)}
 						<DropdownMenuLabel className="text-xs text-muted-foreground">
 							{t(
 								"organizations.organizationSelect.organizations",

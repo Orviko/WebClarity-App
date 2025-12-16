@@ -12,7 +12,7 @@ export default async function proxy(req: NextRequest) {
 
 	const sessionCookie = getSessionCookie(req);
 
-	if (pathname.startsWith("/app")) {
+	if (pathname.startsWith("/workspace") || pathname.startsWith("/admin")) {
 		const response = NextResponse.next();
 
 		if (!appConfig.ui.saas.enabled) {
@@ -53,7 +53,8 @@ export default async function proxy(req: NextRequest) {
 	}
 
 	if (!appConfig.ui.marketing.enabled) {
-		return NextResponse.redirect(new URL("/app", origin));
+		// Redirect to auth/login if marketing is disabled
+		return NextResponse.redirect(new URL("/auth/login", origin));
 	}
 
 	return intlMiddleware(req);

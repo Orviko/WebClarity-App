@@ -41,10 +41,10 @@ export default async function OrganizationLayout({
 			) || organizations[0];
 
 		if (defaultOrganization) {
-			redirect(`/app/${defaultOrganization.slug}`);
+			redirect(`/workspace/${defaultOrganization.slug}`);
 		} else {
-			// No organizations available, redirect to /app which will handle it
-			redirect("/app");
+			// No organizations available, redirect to onboarding
+			redirect("/onboarding");
 		}
 	}
 

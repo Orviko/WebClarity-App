@@ -68,7 +68,7 @@ export const config = {
 		// Whether users should be activate two factor authentication
 		enableTwoFactor: true, // ✅ ENABLED - 2FA for security
 		// where users should be redirected after the sign in
-		redirectAfterSignIn: "/app",
+		redirectAfterSignIn: "/workspace",
 		// where users should be redirected after logout
 		redirectAfterLogout: "/auth/login",
 		// how long a session should be valid

@@ -25,16 +25,21 @@ export default async function OnboardingPage() {
 
 	// Check if onboarding is enabled
 	if (!config.users.enableOnboarding) {
-		redirect("/app");
+		const organizations = await getOrganizationList();
+		const firstOrg = organizations[0];
+		if (firstOrg) {
+			redirect(`/workspace/${firstOrg.slug}`);
+		}
+		redirect("/auth/login");
 	}
 
-	// If user completed onboarding AND has at least one workspace, redirect to app
+	// If user completed onboarding AND has at least one workspace, redirect to workspace
 	if (session.user.onboardingComplete) {
 		const organizations = await getOrganizationList();
 
 		// Only redirect if user has workspaces (prevents redirect loop)
 		if (organizations.length > 0) {
-			redirect("/app");
+			redirect(`/workspace/${organizations[0].slug}`);
 		}
 		// If onboardingComplete is true but no workspaces, allow them to create one
 	}

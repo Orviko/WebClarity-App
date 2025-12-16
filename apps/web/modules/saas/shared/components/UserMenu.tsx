@@ -40,10 +40,10 @@ export function UserMenu({ showUserName }: { showUserName?: boolean }) {
 	const { setTheme: setCurrentTheme, theme: currentTheme } = useTheme();
 	const [theme, setTheme] = useState<string>(currentTheme ?? "system");
 	
-	// Settings link - use active workspace if available, otherwise /app
+	// Settings link - use active workspace if available
 	const settingsHref = organizationSlug
-		? `/app/${organizationSlug}/settings/general`
-		: "/app";
+		? `/workspace/${organizationSlug}/settings/account/general`
+		: "/workspace";
 
 	const colorModeOptions = [
 		{

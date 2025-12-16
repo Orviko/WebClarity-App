@@ -104,7 +104,7 @@ export function UserList() {
 		await refetch();
 		toast.dismiss(toastId);
 		window.location.href = new URL(
-			"/app",
+			"/workspace",
 			window.location.origin,
 		).toString();
 	};

@@ -34,7 +34,7 @@ export default async function SharesPage({
 	);
 
 	if (!activeOrganization) {
-		redirect("/app");
+		redirect("/onboarding");
 	}
 
 	return (

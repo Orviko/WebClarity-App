@@ -65,8 +65,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	}, []);
 
 	const basePath = activeOrganization
-		? `/app/${activeOrganization.slug}`
-		: "/app";
+		? `/workspace/${activeOrganization.slug}`
+		: "/workspace";
 
 	const menuItems = [
 		{
@@ -124,9 +124,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			? [
 					{
 						label: t("app.menu.admin"),
-						href: "/app/admin",
+						href: "/admin",
 						icon: UserCogIcon,
-						isActive: pathname.startsWith("/app/admin/"),
+						isActive: pathname.startsWith("/admin/"),
 						hasAction: false,
 					},
 				]
