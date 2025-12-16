@@ -136,10 +136,12 @@ export const webhookHandler: WebhookHandler = async (req) => {
 					productId,
 				});
 
-				await setCustomerIdToEntity(customerId, {
-					organizationId: metadata?.organization_id as string,
-					userId: metadata?.user_id as string,
-				});
+				if (metadata?.organization_id) {
+					await setCustomerIdToEntity(
+						customerId,
+						metadata.organization_id as string,
+					);
+				}
 
 				break;
 			}
@@ -157,10 +159,12 @@ export const webhookHandler: WebhookHandler = async (req) => {
 					status,
 				});
 
-				await setCustomerIdToEntity(customerId, {
-					organizationId: metadata?.organization_id as string,
-					userId: metadata?.user_id as string,
-				});
+				if (metadata?.organization_id) {
+					await setCustomerIdToEntity(
+						customerId,
+						metadata.organization_id as string,
+					);
+				}
 
 				break;
 			}

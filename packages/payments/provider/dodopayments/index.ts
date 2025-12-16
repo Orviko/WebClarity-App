@@ -193,13 +193,12 @@ export const webhookHandler: WebhookHandler = async (req) => {
 							status: "active",
 						});
 
-						await setCustomerIdToEntity(
-							customer?.customer_id || customer?.email,
-							{
-								organizationId: metadata?.organization_id,
-								userId: metadata?.user_id,
-							},
-						);
+						if (metadata?.organization_id) {
+							await setCustomerIdToEntity(
+								customer?.customer_id || customer?.email,
+								metadata.organization_id,
+							);
+						}
 					} else {
 						await createPurchase({
 							organizationId: metadata?.organization_id || null,
@@ -210,13 +209,12 @@ export const webhookHandler: WebhookHandler = async (req) => {
 							productId: product_id,
 						});
 
-						await setCustomerIdToEntity(
-							customer?.customer_id || customer?.email,
-							{
-								organizationId: metadata?.organization_id,
-								userId: metadata?.user_id,
-							},
-						);
+						if (metadata?.organization_id) {
+							await setCustomerIdToEntity(
+								customer?.customer_id || customer?.email,
+								metadata.organization_id,
+							);
+						}
 					}
 					break;
 				}
@@ -240,13 +238,12 @@ export const webhookHandler: WebhookHandler = async (req) => {
 						status: status || "active",
 					});
 
-					await setCustomerIdToEntity(
-						customer?.customer_id || customer?.email,
-						{
-							organizationId: metadata?.organization_id,
-							userId: metadata?.user_id,
-						},
-					);
+					if (metadata?.organization_id) {
+						await setCustomerIdToEntity(
+							customer?.customer_id || customer?.email,
+							metadata.organization_id,
+						);
+					}
 					break;
 				}
 

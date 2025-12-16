@@ -40,9 +40,7 @@ export const createCheckoutLink = protectedProcedure
 				});
 			}
 
-			const customerId = await getCustomerIdFromEntity({
-				organizationId,
-			});
+			const customerId = await getCustomerIdFromEntity(organizationId);
 
 			const plans = config.payments.plans as Config["payments"]["plans"];
 

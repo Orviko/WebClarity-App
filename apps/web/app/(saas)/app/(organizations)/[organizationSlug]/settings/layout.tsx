@@ -34,9 +34,13 @@ export default async function SettingsLayout({
 		redirect("/app");
 	}
 
+	if (!session) {
+		redirect("/app");
+	}
+
 	const userIsOrganizationAdmin = isOrganizationAdmin(
 		organization,
-		session?.user,
+		session.user,
 	);
 
 	const organizationSettingsBasePath = `/app/${organizationSlug}/settings`;

@@ -54,12 +54,12 @@ export const createCheckoutLink: CreateCheckoutLink = async (options) => {
 					"organizationId" in options
 						? {
 								organization_id: options.organizationId,
-							}
+						  }
 						: {
 								user_id: options.userId,
-							},
+						  },
 			},
-		},
+		}
 	);
 
 	return response.data?.data.attributes.url ?? null;
@@ -112,12 +112,12 @@ export const webhookHandler: WebhookHandler = async (req: Request) => {
 		const text = await req.text();
 		const hmac = createHmac(
 			"sha256",
-			process.env.LEMONSQUEEZY_WEBHOOK_SECRET as string,
+			process.env.LEMONSQUEEZY_WEBHOOK_SECRET as string
 		);
 		const digest = Buffer.from(hmac.update(text).digest("hex"), "utf8");
 		const signature = Buffer.from(
 			req.headers.get("x-signature") as string,
-			"utf8",
+			"utf8"
 		);
 
 		if (!timingSafeEqual(digest, signature)) {
@@ -172,13 +172,12 @@ export const webhookHandler: WebhookHandler = async (req: Request) => {
 					type: "SUBSCRIPTION",
 				});
 
-				await setCustomerIdToEntity(
-					String(data.attributes.customer_id),
-					{
-						organizationId: customData.organization_id,
-						userId: customData.user_id,
-					},
-				);
+				if (customData.organization_id) {
+					await setCustomerIdToEntity(
+						String(data.attributes.customer_id),
+						customData.organization_id
+					);
+				}
 
 				break;
 			}
@@ -187,8 +186,9 @@ export const webhookHandler: WebhookHandler = async (req: Request) => {
 			case "subscription_resumed": {
 				const subscriptionId = String(data.id);
 
-				const existingPurchase =
-					await getPurchaseBySubscriptionId(subscriptionId);
+				const existingPurchase = await getPurchaseBySubscriptionId(
+					subscriptionId
+				);
 
 				if (existingPurchase) {
 					await updatePurchase({
@@ -216,13 +216,12 @@ export const webhookHandler: WebhookHandler = async (req: Request) => {
 					type: "ONE_TIME",
 				});
 
-				await setCustomerIdToEntity(
-					String(data.attributes.customer_id),
-					{
-						organizationId: customData.organization_id,
-						userId: customData.user_id,
-					},
-				);
+				if (customData.organization_id) {
+					await setCustomerIdToEntity(
+						String(data.attributes.customer_id),
+						customData.organization_id
+					);
+				}
 
 				break;
 			}
@@ -240,7 +239,7 @@ export const webhookHandler: WebhookHandler = async (req: Request) => {
 			`Webhook error: ${error instanceof Error ? error.message : ""}`,
 			{
 				status: 400,
-			},
+			}
 		);
 	}
 };
