@@ -35,14 +35,22 @@ import {
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 
 export function NavUser() {
 	const t = useTranslations();
 	const { user } = useSession();
+	const params = useParams();
+	const organizationSlug = params?.organizationSlug as string | undefined;
 	const { setTheme: setCurrentTheme, theme: currentTheme } = useTheme();
 	const [theme, setTheme] = useState<string>(currentTheme ?? "system");
 	const { isMobile } = useSidebar();
+
+	// Settings link - use active workspace if available, otherwise /app
+	const settingsHref = organizationSlug
+		? `/app/${organizationSlug}/settings/general`
+		: "/app";
 
 	const colorModeOptions = [
 		{
@@ -96,8 +104,12 @@ export function NavUser() {
 								className="h-8 w-8 rounded-lg"
 							/>
 							<div className="grid flex-1 text-left text-sm leading-tight">
-								<span className="truncate font-semibold">{name}</span>
-								<span className="truncate text-xs">{email}</span>
+								<span className="truncate font-semibold">
+									{name}
+								</span>
+								<span className="truncate text-xs">
+									{email}
+								</span>
 							</div>
 							<ChevronsUpDownIcon className="ml-auto size-4" />
 						</SidebarMenuButton>
@@ -116,8 +128,12 @@ export function NavUser() {
 									className="h-8 w-8 rounded-lg"
 								/>
 								<div className="grid flex-1 text-left text-sm leading-tight">
-									<span className="truncate font-semibold">{name}</span>
-									<span className="truncate text-xs">{email}</span>
+									<span className="truncate font-semibold">
+										{name}
+									</span>
+									<span className="truncate text-xs">
+										{email}
+									</span>
 								</div>
 							</div>
 						</DropdownMenuLabel>
@@ -145,14 +161,20 @@ export function NavUser() {
 						</DropdownMenuSub>
 						<DropdownMenuGroup>
 							<DropdownMenuItem asChild>
-								<Link href="/app/settings/general" className="flex items-center gap-2">
+								<Link
+									href={settingsHref}
+									className="flex items-center gap-2"
+								>
 									<SettingsIcon className="size-4" />
 									{t("app.userMenu.accountSettings")}
 								</Link>
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem onClick={onLogout} className="flex items-center gap-2">
+						<DropdownMenuItem
+							onClick={onLogout}
+							className="flex items-center gap-2"
+						>
 							<LogOutIcon className="size-4" />
 							{t("app.userMenu.logout")}
 						</DropdownMenuItem>
@@ -162,4 +184,3 @@ export function NavUser() {
 		</SidebarMenu>
 	);
 }
-

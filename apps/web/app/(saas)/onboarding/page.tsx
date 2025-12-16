@@ -1,5 +1,5 @@
 import { config } from "@repo/config";
-import { getSession } from "@saas/auth/lib/server";
+import { getOrganizationList, getSession } from "@saas/auth/lib/server";
 import { OnboardingForm } from "@saas/onboarding/components/OnboardingForm";
 import { AuthWrapper } from "@saas/shared/components/AuthWrapper";
 import { redirect } from "next/navigation";
@@ -23,8 +23,20 @@ export default async function OnboardingPage() {
 		redirect("/auth/login");
 	}
 
-	if (!config.users.enableOnboarding || session.user.onboardingComplete) {
+	// Check if onboarding is enabled
+	if (!config.users.enableOnboarding) {
 		redirect("/app");
+	}
+
+	// If user completed onboarding AND has at least one workspace, redirect to app
+	if (session.user.onboardingComplete) {
+		const organizations = await getOrganizationList();
+
+		// Only redirect if user has workspaces (prevents redirect loop)
+		if (organizations.length > 0) {
+			redirect("/app");
+		}
+		// If onboardingComplete is true but no workspaces, allow them to create one
 	}
 
 	return (

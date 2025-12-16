@@ -18,13 +18,18 @@ export default async function AppStartPage() {
 		config.organizations.enable &&
 		config.organizations.requireOrganization
 	) {
+		// If user has no workspace, force them to onboarding
+		if (organizations.length === 0) {
+			redirect("/onboarding");
+		}
+
 		const organization =
 			organizations.find(
 				(org) => org.id === session?.session.activeOrganizationId,
 			) || organizations[0];
 
 		if (!organization) {
-			redirect("/app");
+			redirect("/onboarding");
 		}
 
 		redirect(`/app/${organization.slug}`);

@@ -26,30 +26,31 @@ export const createCheckoutLink = protectedProcedure
 			productId: z.string(),
 			redirectUrl: z.string().optional(),
 			organizationId: z.string().optional(),
-		}),
+		})
 	)
 	.handler(
 		async ({
 			input: { productId, redirectUrl, type, organizationId },
 			context: { user },
 		}) => {
-			const customerId = await getCustomerIdFromEntity(
-				organizationId
-					? {
-							organizationId,
-						}
-					: {
-							userId: user.id,
-						},
-			);
+			// Personal billing is removed - organizationId is required
+			if (!organizationId) {
+				throw new ORPCError("BAD_REQUEST", {
+					message: "organizationId is required for checkout",
+				});
+			}
+
+			const customerId = await getCustomerIdFromEntity({
+				organizationId,
+			});
 
 			const plans = config.payments.plans as Config["payments"]["plans"];
 
 			const plan = Object.entries(plans).find(([_planId, plan]) =>
-				plan.prices?.find((price) => price.productId === productId),
+				plan.prices?.find((price) => price.productId === productId)
 			);
 			const price = plan?.[1].prices?.find(
-				(price) => price.productId === productId,
+				(price) => price.productId === productId
 			);
 			const trialPeriodDays =
 				price && "trialPeriodDays" in price
@@ -76,9 +77,7 @@ export const createCheckoutLink = protectedProcedure
 					email: user.email,
 					name: user.name ?? "",
 					redirectUrl,
-					...(organizationId
-						? { organizationId }
-						: { userId: user.id }),
+					organizationId,
 					trialPeriodDays,
 					seats,
 					customerId: customerId ?? undefined,
@@ -93,5 +92,5 @@ export const createCheckoutLink = protectedProcedure
 				logger.error(e);
 				throw new ORPCError("INTERNAL_SERVER_ERROR");
 			}
-		},
+		}
 	);

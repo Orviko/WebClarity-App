@@ -251,12 +251,14 @@
 			"name": "Name"
 		},
 		"continue": "Weiter",
-		"message": "Nur ein paar schnelle Schritte, um dir den Einstieg zu erleichtern.",
+		"message": "Lass uns deinen ersten Arbeitsbereich einrichten, um loszulegen.",
 		"notifications": {
 			"accountSetupFailed": "Es tut uns leid, aber wir konnten dein Konto nicht einrichten. \nBitte versuche es später noch einmal."
 		},
 		"step": "Schritt {step} / {total}",
-		"title": "Richte dein Konto ein"
+		"title": "Erstelle deinen Arbeitsbereich",
+		"workspaceName": "Arbeitsbereichsname",
+		"workspaceNamePlaceholder": "Mein Arbeitsbereich"
 	},
 	"organizations": {
 		"createForm": {

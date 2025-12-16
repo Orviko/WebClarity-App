@@ -16,6 +16,10 @@ export async function getPurchasesByOrganizationId(organizationId: string) {
 	});
 }
 
+/**
+ * @deprecated Personal billing is removed. Use getPurchasesByOrganizationId instead.
+ * This function remains for backward compatibility with existing data only.
+ */
 export async function getPurchasesByUserId(userId: string) {
 	return db.purchase.findMany({
 		where: {
@@ -36,7 +40,7 @@ export async function createPurchase(
 	purchase: Omit<
 		z.infer<typeof PurchaseSchema>,
 		"id" | "createdAt" | "updatedAt"
-	>,
+	>
 ) {
 	const created = await db.purchase.create({
 		data: purchase,
@@ -48,7 +52,7 @@ export async function createPurchase(
 export async function updatePurchase(
 	purchase: Partial<
 		Omit<z.infer<typeof PurchaseSchema>, "createdAt" | "updatedAt">
-	> & { id: string },
+	> & { id: string }
 ) {
 	const updated = await db.purchase.update({
 		where: {

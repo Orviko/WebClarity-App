@@ -29,7 +29,6 @@ model User {
   banReason          String?
   banExpires         DateTime?
   onboardingComplete Boolean      @default(false)
-  paymentsCustomerId String?
   locale             String?
   displayUsername    String?
   twoFactorEnabled   Boolean?

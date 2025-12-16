@@ -157,10 +157,10 @@ export function OrganzationSelect({ className }: { className?: string }) {
 								onClick={() => setIsDialogOpen(true)}
 								className="text-primary! cursor-pointer text-sm"
 							>
-									<PlusIcon className="mr-2 size-6 rounded-md bg-primary/20 p-1" />
-									{t(
-										"organizations.organizationSelect.createNewOrganization",
-									)}
+								<PlusIcon className="mr-2 size-6 rounded-md bg-primary/20 p-1" />
+								{t(
+									"organizations.organizationSelect.createNewOrganization",
+								)}
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 					)}

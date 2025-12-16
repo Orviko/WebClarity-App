@@ -259,12 +259,14 @@
 			"name": "Name"
 		},
 		"continue": "Continue",
-		"message": "Just a few quick steps to get you started.",
+		"message": "Let's set up your first workspace to get started.",
 		"notifications": {
 			"accountSetupFailed": "We are sorry, but we were unable to set up your account. Please try again later."
 		},
 		"step": "Step {step} / {total}",
-		"title": "Set up your account"
+		"title": "Create your workspace",
+		"workspaceName": "Workspace name",
+		"workspaceNamePlaceholder": "My Workspace"
 	},
 	"organizations": {
 		"createForm": {

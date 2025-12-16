@@ -29,13 +29,21 @@ import {
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 
 export function UserMenu({ showUserName }: { showUserName?: boolean }) {
 	const t = useTranslations();
 	const { user } = useSession();
+	const params = useParams();
+	const organizationSlug = params?.organizationSlug as string | undefined;
 	const { setTheme: setCurrentTheme, theme: currentTheme } = useTheme();
 	const [theme, setTheme] = useState<string>(currentTheme ?? "system");
+	
+	// Settings link - use active workspace if available, otherwise /app
+	const settingsHref = organizationSlug
+		? `/app/${organizationSlug}/settings/general`
+		: "/app";
 
 	const colorModeOptions = [
 		{
@@ -142,7 +150,7 @@ export function UserMenu({ showUserName }: { showUserName?: boolean }) {
 				<DropdownMenuSeparator />
 
 				<DropdownMenuItem asChild>
-					<Link href="/app/settings/general">
+					<Link href={settingsHref}>
 						<SettingsIcon className="mr-2 size-4" />
 						{t("app.userMenu.accountSettings")}
 					</Link>

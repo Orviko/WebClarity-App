@@ -5,9 +5,12 @@ import { OrganizationLogo } from "@saas/organizations/components/OrganizationLog
 import { SettingsMenu } from "@saas/settings/components/SettingsMenu";
 import { PageHeader } from "@saas/shared/components/PageHeader";
 import { SidebarContentLayout } from "@saas/shared/components/SidebarContentLayout";
+import { UserAvatar } from "@shared/components/UserAvatar";
 import {
 	CreditCardIcon,
 	Settings2Icon,
+	SettingsIcon,
+	LockKeyholeIcon,
 	TriangleAlertIcon,
 	Users2Icon,
 	BarChart3Icon,
@@ -39,6 +42,34 @@ export default async function SettingsLayout({
 	const organizationSettingsBasePath = `/app/${organizationSlug}/settings`;
 
 	const menuItems = [
+		// Section 1: Personal/Account Settings
+		{
+			title: t("settings.menu.account.title"),
+			avatar: (
+				<UserAvatar
+					name={session.user.name ?? ""}
+					avatarUrl={session.user.image}
+				/>
+			),
+			items: [
+				{
+					title: t("settings.menu.account.general"),
+					href: `${organizationSettingsBasePath}/account/general`,
+					icon: <SettingsIcon className="size-4 opacity-50" />,
+				},
+				{
+					title: t("settings.menu.account.security"),
+					href: `${organizationSettingsBasePath}/account/security`,
+					icon: <LockKeyholeIcon className="size-4 opacity-50" />,
+				},
+				{
+					title: t("settings.menu.account.dangerZone"),
+					href: `${organizationSettingsBasePath}/account/danger-zone`,
+					icon: <TriangleAlertIcon className="size-4 opacity-50" />,
+				},
+			],
+		},
+		// Section 2: Active Workspace Settings
 		{
 			title: t("settings.menu.organization.title"),
 			avatar: (
