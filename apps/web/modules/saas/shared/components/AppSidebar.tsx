@@ -126,7 +126,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 						label: t("app.menu.admin"),
 						href: "/admin",
 						icon: UserCogIcon,
-						isActive: pathname.startsWith("/admin/"),
+						isActive: pathname.startsWith("/admin"),
 						hasAction: false,
 					},
 				]

@@ -1,12 +1,24 @@
+"use client";
+
 import { config } from "@repo/config";
+import { useActiveOrganization } from "@saas/organizations/hooks/use-active-organization";
 import { AppSidebar } from "@saas/shared/components/AppSidebar";
 import { DashboardHeader } from "@saas/shared/components/DashboardHeader";
+import { LoadingScreen } from "@shared/components/LoadingScreen";
 import { SidebarInset, SidebarProvider } from "@ui/components/sidebar";
 import { cn } from "@ui/lib";
+import { useParams } from "next/navigation";
 import type { PropsWithChildren } from "react";
 
 export function AppWrapper({ children }: PropsWithChildren) {
 	const { useSidebarLayout } = config.ui.saas;
+	const params = useParams();
+	const organizationSlug = params?.organizationSlug as string | undefined;
+	const { loaded, activeOrganization } = useActiveOrganization();
+
+	// Show loading screen while workspace data is loading
+	// Only apply loading state if we're in an organization route
+	const isLoadingWorkspaceData = organizationSlug && !loaded;
 
 	if (!useSidebarLayout) {
 		// Fallback to old layout if sidebar is disabled
@@ -25,11 +37,16 @@ export function AppWrapper({ children }: PropsWithChildren) {
 		);
 	}
 
+	// Show loading screen until workspace data is ready
+	if (isLoadingWorkspaceData) {
+		return <LoadingScreen message="Loading workspace..." />;
+	}
+
 	return (
 		<div className="h-screen overflow-hidden bg-background">
 			<SidebarProvider className="h-full w-full">
 				<AppSidebar />
-				<SidebarInset className="flex flex-col overflow-hidden h-full md:h-[calc(100svh-1rem)] !ml-0">
+				<SidebarInset className="flex flex-col overflow-hidden h-full md:h-[calc(100svh-1rem)] ml-0!">
 					<DashboardHeader />
 					<div className="flex-1 overflow-y-auto p-4 pt-0">
 						<div className="flex flex-col gap-4">{children}</div>
