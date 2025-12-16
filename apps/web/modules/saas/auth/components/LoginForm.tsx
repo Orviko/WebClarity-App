@@ -72,11 +72,18 @@ export function LoginForm() {
 	const form = useForm<FormValues>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			email: email ?? "",
+			email: "",
 			password: "",
 			mode: config.auth.enablePasswordLogin ? "password" : "magic-link",
 		},
 	});
+
+	// Update email from search params after mount to avoid hydration mismatch
+	useEffect(() => {
+		if (email) {
+			form.setValue("email", email);
+		}
+	}, [email, form]);
 
 	const redirectPath = invitationId
 		? `/organization-invitation/${invitationId}`
@@ -183,6 +190,7 @@ export function LoginForm() {
 						<form
 							className="space-y-4"
 							onSubmit={form.handleSubmit(onSubmit)}
+							suppressHydrationWarning
 						>
 							{config.auth.enableMagicLink &&
 								config.auth.enablePasswordLogin && (
@@ -219,6 +227,7 @@ export function LoginForm() {
 											<Input
 												{...field}
 												autoComplete="email"
+												suppressHydrationWarning
 											/>
 										</FormControl>
 									</FormItem>
@@ -259,6 +268,7 @@ export function LoginForm() {
 															className="pr-10"
 															{...field}
 															autoComplete="current-password"
+															suppressHydrationWarning
 														/>
 														<button
 															type="button"
