@@ -12,15 +12,87 @@ import { Separator } from "@ui/components/separator";
 import { SidebarTrigger } from "@ui/components/sidebar";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useActiveOrganization } from "@saas/organizations/hooks/use-active-organization";
 
-function generateBreadcrumbs(pathname: string) {
+function generateBreadcrumbs(
+	pathname: string,
+	basePath: string,
+	t: ReturnType<typeof useTranslations>,
+) {
 	const segments = pathname.split("/").filter(Boolean);
 	const breadcrumbs: { label: string; href: string }[] = [];
 
-	// Build breadcrumbs from segments
-	let currentPath = "";
+	// Known route segments that should appear in breadcrumbs
+	const knownRoutes = ["admin", "projects", "reports", "shares", "resources", "settings"];
+
+	// Handle admin routes separately
+	const isAdminRoute = segments[0] === "admin";
+
+	if (isAdminRoute) {
+		// For admin routes, start with Dashboard, then Admin, then sub-routes
+		breadcrumbs.push({
+			label: t("app.menu.dashboard"),
+			href: basePath,
+		});
+
+		// Add Admin breadcrumb
+		if (segments.length > 1) {
+			breadcrumbs.push({
+				label: t("app.menu.admin"),
+				href: "/admin",
+			});
+		}
+
+		// Add remaining admin sub-routes
+		let currentPath = "/admin";
+		for (let i = 1; i < segments.length; i++) {
+			const segment = segments[i];
+			currentPath += `/${segment}`;
+
+			const label = segment
+				.split("-")
+				.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+				.join(" ");
+
+			breadcrumbs.push({ label, href: currentPath });
+		}
+
+		return breadcrumbs;
+	}
+
+	// Handle workspace routes - filter out "workspace" and organization slug
+	const filteredSegments: string[] = [];
+	let skipNext = false;
+
 	for (let i = 0; i < segments.length; i++) {
 		const segment = segments[i];
+
+		// Skip "workspace" segment
+		if (segment === "workspace") {
+			skipNext = true; // Next segment is likely the organization slug
+			continue;
+		}
+
+		// Skip organization slug (the segment after "workspace" that's not a known route)
+		if (skipNext && !knownRoutes.includes(segment)) {
+			skipNext = false;
+			continue;
+		}
+
+		skipNext = false;
+		filteredSegments.push(segment);
+	}
+
+	// Add "Dashboard" as the first breadcrumb
+	breadcrumbs.push({
+		label: t("app.menu.dashboard"),
+		href: basePath,
+	});
+
+	// Build breadcrumbs from remaining segments
+	let currentPath = basePath;
+	for (let i = 0; i < filteredSegments.length; i++) {
+		const segment = filteredSegments[i];
 		currentPath += `/${segment}`;
 
 		// Format segment name (capitalize, replace hyphens with spaces)
@@ -38,24 +110,30 @@ function generateBreadcrumbs(pathname: string) {
 export function DashboardHeader() {
 	const pathname = usePathname();
 	const t = useTranslations();
+	const { activeOrganization } = useActiveOrganization();
 
-	// Don't show breadcrumb on the main workspace pages
-	if (
+	// Determine base path for Dashboard link
+	const basePath = activeOrganization
+		? `/workspace/${activeOrganization.slug}`
+		: "/workspace";
+
+	// Check if we're on a dashboard page (workspace root or admin root)
+	const isWorkspaceDashboard =
 		pathname === "/workspace" ||
 		pathname === "/workspace/" ||
-		pathname === "/admin" ||
-		pathname === "/admin/"
-	) {
-		return (
-			<header className="flex h-16 shrink-0 items-center gap-2">
-				<div className="flex items-center gap-2 px-4">
-					<SidebarTrigger className="-ml-1" />
-				</div>
-			</header>
-		);
-	}
+		pathname === basePath ||
+		pathname === `${basePath}/`;
+	const isAdminDashboard = pathname === "/admin" || pathname === "/admin/";
 
-	const breadcrumbs = generateBreadcrumbs(pathname);
+	const breadcrumbs =
+		isWorkspaceDashboard || isAdminDashboard
+			? [
+					{
+						label: t("app.menu.dashboard"),
+						href: isAdminDashboard ? "/admin" : basePath,
+					},
+				]
+			: generateBreadcrumbs(pathname, basePath, t);
 
 	return (
 		<header className="flex h-16 shrink-0 items-center gap-2">

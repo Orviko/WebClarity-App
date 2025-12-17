@@ -25,7 +25,7 @@ import {
 } from "@ui/components/sidebar";
 import { ChevronsUpDownIcon, PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { OrganizationLogo } from "../../organizations/components/OrganizationLogo";
 
 export function WorkspaceSwitcher() {
@@ -36,8 +36,20 @@ export function WorkspaceSwitcher() {
 	const { data: allOrganizations } = useOrganizationListQuery();
 	const { isMobile } = useSidebar();
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const [hasMounted, setHasMounted] = useState(false);
+
+	// Only render DropdownMenu after mount to prevent hydration mismatch
+	useEffect(() => {
+		setHasMounted(true);
+	}, []);
 
 	if (!user || !activeOrganization) {
+		return null;
+	}
+
+	// Don't render DropdownMenu until mounted to prevent hydration mismatch
+	// This provides an extra layer of protection even though it's wrapped in ClientOnly
+	if (!hasMounted) {
 		return null;
 	}
 

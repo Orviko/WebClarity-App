@@ -12,7 +12,7 @@ import { Button } from "@ui/components/button";
 import { Input } from "@ui/components/input";
 import { Label } from "@ui/components/label";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface CreateProjectDialogProps {
 	open: boolean;
@@ -25,6 +25,12 @@ export function CreateProjectDialog({
 }: CreateProjectDialogProps) {
 	const t = useTranslations();
 	const [projectName, setProjectName] = useState("");
+	const [hasMounted, setHasMounted] = useState(false);
+
+	// Only render Dialog after mount to prevent hydration mismatch
+	useEffect(() => {
+		setHasMounted(true);
+	}, []);
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -33,6 +39,11 @@ export function CreateProjectDialog({
 		setProjectName("");
 		onOpenChange(false);
 	};
+
+	// Don't render Dialog until mounted to prevent hydration mismatch
+	if (!hasMounted) {
+		return null;
+	}
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
@@ -71,4 +82,3 @@ export function CreateProjectDialog({
 		</Dialog>
 	);
 }
-

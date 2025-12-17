@@ -38,6 +38,7 @@ import { CreateProjectDialog } from "./CreateProjectDialog";
 import { PlanUsageCard } from "./PlanUsageCard";
 import { SearchTrigger } from "./SearchTrigger";
 import { SearchModal } from "./SearchModal";
+import { ClientOnly } from "@shared/components/ClientOnly";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	const t = useTranslations();
@@ -139,7 +140,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				{config.organizations.enable &&
 					!config.organizations.hideOrganization && (
 						<>
-							<WorkspaceSwitcher />
+							<ClientOnly>
+								<WorkspaceSwitcher />
+							</ClientOnly>
 							<SearchTrigger
 								onClick={() => setIsSearchModalOpen(true)}
 								className="mt-2"

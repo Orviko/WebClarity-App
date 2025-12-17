@@ -46,6 +46,12 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
 	const [typeFilter, setTypeFilter] = React.useState<
 		"all" | "STYLE_GUIDE" | "HEADING_STRUCTURE"
 	>("all");
+	const [hasMounted, setHasMounted] = React.useState(false);
+
+	// Only render Dialog content after mount to prevent hydration mismatch
+	React.useEffect(() => {
+		setHasMounted(true);
+	}, []);
 
 	// Derived state
 	const isSearching = searchQuery.trim().length >= 2;
@@ -119,6 +125,11 @@ export function SearchModal({ open, onOpenChange }: SearchModalProps) {
 		// For "Shares" tab, type filter is already applied in API
 		return searchResults;
 	}, [searchResults, activeTab]);
+
+	// Don't render Dialog until mounted to prevent hydration mismatch
+	if (!hasMounted) {
+		return null;
+	}
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
