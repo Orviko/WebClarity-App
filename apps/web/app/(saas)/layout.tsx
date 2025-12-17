@@ -9,20 +9,22 @@ import { Document } from "@shared/components/Document";
 import { orpc } from "@shared/lib/orpc-query-utils";
 import { getServerQueryClient } from "@shared/lib/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { redirect } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import type { PropsWithChildren } from "react";
 
+/**
+ * Main SaaS Layout
+ * 
+ * Note: Authentication is now handled by middleware.
+ * This layout focuses on data prefetching and provider setup.
+ */
 export default async function SaaSLayout({ children }: PropsWithChildren) {
 	const locale = await getLocale();
 	const messages = await getMessages();
 	const session = await getSession();
 
-	if (!session) {
-		redirect("/auth/login");
-	}
-
+	// Prefetch session and organization data for client components
 	const queryClient = getServerQueryClient();
 
 	await queryClient.prefetchQuery({

@@ -39,13 +39,14 @@ export function DashboardHeader() {
 	const pathname = usePathname();
 	const t = useTranslations();
 
-	// Don't show breadcrumb on the main workspace pages
-	if (
-		pathname === "/workspace" ||
-		pathname === "/workspace/" ||
+	// Don't show breadcrumb on workspace base paths (e.g., /workspace/my-org or /admin)
+	// Users should never see /workspace base URL due to middleware
+	const isBasePath =
 		pathname === "/admin" ||
-		pathname === "/admin/"
-	) {
+		pathname === "/admin/" ||
+		pathname.match(/^\/workspace\/[^/]+\/?$/); // Matches /workspace/slug or /workspace/slug/
+
+	if (isBasePath) {
 		return (
 			<header className="flex h-16 shrink-0 items-center gap-2">
 				<div className="flex items-center gap-2 px-4">

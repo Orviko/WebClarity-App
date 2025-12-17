@@ -11,6 +11,12 @@ import { getServerQueryClient } from "@shared/lib/server";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
 
+/**
+ * Layout for /workspace/[organizationSlug] routes
+ * 
+ * Note: Authentication is now handled by middleware.
+ * This layout focuses on organization access validation and data prefetching.
+ */
 export default async function OrganizationLayout({
 	children,
 	params,
@@ -20,14 +26,7 @@ export default async function OrganizationLayout({
 	}>;
 }>) {
 	const { organizationSlug } = await params;
-
 	const session = await getSession();
-
-	// If user is not logged in, redirect to login
-	if (!session) {
-		redirect("/auth/login");
-	}
-
 	const organization = await getActiveOrganization(organizationSlug);
 
 	// If organization not found or user doesn't have access, redirect to default workspace
@@ -48,6 +47,7 @@ export default async function OrganizationLayout({
 		}
 	}
 
+	// Prefetch organization data for client components
 	const queryClient = getServerQueryClient();
 
 	await queryClient.prefetchQuery({

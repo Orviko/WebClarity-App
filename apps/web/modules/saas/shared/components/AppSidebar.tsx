@@ -64,9 +64,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, []);
 
+	// Always require an active organization for workspace navigation
+	// If no organization is available, user should not be in workspace routes
 	const basePath = activeOrganization
 		? `/workspace/${activeOrganization.slug}`
-		: "/workspace";
+		: "#";
 
 	const menuItems = [
 		{

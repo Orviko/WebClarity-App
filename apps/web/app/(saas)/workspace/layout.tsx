@@ -9,39 +9,17 @@ import type { PropsWithChildren } from "react";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+/**
+ * Layout for /workspace routes
+ * 
+ * Note: Authentication and onboarding checks are now handled by middleware.
+ * This layout focuses on billing checks and data prefetching.
+ */
 export default async function Layout({ children }: PropsWithChildren) {
 	const session = await getSession();
-
-	if (!session) {
-		redirect("/auth/login");
-	}
-
-	if (config.users.enableOnboarding && !session.user.onboardingComplete) {
-		redirect("/onboarding");
-	}
-
 	const organizations = await getOrganizationList();
 
-	if (
-		config.organizations.enable &&
-		config.organizations.requireOrganization
-	) {
-		// If user has no workspace, force them to onboarding
-		if (organizations.length === 0) {
-			redirect("/onboarding");
-		}
-
-		const organization =
-			organizations.find(
-				(org) => org.id === session?.session.activeOrganizationId,
-			) || organizations[0];
-
-		// This should never happen now, but keep as safety check
-		if (!organization) {
-			redirect("/onboarding");
-		}
-	}
-
+	// Check billing requirements (if no free plan exists)
 	const hasFreePlan = Object.values(config.payments.plans).some(
 		(plan) => "isFree" in plan,
 	);
