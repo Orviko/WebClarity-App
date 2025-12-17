@@ -12,7 +12,7 @@
 -   Backend logic resides in `packages/*`:
     -   `api` for orpc procedures and HTTP handlers.
     -   `auth` for Better Auth configuration plus invitation/passkey helpers.
-    -   `database` for Prisma + Drizzle clients, schema, and queries.
+    -   `database` for Prisma clients, schema, and queries.
     -   `ai`, `logs`, `mail`, `payments`, `storage`, `utils`, `i18n` for their respective domains.
 -   Use the package exports (e.g., `@repo/api`, `@repo/auth`) instead of deep relative imports.
 
@@ -50,7 +50,7 @@
 
 -   If possible, add all the API and data fetching logic to the `@repo/api` package, to sustain a single source of truth for the API and a reusable API.
 -   Group logic in the API routes in the `packages/api/modules` directory into meaningful modules.
--   Use the generated database clients from `@repo/database`; never instantiate Prisma or Drizzle directly in app code.
+-   Use the generated database clients from `@repo/database`; never instantiate Prisma directly in app code.
 -   Honor caching and revalidation patterns already in the repo (check adjacent files before introducing new cache strategies).
 
 ### Authentication & Authorization
