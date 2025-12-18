@@ -1,3 +1,4 @@
+import { ORPCError } from "@orpc/server";
 import { auth } from "@repo/auth";
 import { logger } from "@repo/logs";
 import { webhookHandler as paymentsWebhookHandler } from "@repo/payments";
@@ -253,24 +254,76 @@ export const app = new Hono()
 	})
 	// oRPC handlers (for RPC and OpenAPI)
 	.use("*", async (c, next) => {
-		const context = {
-			headers: c.req.raw.headers,
-		};
+		try {
+			const context = {
+				headers: c.req.raw.headers,
+			};
 
-		const isRpc = c.req.path.includes("/rpc/");
+			const isRpc = c.req.path.includes("/rpc/");
 
-		const handler = isRpc ? rpcHandler : openApiHandler;
+			const handler = isRpc ? rpcHandler : openApiHandler;
 
-		const prefix = isRpc ? "/api/rpc" : "/api";
+			const prefix = isRpc ? "/api/rpc" : "/api";
 
-		const { matched, response } = await handler.handle(c.req.raw, {
-			prefix,
-			context,
-		});
+			const { matched, response } = await handler.handle(c.req.raw, {
+				prefix,
+				context,
+			});
 
-		if (matched) {
-			return c.newResponse(response.body, response);
+			if (matched) {
+				return c.newResponse(response.body, response);
+			}
+
+			await next();
+		} catch (error: any) {
+			logger.error("Error in RPC handler:", error);
+
+			// Handle ORPCError instances
+			if (error instanceof ORPCError || error?.code) {
+				const errorCode =
+					error instanceof ORPCError
+						? error.code
+						: typeof error.code === "string"
+							? error.code
+							: error.code.code || "INTERNAL_SERVER_ERROR";
+				const errorMessage = error.message || String(errorCode);
+				const statusCode =
+					errorCode === "UNAUTHORIZED"
+						? 401
+						: errorCode === "FORBIDDEN"
+							? 403
+							: errorCode === "BAD_REQUEST"
+								? 400
+								: errorCode === "NOT_FOUND"
+									? 404
+									: errorCode === "TOO_MANY_REQUESTS"
+										? 429
+										: 500;
+
+				return c.json(
+					{
+						json: {
+							defined: false,
+							code: errorCode,
+							status: statusCode,
+							message: errorMessage,
+						},
+					},
+					statusCode as any,
+				);
+			}
+
+			// Handle generic errors
+			return c.json(
+				{
+					json: {
+						defined: false,
+						code: "INTERNAL_SERVER_ERROR",
+						status: 500,
+						message: error instanceof Error ? error.message : "Internal server error",
+					},
+				},
+				500,
+			);
 		}
-
-		await next();
 	});
