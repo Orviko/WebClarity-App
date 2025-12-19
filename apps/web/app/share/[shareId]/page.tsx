@@ -32,7 +32,9 @@ export async function generateMetadata({
 			shareOgImageUrl = data.shareOgImageUrl;
 			websiteUrl = data.websiteUrl;
 		} else {
-			const data = await orpcClient.headingStructure.getShare({ shareId });
+			const data = await orpcClient.headingStructure.getShare({
+				shareId,
+			});
 			shareOgImageUrl = data.shareOgImageUrl;
 			websiteUrl = data.websiteUrl;
 		}
@@ -116,11 +118,18 @@ export default async function SharePage({
 
 	try {
 		// Get share details to check expiry and workspace membership
-		const shareDetails = await orpcClient.shares.getShareDetails({ shareId });
+		const shareDetails = await orpcClient.shares.getShareDetails({
+			shareId,
+		});
 
 		// If share is expired, show expired view
 		if (shareDetails.isExpired) {
-			return <ExpiredShareView shareId={shareId} shareDetails={shareDetails} />;
+			return (
+				<ExpiredShareView
+					shareId={shareId}
+					shareDetails={shareDetails}
+				/>
+			);
 		}
 
 		// Handle custom domain redirect logic
@@ -142,7 +151,9 @@ export default async function SharePage({
 
 			if (hasValidPlan) {
 				// Redirect to custom domain
-				redirect(`https://${organization.customDomain}/share/${shareId}`);
+				redirect(
+					`https://${organization.customDomain}/share/${shareId}`,
+				);
 			}
 		}
 

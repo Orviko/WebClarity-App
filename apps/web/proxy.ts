@@ -81,21 +81,41 @@ export default async function proxy(req: NextRequest) {
 				if (pathname.startsWith("/share/")) {
 					const shareId = pathname.split("/")[2];
 
-					// Verify the share belongs to this organization
-					// Query by shareId field (the short URL identifier), not id field
+					// Fetch the share to check ownership
 					const share = await db.share.findFirst({
 						where: {
 							shareId: shareId, // Use shareId field (the short identifier)
-							organizationId: organization.id, // Must belong to this org
+						},
+						select: {
+							id: true,
+							organizationId: true,
 						},
 					});
 
-					// If share doesn't belong to this organization, return 404
+					// Share not found at all - 404
 					if (!share) {
 						return new NextResponse(null, { status: 404 });
 					}
 
-					// Share is valid - allow access
+					// CRITICAL: If share has NO organization (created without account),
+					// it should ONLY be accessible via main app domain, NOT custom domains
+					if (!share.organizationId) {
+						// Redirect to main app domain
+						return NextResponse.redirect(
+							new URL(
+								`/share/${shareId}`,
+								process.env.NEXT_PUBLIC_SITE_URL || baseUrl,
+							),
+						);
+					}
+
+					// CRITICAL: If share belongs to a DIFFERENT organization,
+					// it should NOT be accessible via this custom domain
+					if (share.organizationId !== organization.id) {
+						return new NextResponse(null, { status: 404 });
+					}
+
+					// Share belongs to this organization - allow access
 					return NextResponse.rewrite(
 						new URL(`/share/${shareId}`, req.url),
 					);
