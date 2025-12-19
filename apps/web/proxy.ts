@@ -97,25 +97,21 @@ export default async function proxy(req: NextRequest) {
 						return new NextResponse(null, { status: 404 });
 					}
 
-					// CRITICAL: If share has NO organization (created without account),
-					// it should ONLY be accessible via main app domain, NOT custom domains
+					// CRITICAL: Custom domains can ONLY access their own organization's shares
+					// Everything else (public shares OR other workspaces) returns 404
+
+					// If share has NO organization (public/anonymous share) → 404
+					// These shares should ONLY be accessible via main app domain
 					if (!share.organizationId) {
-						// Redirect to main app domain
-						return NextResponse.redirect(
-							new URL(
-								`/share/${shareId}`,
-								process.env.NEXT_PUBLIC_SITE_URL || baseUrl,
-							),
-						);
+						return new NextResponse(null, { status: 404 });
 					}
 
-					// CRITICAL: If share belongs to a DIFFERENT organization,
-					// it should NOT be accessible via this custom domain
+					// If share belongs to a DIFFERENT organization → 404
 					if (share.organizationId !== organization.id) {
 						return new NextResponse(null, { status: 404 });
 					}
 
-					// Share belongs to this organization - allow access
+					// Share belongs to THIS organization - allow access ✅
 					return NextResponse.rewrite(
 						new URL(`/share/${shareId}`, req.url),
 					);
