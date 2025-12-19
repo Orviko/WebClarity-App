@@ -26,7 +26,7 @@ export const verifyCustomDomain = protectedProcedure
 		// Verify user is admin/owner
 		const membership = await verifyOrganizationMembership(
 			organizationId,
-			user.id,
+			user.id
 		);
 
 		if (!membership || !["owner", "admin"].includes(membership.role)) {
@@ -37,20 +37,26 @@ export const verifyCustomDomain = protectedProcedure
 			throw new ORPCError("BAD_REQUEST");
 		}
 
+		// Check if Vercel credentials are configured
+		if (!process.env.VERCEL_AUTH_TOKEN || !process.env.VERCEL_PROJECT_ID) {
+			logger.error("Vercel credentials not configured");
+			throw new ORPCError("INTERNAL_SERVER_ERROR");
+		}
+
 		// Initialize Vercel service
 		const vercelService = new VercelDomainService({
-			projectId: process.env.VERCEL_PROJECT_ID || "",
-			authToken: process.env.VERCEL_AUTH_TOKEN || "",
+			projectId: process.env.VERCEL_PROJECT_ID,
+			authToken: process.env.VERCEL_AUTH_TOKEN,
 			teamId: process.env.VERCEL_TEAM_ID,
 		});
 
 		try {
 			// Verify domain
 			const verification = await vercelService.verifyDomain(
-				organization.customDomain,
+				organization.customDomain
 			);
 
-			// Update verification timestamp
+			// Update verification timestamp only if actually verified
 			if (verification.verified) {
 				await updateOrganization({
 					id: organizationId,
@@ -60,7 +66,7 @@ export const verifyCustomDomain = protectedProcedure
 
 			// Get configuration details
 			const configuration = await vercelService.checkConfiguration(
-				organization.customDomain,
+				organization.customDomain
 			);
 
 			return {
@@ -74,7 +80,20 @@ export const verifyCustomDomain = protectedProcedure
 			};
 		} catch (error) {
 			logger.error("Failed to verify custom domain:", error);
+
+			// More specific error message
+			if (error instanceof Error) {
+				if (error.message.includes("404")) {
+					throw new ORPCError("NOT_FOUND");
+				}
+				if (
+					error.message.includes("401") ||
+					error.message.includes("403")
+				) {
+					throw new ORPCError("UNAUTHORIZED");
+				}
+			}
+
 			throw new ORPCError("INTERNAL_SERVER_ERROR");
 		}
 	});
-

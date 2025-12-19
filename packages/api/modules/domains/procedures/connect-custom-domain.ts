@@ -67,18 +67,24 @@ export const connectCustomDomain = protectedProcedure
 				},
 			});
 
-			if (existingOrgWithDomain) {
-				throw new ORPCError("BAD_REQUEST");
-			}
+		if (existingOrgWithDomain) {
+			throw new ORPCError("BAD_REQUEST");
+		}
 
-			// Initialize Vercel service
-			const vercelService = new VercelDomainService({
-				projectId: process.env.VERCEL_PROJECT_ID || "",
-				authToken: process.env.VERCEL_AUTH_TOKEN || "",
-				teamId: process.env.VERCEL_TEAM_ID,
-			});
+		// Check if Vercel credentials are configured
+		if (!process.env.VERCEL_AUTH_TOKEN || !process.env.VERCEL_PROJECT_ID) {
+			logger.error("Vercel credentials not configured");
+			throw new ORPCError("INTERNAL_SERVER_ERROR");
+		}
 
-			try {
+		// Initialize Vercel service
+		const vercelService = new VercelDomainService({
+			projectId: process.env.VERCEL_PROJECT_ID,
+			authToken: process.env.VERCEL_AUTH_TOKEN,
+			teamId: process.env.VERCEL_TEAM_ID,
+		});
+
+		try {
 				// Add domain to Vercel
 				const result = await vercelService.addDomain(normalizedDomain);
 

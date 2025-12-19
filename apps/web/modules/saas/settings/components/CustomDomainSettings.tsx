@@ -237,27 +237,53 @@ export function CustomDomainSettings({
 							)}
 						</div>
 
-						<div className="rounded-lg border bg-muted/50 p-4">
-							<h4 className="mb-2 text-sm font-medium">
-								DNS Configuration
-							</h4>
-							<p className="mb-3 text-sm text-foreground/70">
-								Add a CNAME record pointing to:
-							</p>
-							<div className="flex items-center gap-2">
-								<code className="flex-1 rounded bg-background px-3 py-2 text-sm">
-									{domainConfig.cnameTarget}
-								</code>
-								<Button
-									type="button"
-									variant="outline"
-									size="sm"
-									onClick={copyCnameTarget}
-								>
-									<CopyIcon className="size-4" />
-								</Button>
-							</div>
+					<div className="rounded-lg border bg-muted/50 p-4">
+						<h4 className="mb-2 text-sm font-medium">
+							DNS Configuration
+						</h4>
+						<p className="mb-3 text-sm text-foreground/70">
+							Add the following CNAME record to your DNS provider:
+						</p>
+						<div className="overflow-x-auto">
+							<table className="w-full text-sm">
+								<thead>
+									<tr className="border-b">
+										<th className="pb-2 text-left font-medium">Type</th>
+										<th className="pb-2 text-left font-medium">Name</th>
+										<th className="pb-2 text-left font-medium">Value</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td className="py-2">
+											<code className="rounded bg-background px-2 py-1">
+												CNAME
+											</code>
+										</td>
+										<td className="py-2">
+											<code className="rounded bg-background px-2 py-1">
+												@ (or subdomain)
+											</code>
+										</td>
+										<td className="py-2 flex items-center gap-2">
+											<code className="flex-1 rounded bg-background px-2 py-1">
+												{domainConfig.cnameTarget}
+											</code>
+											<Button
+												type="button"
+												variant="ghost"
+												size="sm"
+												onClick={copyCnameTarget}
+												className="h-7 w-7 p-0"
+											>
+												<CopyIcon className="size-3" />
+											</Button>
+										</td>
+									</tr>
+								</tbody>
+							</table>
 						</div>
+					</div>
 
 						<Button
 							type="submit"
@@ -296,31 +322,65 @@ export function CustomDomainSettings({
 											Verification Required
 										</h4>
 										<p className="mt-1 text-sm text-foreground/70">
-											Make sure your CNAME record is configured correctly:
+											Configure the following DNS record, then click "Verify Domain":
 										</p>
 									</div>
 								</div>
-								<div className="mb-3 flex items-center gap-2">
-									<code className="flex-1 rounded bg-background px-3 py-2 text-sm">
-										{domainConfig.cnameTarget}
-									</code>
-									<Button
-										type="button"
-										variant="outline"
-										size="sm"
-										onClick={copyCnameTarget}
-									>
-										<CopyIcon className="size-4" />
-									</Button>
+								<div className="mb-4 overflow-x-auto rounded-lg border bg-background">
+									<table className="w-full text-sm">
+										<thead>
+											<tr className="border-b">
+												<th className="p-3 text-left font-medium">Type</th>
+												<th className="p-3 text-left font-medium">Name</th>
+												<th className="p-3 text-left font-medium">Value</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td className="p-3">
+													<code className="rounded bg-muted px-2 py-1">
+														CNAME
+													</code>
+												</td>
+												<td className="p-3">
+													<code className="rounded bg-muted px-2 py-1">
+														{domainStatus?.domain?.includes('.') 
+															? domainStatus.domain.split('.')[0]
+															: '@'}
+													</code>
+												</td>
+												<td className="p-3">
+													<div className="flex items-center gap-2">
+														<code className="flex-1 rounded bg-muted px-2 py-1">
+															{domainConfig.cnameTarget}
+														</code>
+														<Button
+															type="button"
+															variant="ghost"
+															size="sm"
+															onClick={copyCnameTarget}
+															className="h-7 w-7 p-0"
+														>
+															{copied ? (
+																<CheckCircle2Icon className="size-3 text-green-500" />
+															) : (
+																<CopyIcon className="size-3" />
+															)}
+														</Button>
+													</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
 								</div>
 								<Button
-									variant="outline"
+									variant="default"
 									size="sm"
 									onClick={handleVerifyDomain}
 									disabled={verifyDomainMutation.isPending}
 									loading={verifyDomainMutation.isPending}
 								>
-									Verify Domain
+									{verifyDomainMutation.isPending ? "Verifying..." : "Verify Domain"}
 								</Button>
 							</div>
 						)}

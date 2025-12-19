@@ -34,60 +34,31 @@ export const getCustomDomainStatus = protectedProcedure
 			throw new ORPCError("FORBIDDEN");
 		}
 
-		// Check plan access
-		const hasAccess = await checkPlanLimit(organizationId, "customDomain");
+	// Check plan access
+	const hasAccess = await checkPlanLimit(organizationId, "customDomain");
 
-		if (!organization.customDomain) {
-			return {
-				domain: null,
-				enabled: false,
-				verified: false,
-				hasAccess,
-				cnameTarget: domainConfig.cnameTarget,
-			};
-		}
-
-		// Get verification status from Vercel
-		let verified = false;
-		let configuration = null;
-
-		if (organization.customDomain) {
-			const vercelService = new VercelDomainService({
-				projectId: process.env.VERCEL_PROJECT_ID || "",
-				authToken: process.env.VERCEL_AUTH_TOKEN || "",
-				teamId: process.env.VERCEL_TEAM_ID,
-			});
-
-			try {
-				const verification = await vercelService.verifyDomain(
-					organization.customDomain,
-				);
-				verified = verification.verified;
-
-				const config = await vercelService.checkConfiguration(
-					organization.customDomain,
-				);
-				configuration = {
-					configured: config.configured,
-					cnameRecord: config.cnameRecord,
-					txtRecords: config.txtRecords,
-					verification: config.verification,
-				};
-			} catch (error) {
-				// If verification fails, domain is not verified
-				verified = false;
-			}
-		}
-
+	if (!organization.customDomain) {
 		return {
-			domain: organization.customDomain,
-			enabled: organization.customDomainEnabled,
-			verified,
+			domain: null,
+			enabled: false,
+			verified: false,
 			hasAccess,
 			cnameTarget: domainConfig.cnameTarget,
-			configuration,
-			domainConfiguredAt: organization.domainConfiguredAt,
-			domainVerifiedAt: organization.domainVerifiedAt,
 		};
+	}
+
+	// Verification status is based on domainVerifiedAt timestamp
+	// User must click "Verify Domain" button to trigger actual verification
+	const verified = !!organization.domainVerifiedAt;
+
+	return {
+		domain: organization.customDomain,
+		enabled: organization.customDomainEnabled,
+		verified,
+		hasAccess,
+		cnameTarget: domainConfig.cnameTarget,
+		domainConfiguredAt: organization.domainConfiguredAt,
+		domainVerifiedAt: organization.domainVerifiedAt,
+	};
 	});
 

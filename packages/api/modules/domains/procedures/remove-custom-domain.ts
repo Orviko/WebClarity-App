@@ -26,7 +26,7 @@ export const removeCustomDomain = protectedProcedure
 		// Verify user is admin/owner
 		const membership = await verifyOrganizationMembership(
 			organizationId,
-			user.id,
+			user.id
 		);
 
 		if (!membership || !["owner", "admin"].includes(membership.role)) {
@@ -37,10 +37,16 @@ export const removeCustomDomain = protectedProcedure
 			throw new ORPCError("BAD_REQUEST");
 		}
 
+		// Check if Vercel credentials are configured
+		if (!process.env.VERCEL_AUTH_TOKEN || !process.env.VERCEL_PROJECT_ID) {
+			logger.error("Vercel credentials not configured");
+			throw new ORPCError("INTERNAL_SERVER_ERROR");
+		}
+
 		// Initialize Vercel service
 		const vercelService = new VercelDomainService({
-			projectId: process.env.VERCEL_PROJECT_ID || "",
-			authToken: process.env.VERCEL_AUTH_TOKEN || "",
+			projectId: process.env.VERCEL_PROJECT_ID,
+			authToken: process.env.VERCEL_AUTH_TOKEN,
 			teamId: process.env.VERCEL_TEAM_ID,
 		});
 
@@ -74,4 +80,3 @@ export const removeCustomDomain = protectedProcedure
 			throw new ORPCError("INTERNAL_SERVER_ERROR");
 		}
 	});
-
