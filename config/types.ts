@@ -60,6 +60,7 @@ export type Config = {
 				limits?: {
 					shares?: number | null; // null = unlimited
 					projects?: number | null;
+					customDomain?: boolean; // true = enabled, false = disabled
 					// Add more as features expand
 				};
 				prices?: Array<

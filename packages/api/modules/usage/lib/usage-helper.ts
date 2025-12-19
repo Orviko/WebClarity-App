@@ -81,7 +81,7 @@ export async function calculateLimitsForOrganization(
 ): Promise<{
 	planId: PlanId;
 	planName: string;
-	limits: Record<string, number | null>;
+	limits: Record<string, number | null | boolean>;
 }> {
 	const org = await db.organization.findUnique({
 		where: { id: organizationId },
@@ -256,16 +256,17 @@ export async function getWorkspaceUsageData(organizationId: string): Promise<{
 		> = {};
 
 		// For each metric type defined in limits, get usage
-		for (const [metricType, limit] of Object.entries(limits)) {
+		for (const [metricType, limitValue] of Object.entries(limits)) {
+			// Skip boolean limits (like customDomain)
+			if (typeof limitValue === "boolean") continue;
+
+			const limit = limitValue ?? null;
 			const usage = await getUsageForMetric(organizationId, metricType);
-			const threshold = checkUsageThreshold(
-				usage.currentUsage,
-				limit ?? null
-			);
+			const threshold = checkUsageThreshold(usage.currentUsage, limit);
 
 			metrics[metricType] = {
 				current: usage.currentUsage,
-				limit: limit ?? null,
+				limit: limit,
 				status: threshold.status,
 				percentage: threshold.percentage,
 			};

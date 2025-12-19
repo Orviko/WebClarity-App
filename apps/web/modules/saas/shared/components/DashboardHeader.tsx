@@ -40,12 +40,7 @@ export function DashboardHeader() {
 	const t = useTranslations();
 
 	// Don't show breadcrumb on the main workspace pages
-	if (
-		pathname === "/workspace" ||
-		pathname === "/workspace/" ||
-		pathname === "/admin" ||
-		pathname === "/admin/"
-	) {
+	if (pathname === "/" || pathname === "/admin" || pathname === "/admin/") {
 		return (
 			<header className="flex h-16 shrink-0 items-center gap-2">
 				<div className="flex items-center gap-2 px-4">

@@ -44,6 +44,12 @@ export const config = {
 			"settings",
 			"ai-demo",
 			"organization-invitation",
+			"auth",
+			"api",
+			"share",
+			"image-proxy",
+			"onboarding",
+			"choose-plan",
 		],
 	},
 	// Users
@@ -68,7 +74,7 @@ export const config = {
 		// Whether users should be activate two factor authentication
 		enableTwoFactor: true, // ✅ ENABLED - 2FA for security
 		// where users should be redirected after the sign in
-		redirectAfterSignIn: "/workspace",
+		redirectAfterSignIn: "/",
 		// where users should be redirected after logout
 		redirectAfterLogout: "/auth/login",
 		// how long a session should be valid
@@ -116,6 +122,7 @@ export const config = {
 				isFree: true,
 				limits: {
 					shares: 25,
+					customDomain: true, // ❌ No custom domain
 					// Future: projects, aiAnalyses, etc.
 				},
 			},
@@ -123,6 +130,7 @@ export const config = {
 				recommended: true,
 				limits: {
 					shares: null, // null = unlimited
+					customDomain: true, // ✅ Custom domain enabled
 				},
 				prices: [
 					{
@@ -150,6 +158,7 @@ export const config = {
 			lifetime: {
 				limits: {
 					shares: null, // unlimited
+					customDomain: true, // ✅ Custom domain enabled
 				},
 				prices: [
 					{
@@ -165,6 +174,7 @@ export const config = {
 				isEnterprise: true,
 				limits: {
 					shares: null, // unlimited
+					customDomain: true, // ✅ Custom domain enabled
 				},
 			},
 		},

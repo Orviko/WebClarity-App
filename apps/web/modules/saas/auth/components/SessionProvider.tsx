@@ -8,14 +8,15 @@ import { SessionContext } from "../lib/session-context";
 export function SessionProvider({ children }: { children: ReactNode }) {
 	const queryClient = useQueryClient();
 
-	const { data: session } = useSessionQuery();
-	const [loaded, setLoaded] = useState(!!session);
+	const { data: session, isLoading, isFetched } = useSessionQuery();
+	const [loaded, setLoaded] = useState(false);
 
 	useEffect(() => {
-		if (session && !loaded) {
+		// Mark as loaded when query completes (regardless of session presence)
+		if (isFetched && !isLoading) {
 			setLoaded(true);
 		}
-	}, [session]);
+	}, [isFetched, isLoading]);
 
 	return (
 		<SessionContext.Provider

@@ -45,7 +45,7 @@ export function OrganizationInvitationModal({
 					queryKey: organizationListQueryKey,
 				});
 
-				router.replace(`/workspace/${organizationSlug}`);
+				router.replace(`/${organizationSlug}`);
 			} else {
 				const { error } =
 					await authClient.organization.rejectInvitation({

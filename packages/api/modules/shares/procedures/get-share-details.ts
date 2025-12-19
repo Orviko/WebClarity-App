@@ -43,6 +43,8 @@ export const getShareDetails = publicProcedure
 						id: true,
 						name: true,
 						slug: true,
+						customDomain: true,
+						customDomainEnabled: true,
 					},
 				},
 				styleGuideData: true,

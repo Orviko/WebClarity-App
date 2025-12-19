@@ -1,5 +1,6 @@
 import type { RouterClient } from "@orpc/server";
 import { adminRouter } from "../modules/admin/router";
+import { domainsRouter } from "../modules/domains/router";
 import { organizationsRouter } from "../modules/organizations/router";
 import { paymentsRouter } from "../modules/payments/router";
 import { styleGuideRouter } from "../modules/style-guide/router";
@@ -20,6 +21,7 @@ export const router = publicProcedure.router({
 	shared: sharedRouter,
 	shares: sharesRouter,
 	usage: usageRouter,
+	domains: domainsRouter,
 });
 
 export type ApiRouterClient = RouterClient<typeof router>;

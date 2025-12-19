@@ -29,7 +29,7 @@ import {
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { withQuery } from "ufo";
@@ -65,6 +65,7 @@ export function LoginForm() {
 	const { user, loaded: sessionLoaded } = useSession();
 
 	const [showPassword, setShowPassword] = useState(false);
+	const hasRedirected = useRef(false);
 	const invitationId = searchParams.get("invitationId");
 	const email = searchParams.get("email");
 	const redirectTo = searchParams.get("redirectTo");
@@ -85,15 +86,20 @@ export function LoginForm() {
 		}
 	}, [email, form]);
 
-	const redirectPath = invitationId
-		? `/organization-invitation/${invitationId}`
-		: (redirectTo ?? config.auth.redirectAfterSignIn);
+	const redirectPath = useMemo(
+		() =>
+			invitationId
+				? `/organization-invitation/${invitationId}`
+				: (redirectTo ?? config.auth.redirectAfterSignIn),
+		[invitationId, redirectTo],
+	);
 
 	useEffect(() => {
-		if (sessionLoaded && user) {
+		if (sessionLoaded && user && !hasRedirected.current) {
+			hasRedirected.current = true;
 			router.replace(redirectPath);
 		}
-	}, [user, sessionLoaded]);
+	}, [user, sessionLoaded, router, redirectPath]);
 
 	const onSubmit: SubmitHandler<FormValues> = async (values) => {
 		try {

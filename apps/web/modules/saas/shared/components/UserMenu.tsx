@@ -42,8 +42,8 @@ export function UserMenu({ showUserName }: { showUserName?: boolean }) {
 	
 	// Settings link - use active workspace if available
 	const settingsHref = organizationSlug
-		? `/workspace/${organizationSlug}/settings/account/general`
-		: "/workspace";
+		? `/${organizationSlug}/settings/account/general`
+		: "/";
 
 	const colorModeOptions = [
 		{

@@ -82,7 +82,7 @@ export function ActiveOrganizationProvider({
 			};
 		});
 
-		router.push(`/workspace/${newActiveOrganization.slug}`);
+		router.push(`/${newActiveOrganization.slug}`);
 	};
 
 	const [loaded, setLoaded] = useState(activeOrganization !== undefined);

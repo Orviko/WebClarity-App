@@ -19,7 +19,7 @@ export default async function AdminDashboardPage() {
 	}
 
 	if (session.user?.role !== "admin") {
-		redirect("/workspace");
+		redirect("/");
 	}
 
 	return <AdminDashboard />;

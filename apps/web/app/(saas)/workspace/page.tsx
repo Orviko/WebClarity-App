@@ -28,5 +28,5 @@ export default async function WorkspaceIndexPage() {
 		) || organizations[0];
 
 	// Redirect to the default workspace
-	redirect(`/workspace/${defaultOrganization.slug}`);
+	redirect(`/${defaultOrganization.slug}`);
 }

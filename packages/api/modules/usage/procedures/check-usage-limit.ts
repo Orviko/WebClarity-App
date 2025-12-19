@@ -30,7 +30,11 @@ export const checkUsageLimit = protectedProcedure
 
 		// Get limits for the organization based on their plan
 		const { limits } = await calculateLimitsForOrganization(organizationId);
-		const limit = limits[metricType] ?? null;
+		const limitValue = limits[metricType];
+		const limit =
+			typeof limitValue === "number" || limitValue === null
+				? limitValue
+				: null;
 
 		// Get current usage
 		const usage = await getUsageForMetric(organizationId, metricType);

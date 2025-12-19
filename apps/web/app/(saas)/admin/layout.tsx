@@ -19,7 +19,7 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
 		const firstOrg = organizations[0];
 
 		if (firstOrg) {
-			redirect(`/workspace/${firstOrg.slug}`);
+			redirect(`/${firstOrg.slug}`);
 		}
 		redirect("/auth/login");
 	}
