@@ -4,6 +4,7 @@ import { DropdownMenuSub } from "@radix-ui/react-dropdown-menu";
 import { authClient } from "@repo/auth/client";
 import { config } from "@repo/config";
 import { useSession } from "@saas/auth/hooks/use-session";
+import { FullScreenLoader } from "@shared/components/FullScreenLoader";
 import { UserAvatar } from "@shared/components/UserAvatar";
 import {
 	DropdownMenu,
@@ -39,7 +40,8 @@ export function UserMenu({ showUserName }: { showUserName?: boolean }) {
 	const organizationSlug = params?.organizationSlug as string | undefined;
 	const { setTheme: setCurrentTheme, theme: currentTheme } = useTheme();
 	const [theme, setTheme] = useState<string>(currentTheme ?? "system");
-	
+	const [isLoggingOut, setIsLoggingOut] = useState(false);
+
 	// Settings link - use active workspace if available
 	const settingsHref = organizationSlug
 		? `/${organizationSlug}/settings/account/general`
@@ -64,6 +66,10 @@ export function UserMenu({ showUserName }: { showUserName?: boolean }) {
 	];
 
 	const onLogout = () => {
+		setIsLoggingOut(true);
+		// Clear app initialization flag
+		sessionStorage.removeItem("app_initialized");
+
 		authClient.signOut({
 			fetchOptions: {
 				onSuccess: async () => {
@@ -71,6 +77,9 @@ export function UserMenu({ showUserName }: { showUserName?: boolean }) {
 						config.auth.redirectAfterLogout,
 						window.location.origin,
 					).toString();
+				},
+				onError: () => {
+					setIsLoggingOut(false);
 				},
 			},
 		});
@@ -83,84 +92,89 @@ export function UserMenu({ showUserName }: { showUserName?: boolean }) {
 	const { name, email, image } = user;
 
 	return (
-		<DropdownMenu modal={false}>
-			<DropdownMenuTrigger asChild>
-				<button
-					type="button"
-					className="flex cursor-pointer w-full items-center justify-between gap-2 rounded-lg outline-hidden focus-visible:ring-2 focus-visible:ring-primary md:w-[100%+1rem] md:px-2 md:py-1.5 md:hover:bg-primary/5"
-					aria-label="User menu"
-				>
-					<span className="flex items-center gap-2">
-						<UserAvatar name={name ?? ""} avatarUrl={image} />
+		<>
+			{isLoggingOut && <FullScreenLoader message="Logging out..." />}
+			<DropdownMenu modal={false}>
+				<DropdownMenuTrigger asChild>
+					<button
+						type="button"
+						className="flex cursor-pointer w-full items-center justify-between gap-2 rounded-lg outline-hidden focus-visible:ring-2 focus-visible:ring-primary md:w-[100%+1rem] md:px-2 md:py-1.5 md:hover:bg-primary/5"
+						aria-label="User menu"
+					>
+						<span className="flex items-center gap-2">
+							<UserAvatar name={name ?? ""} avatarUrl={image} />
+							{showUserName && (
+								<span className="text-left leading-tight">
+									<span className="font-medium text-sm">
+										{name}
+									</span>
+									<span className="block text-xs opacity-70">
+										{email}
+									</span>
+								</span>
+							)}
+						</span>
+
 						{showUserName && (
-							<span className="text-left leading-tight">
-								<span className="font-medium text-sm">
-									{name}
-								</span>
-								<span className="block text-xs opacity-70">
-									{email}
-								</span>
-							</span>
+							<MoreVerticalIcon className="size-4" />
 						)}
-					</span>
+					</button>
+				</DropdownMenuTrigger>
 
-					{showUserName && <MoreVerticalIcon className="size-4" />}
-				</button>
-			</DropdownMenuTrigger>
+				<DropdownMenuContent align="end">
+					<DropdownMenuLabel>
+						{name}
+						<span className="block font-normal text-xs opacity-70">
+							{email}
+						</span>
+					</DropdownMenuLabel>
 
-			<DropdownMenuContent align="end">
-				<DropdownMenuLabel>
-					{name}
-					<span className="block font-normal text-xs opacity-70">
-						{email}
-					</span>
-				</DropdownMenuLabel>
+					<DropdownMenuSeparator />
 
-				<DropdownMenuSeparator />
+					{/* Color mode selection */}
+					<DropdownMenuSub>
+						<DropdownMenuSubTrigger>
+							<SunIcon className="mr-2 size-4" />
+							{t("app.userMenu.colorMode")}
+						</DropdownMenuSubTrigger>
+						<DropdownMenuPortal>
+							<DropdownMenuSubContent>
+								<DropdownMenuRadioGroup
+									value={theme}
+									onValueChange={(value) => {
+										setTheme(value);
+										setCurrentTheme(value);
+									}}
+								>
+									{colorModeOptions.map((option) => (
+										<DropdownMenuRadioItem
+											key={option.value}
+											value={option.value}
+										>
+											<option.icon className="mr-2 size-4 opacity-50" />
+											{option.label}
+										</DropdownMenuRadioItem>
+									))}
+								</DropdownMenuRadioGroup>
+							</DropdownMenuSubContent>
+						</DropdownMenuPortal>
+					</DropdownMenuSub>
 
-				{/* Color mode selection */}
-				<DropdownMenuSub>
-					<DropdownMenuSubTrigger>
-						<SunIcon className="mr-2 size-4" />
-						{t("app.userMenu.colorMode")}
-					</DropdownMenuSubTrigger>
-					<DropdownMenuPortal>
-						<DropdownMenuSubContent>
-							<DropdownMenuRadioGroup
-								value={theme}
-								onValueChange={(value) => {
-									setTheme(value);
-									setCurrentTheme(value);
-								}}
-							>
-								{colorModeOptions.map((option) => (
-									<DropdownMenuRadioItem
-										key={option.value}
-										value={option.value}
-									>
-										<option.icon className="mr-2 size-4 opacity-50" />
-										{option.label}
-									</DropdownMenuRadioItem>
-								))}
-							</DropdownMenuRadioGroup>
-						</DropdownMenuSubContent>
-					</DropdownMenuPortal>
-				</DropdownMenuSub>
+					<DropdownMenuSeparator />
 
-				<DropdownMenuSeparator />
+					<DropdownMenuItem asChild>
+						<Link href={settingsHref}>
+							<SettingsIcon className="mr-2 size-4" />
+							{t("app.userMenu.accountSettings")}
+						</Link>
+					</DropdownMenuItem>
 
-				<DropdownMenuItem asChild>
-					<Link href={settingsHref}>
-						<SettingsIcon className="mr-2 size-4" />
-						{t("app.userMenu.accountSettings")}
-					</Link>
-				</DropdownMenuItem>
-
-				<DropdownMenuItem onClick={onLogout}>
-					<LogOutIcon className="mr-2 size-4" />
-					{t("app.userMenu.logout")}
-				</DropdownMenuItem>
-			</DropdownMenuContent>
-		</DropdownMenu>
+					<DropdownMenuItem onClick={onLogout}>
+						<LogOutIcon className="mr-2 size-4" />
+						{t("app.userMenu.logout")}
+					</DropdownMenuItem>
+				</DropdownMenuContent>
+			</DropdownMenu>
+		</>
 	);
 }

@@ -20,9 +20,19 @@ export const useSessionQuery = () => {
 
 			return data;
 		},
-		staleTime: Number.POSITIVE_INFINITY,
-		refetchOnWindowFocus: false,
-		retry: false,
+		staleTime: 5 * 60 * 1000, // 5 minutes instead of infinite
+		gcTime: 10 * 60 * 1000, // 10 minutes garbage collection
+		refetchOnWindowFocus: true, // Revalidate on focus
+		refetchOnReconnect: true, // Revalidate on reconnect
+		retry: (failureCount, error) => {
+			// Retry up to 2 times, but not for auth errors
+			const errorMessage = error instanceof Error ? error.message : String(error);
+			if (errorMessage.includes('401') || errorMessage.includes('403')) {
+				return false;
+			}
+			return failureCount < 2;
+		},
+		retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 3000),
 		enabled: config.ui.saas.enabled,
 	});
 };

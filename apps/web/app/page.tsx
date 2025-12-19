@@ -1,59 +1,54 @@
 "use client";
 
 import { useSession } from "@saas/auth/hooks/use-session";
-import { authClient } from "@repo/auth/client";
+import { useOrganizationListQuery } from "@saas/organizations/lib/api";
+import { FullScreenLoader } from "@shared/components/FullScreenLoader";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export default function RootPage() {
-	const { user, loaded } = useSession();
+	const { user, loaded, appInitialized } = useSession();
 	const router = useRouter();
-	const [isRedirecting, setIsRedirecting] = useState(false);
+	const hasRedirected = useRef(false);
+
+	// Only fetch orgs if user exists and hasn't redirected yet
+	const { data: organizations, isLoading: isLoadingOrgs } =
+		useOrganizationListQuery({
+			enabled: !!user && !hasRedirected.current,
+		});
 
 	useEffect(() => {
-		if (!loaded || isRedirecting) return;
+		if (!loaded || hasRedirected.current) return;
 
+		// Not authenticated - redirect to login
 		if (!user) {
-			setIsRedirecting(true);
+			hasRedirected.current = true;
 			router.replace("/auth/login");
 			return;
 		}
 
-		// User is logged in, fetch organizations
-		const redirectToWorkspace = async () => {
-			try {
-				setIsRedirecting(true);
-				const { data: organizations, error } =
-					await authClient.organization.list();
+		// Wait for organizations to load
+		if (isLoadingOrgs || !organizations) return;
 
-				if (error) {
-					console.error("Failed to fetch organizations:", error);
-					router.replace("/onboarding");
-					return;
-				}
+		// Redirect to workspace
+		hasRedirected.current = true;
+		const firstOrg = organizations[0];
 
-				const firstOrg = organizations[0];
+		if (firstOrg) {
+			router.replace(`/${firstOrg.slug}`);
+		} else {
+			router.replace("/onboarding");
+		}
+	}, [user, loaded, organizations, isLoadingOrgs, router]);
 
-				if (firstOrg) {
-					router.replace(`/${firstOrg.slug}`);
-				} else {
-					router.replace("/onboarding");
-				}
-			} catch (error) {
-				console.error("Failed to fetch organizations:", error);
-				router.replace("/onboarding");
-			}
-		};
+	// Show full screen loader throughout the entire initial loading process
+	// This includes: checking auth, loading organizations, and redirecting
+	// After app is initialized, subsequent navigation uses top progress bar
+	if (!appInitialized) {
+		return <FullScreenLoader />;
+	}
 
-		redirectToWorkspace();
-	}, [user, loaded, router, isRedirecting]);
-
-	return (
-		<div className="flex min-h-screen items-center justify-center">
-			<div className="text-center">
-				<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" />
-				<p className="mt-4 text-muted-foreground">Loading...</p>
-			</div>
-		</div>
-	);
+	// After app initialized, don't show any loader - let top progress bar handle it
+	// This component will quickly redirect, so minimal content is fine
+	return null;
 }

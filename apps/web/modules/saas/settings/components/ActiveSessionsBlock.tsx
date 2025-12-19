@@ -30,19 +30,21 @@ export function ActiveSessionsBlock() {
 	});
 
 	const revokeSession = (token: string) => {
+		const isCurrentSession = currentSession?.token === token;
+
+		if (isCurrentSession) {
+			// Clear app initialization flag for current session logout
+			sessionStorage.removeItem("app_initialized");
+			toast.loading("Logging out...");
+		}
+
 		authClient.revokeSession(
 			{
 				token,
 			},
 			{
 				onSuccess: async () => {
-					toast.success(
-						t(
-							"settings.account.security.activeSessions.notifications.revokeSession.success",
-						),
-					);
-
-					if (currentSession?.token === token) {
+					if (isCurrentSession) {
 						await queryClient.refetchQueries({
 							queryKey: sessionQueryKey,
 						});
@@ -52,6 +54,11 @@ export function ActiveSessionsBlock() {
 							window.location.origin,
 						).toString();
 					} else {
+						toast.success(
+							t(
+								"settings.account.security.activeSessions.notifications.revokeSession.success",
+							),
+						);
 						queryClient.invalidateQueries({
 							queryKey: ["active-sessions"],
 						});
@@ -99,14 +106,14 @@ export function ActiveSessionsBlock() {
 									</small>
 								</div>
 							</div>
-						<Button
-							variant="outline"
-							size="icon"
-							className="shrink-0"
-							onClick={() => revokeSession(session.token)}
-						>
-							<XIcon className="size-4" />
-						</Button>
+							<Button
+								variant="outline"
+								size="icon"
+								className="shrink-0"
+								onClick={() => revokeSession(session.token)}
+							>
+								<XIcon className="size-4" />
+							</Button>
 						</div>
 					))
 				)}

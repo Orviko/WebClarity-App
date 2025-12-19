@@ -101,12 +101,14 @@ export function UserList() {
 		await authClient.admin.impersonateUser({
 			userId,
 		});
-		await refetch();
+
+		// Clear appInitialized flag to trigger full reload flow
+		sessionStorage.removeItem("app_initialized");
+
 		toast.dismiss(toastId);
-		window.location.href = new URL(
-			"/workspace",
-			window.location.origin,
-		).toString();
+
+		// Redirect to root, which will handle proper redirection to user's workspace
+		window.location.href = "/";
 	};
 
 	const deleteUser = async (id: string) => {

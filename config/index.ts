@@ -89,8 +89,8 @@ export const config = {
 	ui: {
 		// the themes that should be available in the app
 		enabledThemes: ["light", "dark"],
-		// the default theme
-		defaultTheme: "light",
+		// the default theme (use "system" to respect user's device preferences)
+		defaultTheme: "system",
 		// the saas part of the application
 		saas: {
 			// whether the saas part should be enabled

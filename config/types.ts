@@ -41,7 +41,7 @@ export type Config = {
 	};
 	ui: {
 		enabledThemes: Array<"light" | "dark">;
-		defaultTheme: Config["ui"]["enabledThemes"][number];
+		defaultTheme: Config["ui"]["enabledThemes"][number] | "system";
 		saas: {
 			enabled: boolean;
 			useSidebarLayout: boolean;

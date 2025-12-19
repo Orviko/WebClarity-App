@@ -20,21 +20,18 @@ export default async function OrganizationLayout({
 	}>;
 }>) {
 	const { organizationSlug } = await params;
-
 	const session = await getSession();
 
-	// If user is not logged in, redirect to login
+	// Keep this check for direct URL access (bypassing parent layout)
 	if (!session) {
 		redirect("/auth/login");
 	}
 
+	try {
 	const organization = await getActiveOrganization(organizationSlug);
 
-	// If organization not found or user doesn't have access, redirect to default workspace
 	if (!organization) {
 		const organizations = await getOrganizationList();
-
-		// Find user's default workspace (active org or first org)
 		const defaultOrganization =
 			organizations.find(
 				(org) => org.id === session?.session.activeOrganizationId,
@@ -43,27 +40,33 @@ export default async function OrganizationLayout({
 		if (defaultOrganization) {
 			redirect(`/${defaultOrganization.slug}`);
 		} else {
-			// No organizations available, redirect to onboarding
 			redirect("/onboarding");
 		}
 	}
 
 	const queryClient = getServerQueryClient();
 
-	await queryClient.prefetchQuery({
+		// Prefetch organization-specific data
+		await Promise.all([
+			queryClient.prefetchQuery({
 		queryKey: activeOrganizationQueryKey(organizationSlug),
 		queryFn: () => organization,
-	});
+				staleTime: 60 * 1000,
+			}),
 
-	if (config.users.enableBilling) {
-		await queryClient.prefetchQuery(
+			config.users.enableBilling &&
+				queryClient.prefetchQuery(
 			orpc.payments.listPurchases.queryOptions({
 				input: {
 					organizationId: organization.id,
 				},
 			}),
-		);
-	}
+				),
+		]);
 
 	return <AppWrapper>{children}</AppWrapper>;
+	} catch (error) {
+		console.error("Organization layout error:", error);
+		redirect("/onboarding");
+	}
 }

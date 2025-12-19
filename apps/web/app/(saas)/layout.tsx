@@ -14,31 +14,35 @@ import type { PropsWithChildren } from "react";
 export default async function SaaSLayout({ children }: PropsWithChildren) {
 	const session = await getSession();
 
+	// Keep server-side redirect for direct URL access
 	if (!session) {
 		redirect("/auth/login");
 	}
 
 	const queryClient = getServerQueryClient();
 
-	await queryClient.prefetchQuery({
+	// Prefetch data for faster client-side hydration
+	await Promise.all([
+		queryClient.prefetchQuery({
 		queryKey: sessionQueryKey,
 		queryFn: () => session,
-	});
+			staleTime: 5 * 60 * 1000, // Match client config
+		}),
 
-	if (config.organizations.enable) {
-		await queryClient.prefetchQuery({
+		config.organizations.enable &&
+			queryClient.prefetchQuery({
 			queryKey: organizationListQueryKey,
 			queryFn: getOrganizationList,
-		});
-	}
+				staleTime: 60 * 1000, // 1 minute
+			}),
 
-	if (config.users.enableBilling) {
-		await queryClient.prefetchQuery(
+		config.users.enableBilling &&
+			queryClient.prefetchQuery(
 			orpc.payments.listPurchases.queryOptions({
 				input: {},
 			}),
-		);
-	}
+			),
+	]);
 
 	return (
 		<HydrationBoundary state={dehydrate(queryClient)}>
