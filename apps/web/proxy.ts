@@ -77,10 +77,27 @@ export default async function proxy(req: NextRequest) {
 			);
 
 			if (hasAccess) {
-				// If it's a custom domain for a share, rewrite to /share/[shareId]
+				// If it's a custom domain for a share, verify ownership first
 				if (pathname.startsWith("/share/")) {
+					const shareId = pathname.split("/")[2];
+
+					// Verify the share belongs to this organization
+					// Query by shareId field (the short URL identifier), not id field
+					const share = await db.share.findFirst({
+						where: {
+							shareId: shareId, // Use shareId field (the short identifier)
+							organizationId: organization.id, // Must belong to this org
+						},
+					});
+
+					// If share doesn't belong to this organization, return 404
+					if (!share) {
+						return new NextResponse(null, { status: 404 });
+					}
+
+					// Share is valid - allow access
 					return NextResponse.rewrite(
-						new URL(`/share/${pathname.split("/")[2]}`, req.url),
+						new URL(`/share/${shareId}`, req.url),
 					);
 				}
 				// Otherwise, rewrite to the organization's slug route
