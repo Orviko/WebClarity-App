@@ -1,4 +1,5 @@
 import { Slot, Slottable } from "@radix-ui/react-slot";
+import { Loader2Icon } from "lucide-react";
 import { Spinner } from "@shared/components/Spinner";
 import { cn } from "@ui/lib";
 import type { VariantProps } from "class-variance-authority";
@@ -54,21 +55,27 @@ const Button = ({
 	...props
 }: ButtonProps) => {
 	const Comp = asChild ? Slot : "button";
-	
-	// Determine spinner color based on variant
-	// For primary/default variant, use white; for others, use primary color
-	const spinnerClassName =
-		variant === "default" || variant === undefined
-			? "size-4 text-white"
-			: "size-4";
-	
+
+	// For default variant (Sign in button), use circular loader with white color
+	// For all other variants, use the original bouncing dots spinner
+	const isDefaultVariant = variant === "default" || variant === undefined;
+
 	return (
 		<Comp
 			className={cn(buttonVariants({ variant, size, className }))}
 			disabled={disabled || loading}
 			{...props}
 		>
-			{loading && <Spinner className={spinnerClassName} />}
+			{loading &&
+				(isDefaultVariant ? (
+					<Loader2Icon
+						role="status"
+						aria-label="Loading"
+						className="size-4 animate-spin text-white"
+					/>
+				) : (
+					<Spinner />
+				))}
 			<Slottable>{children}</Slottable>
 		</Comp>
 	);
