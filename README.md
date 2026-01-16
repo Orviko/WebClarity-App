@@ -80,32 +80,32 @@ web-app/
 
 ### Core Technologies
 
--   **Next.js 16** - React framework with App Router
--   **React 19** - UI library
--   **TypeScript 5.9** - Type-safe JavaScript
--   **Turborepo** - Monorepo build system
--   **pnpm** - Fast, efficient package manager
+- **Next.js 16** - React framework with App Router
+- **React 19** - UI library
+- **TypeScript 5.9** - Type-safe JavaScript
+- **Turborepo** - Monorepo build system
+- **pnpm** - Fast, efficient package manager
 
 ### Backend & Database
 
--   **Prisma** - Type-safe ORM
--   **PostgreSQL** - Database (Neon/Supabase)
--   **Better Auth** - Authentication system
--   **oRPC** - Type-safe API layer
+- **Prisma** - Type-safe ORM
+- **PostgreSQL** - Database (Neon/Supabase)
+- **Better Auth** - Authentication system
+- **oRPC** - Type-safe API layer
 
 ### Frontend & UI
 
--   **Tailwind CSS v4** - Utility-first styling
--   **Shadcn UI** - Component library
--   **Radix UI** - Accessible primitives
--   **Lucide Icons** - Icon library
--   **Next Themes** - Dark mode support
+- **Tailwind CSS v4** - Utility-first styling
+- **Shadcn UI** - Component library
+- **Radix UI** - Accessible primitives
+- **Lucide Icons** - Icon library
+- **Next Themes** - Dark mode support
 
 ### Features & Integrations
 
--   **Stripe** - Payment processing
--   **Cloudflare R2** - File storage
--   **Email Providers** - Transactional emails (Plunk/Resend)
+- **Stripe** - Payment processing
+- **Cloudflare R2** - File storage
+- **Email Providers** - Transactional emails (Plunk/Resend)
 
 ## 🎯 Key Features
 
@@ -259,10 +259,10 @@ openssl rand -base64 32
 
 **Note on Scheduled Cleanup**:
 
--   Currently configured for **Vercel Cron Jobs** (weekly schedule in `vercel.json`)
--   The cleanup endpoint (`/api/cron/cleanup-shares`) is vendor-agnostic and works with any HTTP scheduler
--   **Lazy deletion** (on user visits) will always work regardless of hosting provider
--   If moving away from Vercel, scheduled weekly cleanup will stop, but the system won't break - only orphaned images may persist longer until manually cleaned or a new scheduler is configured
+- Currently configured for **Vercel Cron Jobs** (weekly schedule in `vercel.json`)
+- The cleanup endpoint (`/api/cron/cleanup-shares`) is vendor-agnostic and works with any HTTP scheduler
+- **Lazy deletion** (on user visits) will always work regardless of hosting provider
+- If moving away from Vercel, scheduled weekly cleanup will stop, but the system won't break - only orphaned images may persist longer until manually cleaned or a new scheduler is configured
 
 ## 🔧 Available Commands
 
@@ -391,32 +391,32 @@ model Purchase {
 
 ### Production Checklist
 
--   [ ] Set up production database (Neon/Supabase)
--   [ ] Configure production environment variables
--   [ ] Set up Stripe webhooks for production
--   [ ] Configure Google OAuth production URLs
--   [ ] Set up custom domain (app.stepcaptor.com)
--   [ ] Enable error tracking (Sentry)
--   [ ] Set up monitoring & analytics
--   [ ] Configure CDN & caching
--   [ ] Test all authentication flows
--   [ ] Test payment flows
+- [ ] Set up production database (Neon/Supabase)
+- [ ] Configure production environment variables
+- [ ] Set up Stripe webhooks for production
+- [ ] Configure Google OAuth production URLs
+- [ ] Set up custom domain (app.stepcaptor.com)
+- [ ] Enable error tracking (Sentry)
+- [ ] Set up monitoring & analytics
+- [ ] Configure CDN & caching
+- [ ] Test all authentication flows
+- [ ] Test payment flows
 
 ### Recommended Platforms
 
 **Vercel** (Recommended)
 
--   Optimal for Next.js
--   Automatic deployments
--   Edge network
--   Environment variables management
+- Optimal for Next.js
+- Automatic deployments
+- Edge network
+- Environment variables management
 
 **Alternatives:**
 
--   Netlify
--   Railway
--   Fly.io
--   Self-hosted (Docker)
+- Netlify
+- Railway
+- Fly.io
+- Self-hosted (Docker)
 
 ### Vercel Deployment
 
@@ -456,10 +456,10 @@ pnpm --filter web e2e
 
 TypeScript ensures type safety across:
 
--   API calls (oRPC)
--   Database queries (Prisma)
--   Component props
--   Environment variables
+- API calls (oRPC)
+- Database queries (Prisma)
+- Component props
+- Environment variables
 
 ## 📚 Package Details
 
@@ -469,10 +469,10 @@ Type-safe API layer using oRPC.
 
 **Key Modules:**
 
--   `admin/` - Admin operations (user/workspace management)
--   `organizations/` - Workspace management (code uses "organization", UI shows "workspace")
--   `payments/` - Billing operations
--   `users/` - User operations
+- `admin/` - Admin operations (user/workspace management)
+- `organizations/` - Workspace management (code uses "organization", UI shows "workspace")
+- `payments/` - Billing operations
+- `users/` - User operations
 
 ### `@repo/auth`
 
@@ -480,12 +480,12 @@ Authentication system using Better Auth.
 
 **Features:**
 
--   Email/password auth
--   Google OAuth
--   2FA (TOTP)
--   Email verification
--   Password reset
--   Workspace invitations
+- Email/password auth
+- Google OAuth
+- 2FA (TOTP)
+- Email verification
+- Password reset
+- Workspace invitations
 
 ### `@repo/database`
 
@@ -493,9 +493,9 @@ Database layer using Prisma ORM.
 
 **Includes:**
 
--   Type-safe queries
--   Zod schema generation
--   Migration management
+- Type-safe queries
+- Zod schema generation
+- Migration management
 
 ### `@repo/mail`
 
@@ -503,10 +503,10 @@ Email system with React templates.
 
 **Templates:**
 
--   Email verification
--   Password reset
--   Workspace invitations (user-facing)
--   New user welcome
+- Email verification
+- Password reset
+- Workspace invitations (user-facing)
+- New user welcome
 
 ### `@repo/payments`
 
@@ -514,9 +514,9 @@ Payment processing with Stripe.
 
 **Features:**
 
--   Subscription management
--   Customer portal
--   Webhook handling
+- Subscription management
+- Customer portal
+- Webhook handling
 
 ## 🐛 Troubleshooting
 
@@ -580,44 +580,74 @@ pnpm build
 
 ### Official Resources
 
--   [Next.js Documentation](https://nextjs.org/docs)
--   [Prisma Documentation](https://www.prisma.io/docs)
--   [Better Auth Documentation](https://better-auth.com)
--   [Stripe Documentation](https://stripe.com/docs)
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Prisma Documentation](https://www.prisma.io/docs)
+- [Better Auth Documentation](https://better-auth.com)
+- [Stripe Documentation](https://stripe.com/docs)
 
 ### Learning Resources
 
--   [Turborepo Handbook](https://turbo.build/repo/docs)
--   [TypeScript Handbook](https://www.typescriptlang.org/docs/)
--   [Tailwind CSS Docs](https://tailwindcss.com/docs)
+- [Turborepo Handbook](https://turbo.build/repo/docs)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+- [Tailwind CSS Docs](https://tailwindcss.com/docs)
 
 ## 📋 Important: Organization vs Workspace Terminology
 
 **Critical for Developers:** This codebase uses a dual terminology system:
 
--   **Code/Backend:** Everything uses "organization" terminology
+- **Code/Backend:** Everything uses "organization" terminology
+    - Database models: `Organization`, `organizationId`
+    - API endpoints: `/api/organizations/*`
+    - Functions: `getOrganization()`, `createOrganization()`
+    - Variables: `activeOrganization`, `organizationSlug`
+    - File/folder names: `organizations/`, `OrganizationSelect.tsx`
 
-    -   Database models: `Organization`, `organizationId`
-    -   API endpoints: `/api/organizations/*`
-    -   Functions: `getOrganization()`, `createOrganization()`
-    -   Variables: `activeOrganization`, `organizationSlug`
-    -   File/folder names: `organizations/`, `OrganizationSelect.tsx`
-
--   **User-Facing:** Everything displays as "workspace"
-    -   UI text: "Create workspace", "Workspace settings"
-    -   URLs: `/app/admin/workspaces` (admin routes only)
-    -   Emails: "You've been invited to join a workspace"
-    -   Translations: All `organizations.*` keys show "workspace" text
+- **User-Facing:** Everything displays as "workspace"
+    - UI text: "Create workspace", "Workspace settings"
+    - URLs: `/app/admin/workspaces` (admin routes only)
+    - Emails: "You've been invited to join a workspace"
+    - Translations: All `organizations.*` keys show "workspace" text
 
 **When Developing:**
 
--   ✅ Use `organization` functions, types, and variables in code
--   ✅ Use `organizations.*` translation keys
--   ✅ Display user-facing text as "workspace" via translations
--   ❌ Don't rename code variables/functions to "workspace"
--   ❌ Don't change database schema or API endpoints
+- ✅ Use `organization` functions, types, and variables in code
+- ✅ Use `organizations.*` translation keys
+- ✅ Display user-facing text as "workspace" via translations
+- ❌ Don't rename code variables/functions to "workspace"
+- ❌ Don't change database schema or API endpoints
 
 See [Workspace Terminology Guide](doc/WORKSPACE_TERMINOLOGY.md) for complete details.
+
+## 🎨 UI Components Development Page
+
+When running the application in **development mode**, you can access a comprehensive UI components showcase page at:
+
+```
+http://localhost:3000/dev/ui-components
+```
+
+### Features
+
+- **Live Component Preview**: See all 30+ UI components with interactive examples
+- **Category Navigation**: Components organized by type (Buttons, Inputs, Feedback, Layout, Overlays, Navigation, Data Display)
+- **Variant Showcase**: View different variants, sizes, and states for each component
+- **Development Only**: This page is **only accessible in development environments** (localhost, preview deployments) and will return 404 in production
+
+### When to Use
+
+- Reference this page when building new features to see available components
+- Use it to ensure consistency across the application
+- Great for onboarding new developers to the project's component library
+
+### Protected Routes
+
+All routes under `/dev/*` are protected and will only be accessible when:
+
+- `NODE_ENV === "development"`
+- URL contains `localhost` or `127.0.0.1`
+- URL contains `vercel.app` or `preview` (for preview deployments)
+
+---
 
 ## 🤝 Contributing
 
