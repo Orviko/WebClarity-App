@@ -23,7 +23,14 @@ function generateBreadcrumbs(
 	const breadcrumbs: { label: string; href: string }[] = [];
 
 	// Known route segments that should appear in breadcrumbs
-	const knownRoutes = ["admin", "projects", "reports", "shares", "resources", "settings"];
+	const knownRoutes = [
+		"admin",
+		"projects",
+		"reports",
+		"shares",
+		"resources",
+		"settings",
+	];
 
 	// Handle admin routes separately
 	const isAdminRoute = segments[0] === "admin";
@@ -111,6 +118,16 @@ export function DashboardHeader() {
 	const pathname = usePathname();
 	const t = useTranslations();
 	const { activeOrganization } = useActiveOrganization();
+
+	// Determine base path for the current organization
+	const basePath = activeOrganization?.slug
+		? `/${activeOrganization.slug}`
+		: "/";
+
+	// Check if we're on specific dashboard pages
+	const isWorkspaceDashboard =
+		pathname === basePath || pathname === `${basePath}/`;
+	const isAdminDashboard = pathname === "/admin" || pathname === "/admin/";
 
 	// Don't show breadcrumb on the main workspace pages
 	if (pathname === "/" || pathname === "/admin" || pathname === "/admin/") {
