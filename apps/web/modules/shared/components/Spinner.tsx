@@ -1,10 +1,22 @@
 import { cn } from "@ui/lib";
-import { Loader2Icon } from "lucide-react";
 
 export function Spinner({ className }: { className?: string }) {
 	return (
-		<Loader2Icon
-			className={cn("size-4 animate-spin text-primary", className)}
-		/>
+		<div
+			className={cn("flex items-center justify-center gap-2", className)}
+		>
+			<div
+				className="size-2.5 rounded-full bg-primary animate-bounce"
+				style={{ animationDelay: "0ms", animationDuration: "1s" }}
+			/>
+			<div
+				className="size-2.5 rounded-full bg-primary animate-bounce"
+				style={{ animationDelay: "150ms", animationDuration: "1s" }}
+			/>
+			<div
+				className="size-2.5 rounded-full bg-primary animate-bounce"
+				style={{ animationDelay: "300ms", animationDuration: "1s" }}
+			/>
+		</div>
 	);
 }

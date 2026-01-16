@@ -41,7 +41,7 @@ export type Config = {
 	};
 	ui: {
 		enabledThemes: Array<"light" | "dark">;
-		defaultTheme: Config["ui"]["enabledThemes"][number];
+		defaultTheme: Config["ui"]["enabledThemes"][number] | "system";
 		saas: {
 			enabled: boolean;
 			useSidebarLayout: boolean;
@@ -60,6 +60,7 @@ export type Config = {
 				limits?: {
 					shares?: number | null; // null = unlimited
 					projects?: number | null;
+					customDomain?: boolean; // true = enabled, false = disabled
 					// Add more as features expand
 				};
 				prices?: Array<

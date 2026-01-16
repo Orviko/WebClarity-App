@@ -63,7 +63,7 @@ export function CreateOrganizationForm({
 				queryKey: organizationListQueryKey,
 			});
 
-			router.replace(`/workspace/${newOrganization.slug}`);
+			router.replace(`/${newOrganization.slug}`);
 		} catch {
 			toast.error(t("organizations.createForm.notifications.error"));
 		}

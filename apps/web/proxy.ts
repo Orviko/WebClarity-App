@@ -1,18 +1,162 @@
 import { routing } from "@i18n/routing";
 import { config as appConfig } from "@repo/config";
+import { db } from "@repo/database";
+import { getPurchasesByOrganizationId } from "@repo/database";
+import { createPurchasesHelper } from "@repo/payments";
 import { getSessionCookie } from "better-auth/cookies";
 import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 import { withQuery } from "ufo";
+import { getBaseUrl } from "@repo/utils";
 
 const intlMiddleware = createMiddleware(routing);
 
+// Helper function to check custom domain access based on plan
+async function checkCustomDomainPlanAccess(
+	organizationId: string,
+): Promise<boolean> {
+	try {
+		const purchases = await getPurchasesByOrganizationId(organizationId);
+
+		// Create helper to determine active plan
+		const { activePlan } = createPurchasesHelper(purchases);
+
+		if (!activePlan) {
+			// No active purchase - check free plan limits
+			const freePlan = appConfig.payments.plans.free;
+			const limitValue = freePlan.limits?.customDomain;
+
+			// Boolean limits: true = enabled, false = disabled
+			if (typeof limitValue === "boolean") {
+				return limitValue;
+			}
+
+			return false;
+		}
+
+		// Find the plan configuration
+		const planConfig = appConfig.payments.plans[activePlan.id];
+
+		if (!planConfig?.limits) {
+			return false;
+		}
+
+		const limitValue = planConfig.limits.customDomain;
+
+		// Boolean limits: true = enabled, false = disabled
+		if (typeof limitValue === "boolean") {
+			return limitValue;
+		}
+
+		return false;
+	} catch {
+		return false;
+	}
+}
+
 export default async function proxy(req: NextRequest) {
-	const { pathname, origin } = req.nextUrl;
-
+	const { pathname, origin, hostname } = req.nextUrl;
 	const sessionCookie = getSessionCookie(req);
+	const baseUrl = getBaseUrl();
 
-	if (pathname.startsWith("/workspace") || pathname.startsWith("/admin")) {
+	// 1. Custom Domain Handling (Highest Priority)
+	// Check if the incoming request is on a custom domain
+	if (hostname !== new URL(baseUrl).hostname) {
+		const organization = await db.organization.findFirst({
+			where: {
+				customDomain: hostname,
+				customDomainEnabled: true,
+				domainVerifiedAt: { not: null },
+			},
+		});
+
+		if (organization) {
+			// Check if organization has plan access to custom domains
+			const hasAccess = await checkCustomDomainPlanAccess(
+				organization.id,
+			);
+
+			if (hasAccess) {
+				// If it's a custom domain for a share, verify ownership first
+				if (pathname.startsWith("/share/")) {
+					const shareId = pathname.split("/")[2];
+
+					// Fetch the share to check ownership
+					const share = await db.share.findFirst({
+						where: {
+							shareId: shareId, // Use shareId field (the short identifier)
+						},
+						select: {
+							id: true,
+							organizationId: true,
+						},
+					});
+
+					// Share not found at all - 404
+					if (!share) {
+						return new NextResponse(null, { status: 404 });
+					}
+
+					// CRITICAL: Custom domains can ONLY access their own organization's shares
+					// Everything else (public shares OR other workspaces) returns 404
+
+					// If share has NO organization (public/anonymous share) → 404
+					// These shares should ONLY be accessible via main app domain
+					if (!share.organizationId) {
+						return new NextResponse(null, { status: 404 });
+					}
+
+					// If share belongs to a DIFFERENT organization → 404
+					if (share.organizationId !== organization.id) {
+						return new NextResponse(null, { status: 404 });
+					}
+
+					// Share belongs to THIS organization - allow access ✅
+					return NextResponse.rewrite(
+						new URL(`/share/${shareId}`, req.url),
+					);
+				}
+				// Otherwise, rewrite to the organization's slug route
+				return NextResponse.rewrite(
+					new URL(`/${organization.slug}${pathname}`, req.url),
+				);
+			}
+		}
+
+		// If custom domain is not found, not active, or plan doesn't have access
+		// redirect to main app URL
+		return NextResponse.redirect(
+			new URL(req.url.replace(hostname, new URL(baseUrl).hostname)),
+		);
+	}
+
+	// 2. Legacy /workspace redirects (after custom domain check)
+	if (pathname.startsWith("/workspace")) {
+		const response = NextResponse.next();
+
+		if (!appConfig.ui.saas.enabled) {
+			return NextResponse.redirect(new URL("/", origin));
+		}
+
+		if (!sessionCookie) {
+			return NextResponse.redirect(
+				new URL(
+					withQuery("/auth/login", {
+						redirectTo: pathname,
+					}),
+					origin,
+				),
+			);
+		}
+
+		// Redirect /workspace to /
+		return NextResponse.redirect(
+			new URL(pathname.replace("/workspace", ""), origin),
+		);
+	}
+
+	// 3. Admin routes
+	if (pathname.startsWith("/admin")) {
 		const response = NextResponse.next();
 
 		if (!appConfig.ui.saas.enabled) {
@@ -33,6 +177,7 @@ export default async function proxy(req: NextRequest) {
 		return response;
 	}
 
+	// 4. Auth routes
 	if (pathname.startsWith("/auth")) {
 		if (!appConfig.ui.saas.enabled) {
 			return NextResponse.redirect(new URL("/", origin));
@@ -41,23 +186,53 @@ export default async function proxy(req: NextRequest) {
 		return NextResponse.next();
 	}
 
+	// 5. Paths without locale
 	const pathsWithoutLocale = [
 		"/onboarding",
 		"/choose-plan",
 		"/organization-invitation",
 		"/share", // Public share pages don't need locale or auth
+		"/admin", // Admin routes are handled separately for auth
 	];
 
 	if (pathsWithoutLocale.some((path) => pathname.startsWith(path))) {
 		return NextResponse.next();
 	}
 
-	if (!appConfig.ui.marketing.enabled) {
-		// Redirect to auth/login if marketing is disabled
-		return NextResponse.redirect(new URL("/auth/login", origin));
+	// 6. Organization routes (new workspace structure)
+	// Allow root path and organization-specific routes to pass through
+	// Root path handles its own auth/redirect logic
+	const pathsToAllowThrough = ["/"];
+
+	if (pathsToAllowThrough.includes(pathname)) {
+		return NextResponse.next();
 	}
 
-	return intlMiddleware(req);
+	// Allow organization slug routes (anything not starting with reserved paths)
+	const reservedPaths = [
+		"/api",
+		"/auth",
+		"/admin",
+		"/onboarding",
+		"/choose-plan",
+		"/organization-invitation",
+		"/share",
+		"/image-proxy",
+		"/images",
+		"/fonts",
+	];
+	const isReservedPath = reservedPaths.some((path) =>
+		pathname.startsWith(path),
+	);
+
+	if (!isReservedPath && pathname !== "/") {
+		// This is likely an organization route like /{slug} or /{slug}/settings
+		return NextResponse.next();
+	}
+
+	// 7. For root path and other non-reserved paths, let them through
+	// The root page handles its own authentication and redirects
+	return NextResponse.next();
 }
 
 export const config = {

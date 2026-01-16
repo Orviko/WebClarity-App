@@ -28,7 +28,7 @@ export default async function OnboardingPage() {
 		const organizations = await getOrganizationList();
 		const firstOrg = organizations[0];
 		if (firstOrg) {
-			redirect(`/workspace/${firstOrg.slug}`);
+			redirect(`/${firstOrg.slug}`);
 		}
 		redirect("/auth/login");
 	}

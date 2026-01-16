@@ -14,6 +14,7 @@ import {
 	TriangleAlertIcon,
 	Users2Icon,
 	BarChart3Icon,
+	PaletteIcon,
 } from "lucide-react";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -43,7 +44,7 @@ export default async function SettingsLayout({
 		session.user,
 	);
 
-	const organizationSettingsBasePath = `/workspace/${organizationSlug}/settings`;
+	const organizationSettingsBasePath = `/${organizationSlug}/settings`;
 
 	const menuItems = [
 		// Section 1: Personal/Account Settings
@@ -98,6 +99,15 @@ export default async function SettingsLayout({
 					href: `${organizationSettingsBasePath}/usage`,
 					icon: <BarChart3Icon className="size-4 opacity-50" />,
 				},
+				...(userIsOrganizationAdmin
+					? [
+							{
+								title: "Branding",
+								href: `${organizationSettingsBasePath}/branding`,
+								icon: <PaletteIcon className="size-4 opacity-50" />,
+							},
+						]
+					: []),
 				...(config.organizations.enable &&
 				config.organizations.enableBilling &&
 				userIsOrganizationAdmin

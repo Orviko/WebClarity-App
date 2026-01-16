@@ -4,7 +4,7 @@ import { orpcClient } from "@shared/lib/orpc-client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const organizationListQueryKey = ["user", "organizations"] as const;
-export const useOrganizationListQuery = () => {
+export const useOrganizationListQuery = (options?: { enabled?: boolean }) => {
 	return useQuery({
 		queryKey: organizationListQueryKey,
 		queryFn: async () => {
@@ -18,6 +18,9 @@ export const useOrganizationListQuery = () => {
 
 			return data;
 		},
+		staleTime: 2 * 60 * 1000, // 2 minutes (organizations don't change often)
+		gcTime: 10 * 60 * 1000, // 10 minutes
+		enabled: options?.enabled,
 	});
 };
 
@@ -27,6 +30,7 @@ export const useActiveOrganizationQuery = (
 	slug: string,
 	options?: {
 		enabled?: boolean;
+		retry?: number;
 	},
 ) => {
 	return useQuery({
@@ -48,6 +52,7 @@ export const useActiveOrganizationQuery = (
 			return data;
 		},
 		enabled: options?.enabled,
+		retry: options?.retry ?? 1, // Retry once on failure by default
 	});
 };
 

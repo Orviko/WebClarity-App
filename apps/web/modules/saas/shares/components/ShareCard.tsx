@@ -38,6 +38,7 @@ type Share = {
 	expiresAt: Date;
 	shareOgImageUrl: string | null;
 	type: "STYLE_GUIDE" | "HEADING_STRUCTURE";
+	shareUrl: string; // Added: URL from backend (includes custom domain if enabled)
 	user: {
 		id: string;
 		name: string;
@@ -57,10 +58,8 @@ export function ShareCard({ share, onUpdate }: ShareCardProps) {
 	const [isRenewOpen, setIsRenewOpen] = useState(false);
 	const [copied, setCopied] = useState(false);
 
-	const shareUrl =
-		typeof window !== "undefined"
-			? `${window.location.origin}/share/${share.shareId}`
-			: `/share/${share.shareId}`;
+	// Use shareUrl from API response (includes custom domain if enabled)
+	const shareUrl = share.shareUrl;
 
 	const handleCopyLink = async (e: React.MouseEvent) => {
 		e.stopPropagation();

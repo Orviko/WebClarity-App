@@ -112,18 +112,16 @@ export function DashboardHeader() {
 	const t = useTranslations();
 	const { activeOrganization } = useActiveOrganization();
 
-	// Determine base path for Dashboard link
-	const basePath = activeOrganization
-		? `/workspace/${activeOrganization.slug}`
-		: "/workspace";
-
-	// Check if we're on a dashboard page (workspace root or admin root)
-	const isWorkspaceDashboard =
-		pathname === "/workspace" ||
-		pathname === "/workspace/" ||
-		pathname === basePath ||
-		pathname === `${basePath}/`;
-	const isAdminDashboard = pathname === "/admin" || pathname === "/admin/";
+	// Don't show breadcrumb on the main workspace pages
+	if (pathname === "/" || pathname === "/admin" || pathname === "/admin/") {
+		return (
+			<header className="flex h-16 shrink-0 items-center gap-2">
+				<div className="flex items-center gap-2 px-4">
+					<SidebarTrigger className="-ml-1" />
+				</div>
+			</header>
+		);
+	}
 
 	const breadcrumbs =
 		isWorkspaceDashboard || isAdminDashboard

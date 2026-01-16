@@ -142,21 +142,45 @@ export async function createShareHandler(
 		return { ...share, shareOgImageUrl };
 	});
 
-	// Generate share URL - use web app URL from environment variable
-	// NEXT_PUBLIC_SITE_URL should be set in .env.local with the web app URL
-	const webAppUrl =
-		process.env.NEXT_PUBLIC_SITE_URL ||
-		(process.env.NEXT_PUBLIC_VERCEL_URL
-			? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-			: undefined);
+	// Generate share URL - use custom domain if available, otherwise default domain
+	let baseUrl: string;
+	if (organizationId) {
+		// Check if organization has custom domain enabled
+		const organization = await db.organization.findUnique({
+			where: { id: organizationId },
+			select: { customDomain: true, customDomainEnabled: true },
+		});
 
-	if (!webAppUrl) {
+		if (organization?.customDomainEnabled && organization?.customDomain) {
+			baseUrl = `https://${organization.customDomain}`;
+		} else {
+			// Use default domain
+			baseUrl =
+				process.env.NEXT_PUBLIC_SITE_URL ||
+				(process.env.NEXT_PUBLIC_VERCEL_URL
+					? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+					: undefined) ||
+				process.env.NEXT_PUBLIC_APP_URL ||
+				"";
+		}
+	} else {
+		// Anonymous share - use default domain
+		baseUrl =
+			process.env.NEXT_PUBLIC_SITE_URL ||
+			(process.env.NEXT_PUBLIC_VERCEL_URL
+				? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+				: undefined) ||
+			process.env.NEXT_PUBLIC_APP_URL ||
+			"";
+	}
+
+	if (!baseUrl) {
 		throw new Error(
-			"NEXT_PUBLIC_SITE_URL must be set in environment variables"
+			"NEXT_PUBLIC_SITE_URL or NEXT_PUBLIC_APP_URL must be set in environment variables"
 		);
 	}
 
-	const shareUrl = `${webAppUrl}/share/${shareId}`;
+	const shareUrl = `${baseUrl}/share/${shareId}`;
 
 	return {
 		shareId: result.shareId,

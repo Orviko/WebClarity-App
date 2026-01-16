@@ -3,6 +3,7 @@
 import { authClient } from "@repo/auth/client";
 import { config } from "@repo/config";
 import { useSession } from "@saas/auth/hooks/use-session";
+import { FullScreenLoader } from "@shared/components/FullScreenLoader";
 import { UserAvatar } from "@shared/components/UserAvatar";
 import {
 	DropdownMenu,
@@ -45,12 +46,13 @@ export function NavUser() {
 	const organizationSlug = params?.organizationSlug as string | undefined;
 	const { setTheme: setCurrentTheme, theme: currentTheme } = useTheme();
 	const [theme, setTheme] = useState<string>(currentTheme ?? "system");
+	const [isLoggingOut, setIsLoggingOut] = useState(false);
 	const { isMobile } = useSidebar();
 
 	// Settings link - use active workspace if available
 	const settingsHref = organizationSlug
-		? `/workspace/${organizationSlug}/settings/account/general`
-		: "/workspace";
+		? `/${organizationSlug}/settings/account/general`
+		: "/";
 
 	const colorModeOptions = [
 		{
@@ -71,6 +73,10 @@ export function NavUser() {
 	];
 
 	const onLogout = () => {
+		setIsLoggingOut(true);
+		// Clear app initialization flag
+		sessionStorage.removeItem("app_initialized");
+
 		authClient.signOut({
 			fetchOptions: {
 				onSuccess: async () => {
@@ -78,6 +84,9 @@ export function NavUser() {
 						config.auth.redirectAfterLogout,
 						window.location.origin,
 					).toString();
+				},
+				onError: () => {
+					setIsLoggingOut(false);
 				},
 			},
 		});
@@ -90,38 +99,16 @@ export function NavUser() {
 	const { name, email, image } = user;
 
 	return (
-		<SidebarMenu>
-			<SidebarMenuItem>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<SidebarMenuButton
-							size="lg"
-							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-						>
-							<UserAvatar
-								name={name ?? ""}
-								avatarUrl={image}
-								className="h-8 w-8 rounded-lg"
-							/>
-							<div className="grid flex-1 text-left text-sm leading-tight">
-								<span className="truncate font-semibold">
-									{name}
-								</span>
-								<span className="truncate text-xs">
-									{email}
-								</span>
-							</div>
-							<ChevronsUpDownIcon className="ml-auto size-4" />
-						</SidebarMenuButton>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent
-						className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-						side={isMobile ? "bottom" : "right"}
-						align="end"
-						sideOffset={4}
-					>
-						<DropdownMenuLabel className="p-0 font-normal">
-							<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+		<>
+			{isLoggingOut && <FullScreenLoader message="Logging out..." />}
+			<SidebarMenu>
+				<SidebarMenuItem>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<SidebarMenuButton
+								size="lg"
+								className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+							>
 								<UserAvatar
 									name={name ?? ""}
 									avatarUrl={image}
@@ -135,52 +122,77 @@ export function NavUser() {
 										{email}
 									</span>
 								</div>
-							</div>
-						</DropdownMenuLabel>
-						<DropdownMenuSeparator />
-						<DropdownMenuSub>
-							<DropdownMenuSubTrigger>
-								<SunIcon className="mr-2 size-4" />
-								{t("app.userMenu.colorMode")}
-							</DropdownMenuSubTrigger>
-							<DropdownMenuSubContent>
-								{colorModeOptions.map((option) => (
-									<DropdownMenuItem
-										key={option.value}
-										onClick={() => {
-											setTheme(option.value);
-											setCurrentTheme(option.value);
-										}}
+								<ChevronsUpDownIcon className="ml-auto size-4" />
+							</SidebarMenuButton>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent
+							className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+							side={isMobile ? "bottom" : "right"}
+							align="end"
+							sideOffset={4}
+						>
+							<DropdownMenuLabel className="p-0 font-normal">
+								<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+									<UserAvatar
+										name={name ?? ""}
+										avatarUrl={image}
+										className="h-8 w-8 rounded-lg"
+									/>
+									<div className="grid flex-1 text-left text-sm leading-tight">
+										<span className="truncate font-semibold">
+											{name}
+										</span>
+										<span className="truncate text-xs">
+											{email}
+										</span>
+									</div>
+								</div>
+							</DropdownMenuLabel>
+							<DropdownMenuSeparator />
+							<DropdownMenuSub>
+								<DropdownMenuSubTrigger>
+									<SunIcon className="mr-2 size-4" />
+									{t("app.userMenu.colorMode")}
+								</DropdownMenuSubTrigger>
+								<DropdownMenuSubContent>
+									{colorModeOptions.map((option) => (
+										<DropdownMenuItem
+											key={option.value}
+											onClick={() => {
+												setTheme(option.value);
+												setCurrentTheme(option.value);
+											}}
+											className="flex items-center gap-2"
+										>
+											<option.icon className="size-4 opacity-50" />
+											{option.label}
+										</DropdownMenuItem>
+									))}
+								</DropdownMenuSubContent>
+							</DropdownMenuSub>
+							<DropdownMenuGroup>
+								<DropdownMenuItem asChild>
+									<Link
+										href={settingsHref}
 										className="flex items-center gap-2"
 									>
-										<option.icon className="size-4 opacity-50" />
-										{option.label}
-									</DropdownMenuItem>
-								))}
-							</DropdownMenuSubContent>
-						</DropdownMenuSub>
-						<DropdownMenuGroup>
-							<DropdownMenuItem asChild>
-								<Link
-									href={settingsHref}
-									className="flex items-center gap-2"
-								>
-									<SettingsIcon className="size-4" />
-									{t("app.userMenu.accountSettings")}
-								</Link>
+										<SettingsIcon className="size-4" />
+										{t("app.userMenu.accountSettings")}
+									</Link>
+								</DropdownMenuItem>
+							</DropdownMenuGroup>
+							<DropdownMenuSeparator />
+							<DropdownMenuItem
+								onClick={onLogout}
+								className="flex items-center gap-2"
+							>
+								<LogOutIcon className="size-4" />
+								{t("app.userMenu.logout")}
 							</DropdownMenuItem>
-						</DropdownMenuGroup>
-						<DropdownMenuSeparator />
-						<DropdownMenuItem
-							onClick={onLogout}
-							className="flex items-center gap-2"
-						>
-							<LogOutIcon className="size-4" />
-							{t("app.userMenu.logout")}
-						</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
-			</SidebarMenuItem>
-		</SidebarMenu>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</SidebarMenuItem>
+			</SidebarMenu>
+		</>
 	);
 }

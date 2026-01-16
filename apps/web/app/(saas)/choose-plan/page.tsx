@@ -51,7 +51,7 @@ export default async function ChoosePlanPage() {
 	if (activePlan) {
 		const organization = (await getOrganizationList()).at(0);
 		if (organization) {
-			redirect(`/workspace/${organization.slug}`);
+			redirect(`/${organization.slug}`);
 		}
 		redirect("/onboarding");
 	}

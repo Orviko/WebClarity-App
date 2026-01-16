@@ -1,24 +1,42 @@
 "use client";
 
 import { config } from "@repo/config";
+import { useSession } from "@saas/auth/hooks/use-session";
 import { useActiveOrganization } from "@saas/organizations/hooks/use-active-organization";
 import { AppSidebar } from "@saas/shared/components/AppSidebar";
 import { DashboardHeader } from "@saas/shared/components/DashboardHeader";
-import { LoadingScreen } from "@shared/components/LoadingScreen";
+import { FullScreenLoader } from "@shared/components/FullScreenLoader";
 import { SidebarInset, SidebarProvider } from "@ui/components/sidebar";
 import { cn } from "@ui/lib";
 import { useParams } from "next/navigation";
+import { useEffect } from "react";
 import type { PropsWithChildren } from "react";
 
 export function AppWrapper({ children }: PropsWithChildren) {
 	const { useSidebarLayout } = config.ui.saas;
 	const params = useParams();
 	const organizationSlug = params?.organizationSlug as string | undefined;
-	const { loaded, activeOrganization } = useActiveOrganization();
+	const { loaded } = useActiveOrganization();
+	const { appInitialized } = useSession();
 
-	// Show loading screen while workspace data is loading
-	// Only apply loading state if we're in an organization route
+	// Mark app as initialized once workspace is loaded
+	useEffect(() => {
+		if (loaded && organizationSlug && !appInitialized) {
+			sessionStorage.setItem("app_initialized", "true");
+			// Trigger storage event for same-tab sync
+			window.dispatchEvent(new Event("storage"));
+		}
+	}, [loaded, organizationSlug, appInitialized]);
+
+	// Show loading screen while workspace data is loading during initial app load
+	// This ensures seamless transition from root page loader to workspace loader
+	// After app is initialized, workspace loading is handled by top progress bar
 	const isLoadingWorkspaceData = organizationSlug && !loaded;
+	const isInitialLoad = !appInitialized;
+
+	// Show loader during initial load phase only (seamless transition from root page)
+	// After app is initialized, let top progress bar handle loading
+	const showWorkspaceLoader = isLoadingWorkspaceData && isInitialLoad;
 
 	if (!useSidebarLayout) {
 		// Fallback to old layout if sidebar is disabled
@@ -37,9 +55,10 @@ export function AppWrapper({ children }: PropsWithChildren) {
 		);
 	}
 
-	// Show loading screen until workspace data is ready
-	if (isLoadingWorkspaceData) {
-		return <LoadingScreen message="Loading workspace..." />;
+	// Show same full screen loader with workspace message during initial load
+	// This creates seamless transition from root page loader
+	if (showWorkspaceLoader) {
+		return <FullScreenLoader message="Loading workspace..." />;
 	}
 
 	return (

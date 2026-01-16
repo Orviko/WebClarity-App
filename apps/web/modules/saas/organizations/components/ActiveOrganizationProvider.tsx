@@ -29,12 +29,22 @@ export function ActiveOrganizationProvider({
 
 	const activeOrganizationSlug = params.organizationSlug as string;
 
-	const { data: activeOrganization } = useActiveOrganizationQuery(
+	const { data: activeOrganization, isLoading } = useActiveOrganizationQuery(
 		activeOrganizationSlug,
 		{
 			enabled: !!activeOrganizationSlug,
 		},
 	);
+
+	// Track loaded state properly
+	const [loaded, setLoaded] = useState(false);
+
+	useEffect(() => {
+		// Mark as loaded when query completes
+		if (!isLoading && activeOrganization !== undefined) {
+			setLoaded(true);
+		}
+	}, [isLoading, activeOrganization]);
 
 	const refetchActiveOrganization = async () => {
 		await queryClient.refetchQueries({
@@ -44,54 +54,51 @@ export function ActiveOrganizationProvider({
 
 	const setActiveOrganization = async (organizationSlug: string | null) => {
 		nProgress.start();
-		const { data: newActiveOrganization } =
-			await authClient.organization.setActive(
-				organizationSlug
-					? {
-							organizationSlug,
-						}
-					: {
-							organizationId: null,
+
+		try {
+			const { data: newActiveOrganization } =
+				await authClient.organization.setActive(
+					organizationSlug
+						? {
+								organizationSlug,
+							}
+						: {
+								organizationId: null,
+							},
+				);
+
+			if (!newActiveOrganization) {
+				nProgress.done();
+				return;
+			}
+
+			await refetchActiveOrganization();
+
+			if (config.organizations.enableBilling) {
+				await queryClient.prefetchQuery(
+					orpc.payments.listPurchases.queryOptions({
+						input: {
+							organizationId: newActiveOrganization.id,
 						},
-			);
+					}),
+				);
+			}
 
-		if (!newActiveOrganization) {
-			nProgress.done();
-			return;
-		}
-
-		await refetchActiveOrganization();
-
-		if (config.organizations.enableBilling) {
-			await queryClient.prefetchQuery(
-				orpc.payments.listPurchases.queryOptions({
-					input: {
-						organizationId: newActiveOrganization.id,
-					},
-				}),
-			);
-		}
-
-		await queryClient.setQueryData(sessionQueryKey, (data: any) => {
-			return {
+			await queryClient.setQueryData(sessionQueryKey, (data: any) => ({
 				...data,
 				session: {
 					...data?.session,
 					activeOrganizationId: newActiveOrganization.id,
 				},
-			};
-		});
+			}));
 
-		router.push(`/workspace/${newActiveOrganization.slug}`);
-	};
-
-	const [loaded, setLoaded] = useState(activeOrganization !== undefined);
-
-	useEffect(() => {
-		if (!loaded && activeOrganization !== undefined) {
-			setLoaded(true);
+			router.push(`/${newActiveOrganization.slug}`);
+		} catch (error) {
+			console.error("Failed to set active organization:", error);
+			nProgress.done();
+			throw error;
 		}
-	}, [activeOrganization]);
+	};
 
 	const activeOrganizationUserRole = activeOrganization?.members.find(
 		(member) => member.userId === session?.userId,

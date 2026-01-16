@@ -30,7 +30,9 @@ export async function createShareHandler(
 
 	// Validation: both userId and organizationId must be provided together, or neither
 	if ((userId && !organizationId) || (!userId && organizationId)) {
-		const error = new Error("Both userId and organizationId must be provided for authenticated shares");
+		const error = new Error(
+			"Both userId and organizationId must be provided for authenticated shares"
+		);
 		(error as any).code = "BAD_REQUEST";
 		throw error;
 	}
@@ -50,7 +52,9 @@ export async function createShareHandler(
 		// Check share limit
 		const limitCheck = await checkShareLimit(organizationId);
 		if (!limitCheck.canCreate) {
-			const error = new Error(`Share limit reached (${limitCheck.currentCount}/${limitCheck.limit}). Upgrade to create more.`);
+			const error = new Error(
+				`Share limit reached (${limitCheck.currentCount}/${limitCheck.limit}). Upgrade to create more.`
+			);
 			(error as any).code = "FORBIDDEN";
 			throw error;
 		}
@@ -111,7 +115,9 @@ export async function createShareHandler(
 		// Generate share OG image
 		let shareOgImageUrl: string | null = null;
 		try {
-			const { generateAndUploadShareOGImage } = await import("@repo/share-og");
+			const { generateAndUploadShareOGImage } = await import(
+				"@repo/share-og"
+			);
 
 			shareOgImageUrl = await generateAndUploadShareOGImage(
 				shareId,
@@ -120,7 +126,7 @@ export async function createShareHandler(
 					websiteUrl: validated.websiteUrl,
 					colorsData: validated.colorsData,
 					typographyData: validated.typographyData,
-				},
+				}
 			);
 
 			// Update share with share OG image URL
@@ -129,28 +135,55 @@ export async function createShareHandler(
 				data: { shareOgImageUrl },
 			});
 		} catch (error) {
-			logger.error("Share OG image generation failed, continuing without it:", error);
+			logger.error(
+				"Share OG image generation failed, continuing without it:",
+				error
+			);
 			// Don't fail the entire request if share OG generation fails
 		}
 
 		return { ...share, shareOgImageUrl };
 	});
 
-	// Generate share URL - use web app URL from environment variable
-	// NEXT_PUBLIC_SITE_URL should be set in .env.local with the web app URL
-	const webAppUrl =
-		process.env.NEXT_PUBLIC_SITE_URL ||
-		(process.env.NEXT_PUBLIC_VERCEL_URL
-			? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-			: undefined);
+	// Generate share URL - use custom domain if available, otherwise default domain
+	let baseUrl: string;
+	if (organizationId) {
+		// Check if organization has custom domain enabled
+		const organization = await db.organization.findUnique({
+			where: { id: organizationId },
+			select: { customDomain: true, customDomainEnabled: true },
+		});
 
-	if (!webAppUrl) {
+		if (organization?.customDomainEnabled && organization?.customDomain) {
+			baseUrl = `https://${organization.customDomain}`;
+		} else {
+			// Use default domain
+			baseUrl =
+				process.env.NEXT_PUBLIC_SITE_URL ||
+				(process.env.NEXT_PUBLIC_VERCEL_URL
+					? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+					: undefined) ||
+				process.env.NEXT_PUBLIC_APP_URL ||
+				"";
+		}
+	} else {
+		// Anonymous share - use default domain
+		baseUrl =
+			process.env.NEXT_PUBLIC_SITE_URL ||
+			(process.env.NEXT_PUBLIC_VERCEL_URL
+				? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+				: undefined) ||
+			process.env.NEXT_PUBLIC_APP_URL ||
+			"";
+	}
+
+	if (!baseUrl) {
 		throw new Error(
-			"NEXT_PUBLIC_SITE_URL must be set in environment variables"
+			"NEXT_PUBLIC_SITE_URL or NEXT_PUBLIC_APP_URL must be set in environment variables"
 		);
 	}
 
-	const shareUrl = `${webAppUrl}/share/${shareId}`;
+	const shareUrl = `${baseUrl}/share/${shareId}`;
 
 	return {
 		shareId: result.shareId,

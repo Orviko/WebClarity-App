@@ -142,6 +142,11 @@ model Organization {
   metadata           String?
   paymentsCustomerId String?
   shareLimit         Int?
+  // Custom domain configuration
+  customDomain       String?
+  customDomainEnabled Boolean     @default(false)
+  domainConfiguredAt DateTime?
+  domainVerifiedAt   DateTime?
   members            Member[]
   invitations        Invitation[]
   purchases          Purchase[]
@@ -149,6 +154,7 @@ model Organization {
   usageMetrics       UsageMetric[]
 
   @@unique([slug])
+  @@index([customDomain])
   @@map("organization")
 }
 

@@ -6,6 +6,7 @@ export const SessionContext = React.createContext<
 			session: Session["session"] | null;
 			user: Session["user"] | null;
 			loaded: boolean;
+			appInitialized: boolean;
 			reloadSession: () => Promise<void>;
 	  }
 	| undefined

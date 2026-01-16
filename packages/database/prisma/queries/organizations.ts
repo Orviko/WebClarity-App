@@ -1,6 +1,5 @@
-import type { z } from "zod";
+import type { OrganizationUpdateInput } from "../generated/models/Organization";
 import { db } from "../client";
-import type { OrganizationSchema } from "../zod";
 
 export async function getOrganizations({
 	limit,
@@ -23,7 +22,7 @@ export async function getOrganizations({
 								},
 							},
 						],
-					}
+				  }
 				: undefined,
 			include: {
 				_count: {
@@ -39,7 +38,7 @@ export async function getOrganizations({
 			res.map((org) => ({
 				...org,
 				membersCount: org._count.members,
-			})),
+			}))
 		);
 }
 
@@ -55,7 +54,7 @@ export async function countAllOrganizations({ query }: { query?: string }) {
 							},
 						},
 					],
-				}
+			  }
 			: undefined,
 	});
 }
@@ -87,7 +86,7 @@ export async function getOrganizationBySlug(slug: string) {
 
 export async function getOrganizationMembership(
 	organizationId: string,
-	userId: string,
+	userId: string
 ) {
 	return db.member.findUnique({
 		where: {
@@ -103,7 +102,7 @@ export async function getOrganizationMembership(
 }
 
 export async function getOrganizationWithPurchasesAndMembersCount(
-	organizationId: string,
+	organizationId: string
 ) {
 	const organization = await db.organization.findUnique({
 		where: {
@@ -123,7 +122,7 @@ export async function getOrganizationWithPurchasesAndMembersCount(
 		? {
 				...organization,
 				membersCount: organization._count.members,
-			}
+		  }
 		: null;
 }
 
@@ -137,12 +136,11 @@ export async function getPendingInvitationByEmail(email: string) {
 }
 
 export async function updateOrganization(
-	organization: Partial<z.infer<typeof OrganizationSchema>> & { id: string },
+	data: OrganizationUpdateInput & { id: string }
 ) {
+	const { id, ...updateData } = data;
 	return db.organization.update({
-		where: {
-			id: organization.id,
-		},
-		data: organization,
+		where: { id },
+		data: updateData as OrganizationUpdateInput,
 	});
 }

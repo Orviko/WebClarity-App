@@ -33,7 +33,8 @@ export async function checkShareLimit(organizationId: string): Promise<{
 		// Get limits based on plan
 		const { planName, limits } =
 			await calculateLimitsForOrganization(organizationId);
-		const limit = limits.shares ?? null;
+		const limitValue = limits.shares;
+		const limit = (typeof limitValue === "number" || limitValue === null) ? limitValue : null;
 
 		// Get current usage
 		const usage = await getUsageForMetric(organizationId, "shares");
