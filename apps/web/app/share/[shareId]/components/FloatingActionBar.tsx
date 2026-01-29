@@ -17,11 +17,11 @@ export function FloatingActionBar({
 	hasIssues,
 }: FloatingActionBarProps) {
 	return (
-		<div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+		<div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
 			<div className="bg-background/95 backdrop-blur-md border border-border/50 rounded-2xl shadow-lg p-2 flex items-center gap-2">
 				<Button variant="outline" size="sm" onClick={onExport}>
 					<DownloadIcon className="size-4" />
-					Export
+					<span className="hidden sm:inline ml-2">Export</span>
 				</Button>
 
 				<ShimmerButton
@@ -31,7 +31,7 @@ export function FloatingActionBar({
 					innerClassName="px-3 py-0"
 				>
 					<SparklesIcon className="size-4" />
-					Fix with AI
+					<span className="hidden sm:inline ml-2">Fix with AI</span>
 				</ShimmerButton>
 
 				<div className="h-6 w-px bg-border/60" />
