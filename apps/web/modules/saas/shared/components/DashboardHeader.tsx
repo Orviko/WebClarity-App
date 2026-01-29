@@ -1,117 +1,129 @@
 "use client";
 
-import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from "@ui/components/breadcrumb";
 import { Separator } from "@ui/components/separator";
 import { SidebarTrigger } from "@ui/components/sidebar";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useActiveOrganization } from "@saas/organizations/hooks/use-active-organization";
+import {
+	BookOpenIcon,
+	FileTextIcon,
+	FolderKanbanIcon,
+	LayoutDashboardIcon,
+	SettingsIcon,
+	Share2Icon,
+	UserCogIcon,
+	UsersIcon,
+	Building2Icon,
+	type LucideIcon,
+} from "lucide-react";
 
-function generateBreadcrumbs(
+interface PageInfo {
+	label: string;
+	icon: LucideIcon;
+}
+
+function getCurrentPageInfo(
 	pathname: string,
 	basePath: string,
 	t: ReturnType<typeof useTranslations>,
-) {
+): PageInfo | null {
 	const segments = pathname.split("/").filter(Boolean);
-	const breadcrumbs: { label: string; href: string }[] = [];
 
-	// Known route segments that should appear in breadcrumbs
-	const knownRoutes = [
-		"admin",
-		"projects",
-		"reports",
-		"shares",
-		"resources",
-		"settings",
-	];
-
-	// Handle admin routes separately
-	const isAdminRoute = segments[0] === "admin";
-
-	if (isAdminRoute) {
-		// For admin routes, start with Dashboard, then Admin, then sub-routes
-		breadcrumbs.push({
-			label: t("app.menu.dashboard"),
-			href: basePath,
-		});
-
-		// Add Admin breadcrumb
-		if (segments.length > 1) {
-			breadcrumbs.push({
-				label: t("app.menu.admin"),
-				href: "/admin",
-			});
+	// Handle admin routes
+	if (pathname.startsWith("/admin")) {
+		if (pathname === "/admin" || pathname === "/admin/") {
+			return {
+				label: t("admin.menu.dashboard"),
+				icon: LayoutDashboardIcon,
+			};
 		}
 
-		// Add remaining admin sub-routes
-		let currentPath = "/admin";
-		for (let i = 1; i < segments.length; i++) {
-			const segment = segments[i];
-			currentPath += `/${segment}`;
-
-			const label = segment
-				.split("-")
-				.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-				.join(" ");
-
-			breadcrumbs.push({ label, href: currentPath });
+		if (pathname.startsWith("/admin/users")) {
+			return {
+				label: t("admin.menu.users"),
+				icon: UsersIcon,
+			};
 		}
 
-		return breadcrumbs;
-	}
-
-	// Handle workspace routes - filter out "workspace" and organization slug
-	const filteredSegments: string[] = [];
-	let skipNext = false;
-
-	for (let i = 0; i < segments.length; i++) {
-		const segment = segments[i];
-
-		// Skip "workspace" segment
-		if (segment === "workspace") {
-			skipNext = true; // Next segment is likely the organization slug
-			continue;
+		if (pathname.startsWith("/admin/workspaces")) {
+			return {
+				label: t("admin.menu.workspaces"),
+				icon: Building2Icon,
+			};
 		}
 
-		// Skip organization slug (the segment after "workspace" that's not a known route)
-		if (skipNext && !knownRoutes.includes(segment)) {
-			skipNext = false;
-			continue;
-		}
-
-		skipNext = false;
-		filteredSegments.push(segment);
-	}
-
-	// Add "Dashboard" as the first breadcrumb
-	breadcrumbs.push({
-		label: t("app.menu.dashboard"),
-		href: basePath,
-	});
-
-	// Build breadcrumbs from remaining segments
-	let currentPath = basePath;
-	for (let i = 0; i < filteredSegments.length; i++) {
-		const segment = filteredSegments[i];
-		currentPath += `/${segment}`;
-
-		// Format segment name (capitalize, replace hyphens with spaces)
-		const label = segment
+		// For other admin sub-routes, show formatted name with default icon
+		const lastSegment = segments[segments.length - 1];
+		const label = lastSegment
 			.split("-")
 			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 			.join(" ");
 
-		breadcrumbs.push({ label, href: currentPath });
+		return {
+			label,
+			icon: LayoutDashboardIcon,
+		};
 	}
 
-	return breadcrumbs;
+	// Handle workspace routes
+	if (pathname === basePath || pathname === `${basePath}/`) {
+		return {
+			label: t("app.menu.dashboard"),
+			icon: LayoutDashboardIcon,
+		};
+	}
+
+	if (pathname.includes("/projects")) {
+		return {
+			label: t("app.menu.projects"),
+			icon: FolderKanbanIcon,
+		};
+	}
+
+	if (pathname.includes("/reports")) {
+		return {
+			label: t("app.menu.reports"),
+			icon: FileTextIcon,
+		};
+	}
+
+	if (pathname.includes("/shares")) {
+		return {
+			label: t("app.menu.shares"),
+			icon: Share2Icon,
+		};
+	}
+
+	if (pathname.includes("/resources")) {
+		return {
+			label: t("app.menu.resources"),
+			icon: BookOpenIcon,
+		};
+	}
+
+	if (pathname.includes("/settings")) {
+		return {
+			label: t("app.menu.organizationSettings"),
+			icon: SettingsIcon,
+		};
+	}
+
+	// For unknown routes, try to format the last segment
+	const lastSegment = segments[segments.length - 1];
+	if (lastSegment && lastSegment !== "workspace") {
+		const label = lastSegment
+			.split("-")
+			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(" ");
+
+		return {
+			label,
+			icon: LayoutDashboardIcon,
+		};
+	}
+
+	return null;
 }
 
 export function DashboardHeader() {
@@ -121,16 +133,14 @@ export function DashboardHeader() {
 
 	// Determine base path for the current organization
 	const basePath = activeOrganization?.slug
-		? `/${activeOrganization.slug}`
-		: "/";
+		? `/workspace/${activeOrganization.slug}`
+		: "/workspace";
 
-	// Check if we're on specific dashboard pages
-	const isWorkspaceDashboard =
-		pathname === basePath || pathname === `${basePath}/`;
-	const isAdminDashboard = pathname === "/admin" || pathname === "/admin/";
+	// Get current page info
+	const pageInfo = getCurrentPageInfo(pathname, basePath, t);
 
-	// Don't show breadcrumb on the main workspace pages
-	if (pathname === "/" || pathname === "/admin" || pathname === "/admin/") {
+	// Don't show page info if we couldn't determine it
+	if (!pageInfo) {
 		return (
 			<header className="flex h-16 shrink-0 items-center gap-2">
 				<div className="flex items-center gap-2 px-4">
@@ -140,15 +150,7 @@ export function DashboardHeader() {
 		);
 	}
 
-	const breadcrumbs =
-		isWorkspaceDashboard || isAdminDashboard
-			? [
-					{
-						label: t("app.menu.dashboard"),
-						href: isAdminDashboard ? "/admin" : basePath,
-					},
-				]
-			: generateBreadcrumbs(pathname, basePath, t);
+	const PageIcon = pageInfo.icon;
 
 	return (
 		<header className="flex h-16 shrink-0 items-center gap-2">
@@ -158,44 +160,12 @@ export function DashboardHeader() {
 					orientation="vertical"
 					className="mr-2 data-[orientation=vertical]:h-4"
 				/>
-				<Breadcrumb>
-					<BreadcrumbList>
-						{breadcrumbs.map((crumb, index) => {
-							const isLast = index === breadcrumbs.length - 1;
-							return (
-								<div
-									key={crumb.href}
-									className="flex items-center gap-2"
-								>
-									<BreadcrumbItem
-										className={
-											index === 0 ? "hidden md:block" : ""
-										}
-									>
-										{isLast ? (
-											<BreadcrumbPage>
-												{crumb.label}
-											</BreadcrumbPage>
-										) : (
-											<BreadcrumbLink href={crumb.href}>
-												{crumb.label}
-											</BreadcrumbLink>
-										)}
-									</BreadcrumbItem>
-									{!isLast && (
-										<BreadcrumbSeparator
-											className={
-												index === 0
-													? "hidden md:block"
-													: ""
-											}
-										/>
-									)}
-								</div>
-							);
-						})}
-					</BreadcrumbList>
-				</Breadcrumb>
+				<div className="flex items-center gap-2">
+					<PageIcon className="size-3 text-muted-foreground" />
+					<span className="text-sm font-regular text-muted-foreground">
+						{pageInfo.label}
+					</span>
+				</div>
 			</div>
 		</header>
 	);
