@@ -967,6 +967,59 @@
 			"footer": {
 				"copyright": "©{year} WebClarity. All rights reserved.",
 				"website": "webclarity.ai"
+			},
+			"controls": {
+				"expandAll": "Expand All",
+				"collapseAll": "Collapse All",
+				"export": "Export",
+				"fixAll": "Fix with AI"
+			},
+			"filters": {
+				"all": "All Headings",
+				"empty": "Empty",
+				"short": "Short",
+				"long": "Long",
+				"skip": "Skipped Levels",
+				"orphan": "Orphaned",
+				"multipleH1": "Multiple H1",
+				"noIssuesFound": "No issues found for this filter",
+				"noIssuesDescription": "All headings are following best practices for this criteria."
+			},
+			"aifix": {
+				"title": "Fix Heading Issues with AI",
+				"description": "Generate AI prompts to fix heading structure issues",
+				"fixOptions": "Fix Options",
+				"includeEmpty": "Empty headings (Critical)",
+				"includeShort": "Short headings (Warning)",
+				"includeLong": "Long headings (Warning)",
+				"includeSkip": "Skipped levels (Critical)",
+				"includeOrphan": "Orphaned headings (Warning)",
+				"includeMultipleH1": "Multiple H1 tags (Critical)",
+				"howItWorks": "How it works",
+				"step1": "Select which issues to include in the AI prompt",
+				"step2": "Copy the generated prompt to your clipboard",
+				"step3": "Paste into ChatGPT, Claude, or your IDE's AI assistant",
+				"step4": "Review and apply the AI's suggestions to fix issues",
+				"copy": "Copy for AI",
+				"copyForIDE": "Copy for IDE",
+				"promptCopied": "AI prompt copied to clipboard! Paste it into ChatGPT or Claude.",
+				"promptCopiedIDE": "IDE prompt copied to clipboard! Paste it into VS Code or Cursor.",
+				"failed": "Failed to copy prompt. Please try again.",
+				"noIssues": "No issues found matching your criteria."
+			},
+			"export": {
+				"title": "Export Heading Structure",
+				"description": "Export heading structure report with customizable options",
+				"options": "Export Options",
+				"includeIssues": "Include issue badges and labels",
+				"includeSelectors": "Include CSS selectors",
+				"includeSummary": "Include summary statistics",
+				"copyToClipboard": "Copy to Clipboard",
+				"download": "Download",
+				"copied": "Heading structure copied to clipboard!",
+				"exported": "Heading structure exported successfully!",
+				"copyFailed": "Failed to copy to clipboard. Please try again.",
+				"downloadFailed": "Failed to download file. Please try again."
 			}
 		},
 		"styleGuide": {

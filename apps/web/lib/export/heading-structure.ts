@@ -1,0 +1,211 @@
+// Heading Structure Export Text Generator
+
+interface HeadingNode {
+	level: number;
+	content: string;
+	selector?: string;
+	children: HeadingNode[];
+	issues: Array<
+		| "skip"
+		| "orphan"
+		| "short"
+		| "long"
+		| "empty"
+		| "multiple-h1"
+		| "missing-h1"
+	>;
+	targetLevel?: number;
+}
+
+export interface ExportOptions {
+	includeIssues?: boolean;
+	includeSelectors?: boolean;
+	includeSummary?: boolean;
+}
+
+interface ExportContext {
+	tree: HeadingNode[];
+	totalHeadings: number;
+	issuesCount: number;
+	h1Count: number;
+	pageUrl: string;
+	options: ExportOptions;
+}
+
+/**
+ * Calculate issue counts from tree
+ */
+function calculateIssueCounts(tree: HeadingNode[]): {
+	critical: number;
+	warnings: number;
+	noIssues: number;
+} {
+	let critical = 0;
+	let warnings = 0;
+	let noIssues = 0;
+
+	const traverse = (nodes: HeadingNode[]) => {
+		for (const node of nodes) {
+			if (node.issues.length === 0) {
+				noIssues++;
+			} else {
+				const hasCritical = node.issues.some((i) =>
+					["skip", "empty", "multiple-h1", "missing-h1"].includes(i),
+				);
+				if (hasCritical) {
+					critical++;
+				} else {
+					warnings++;
+				}
+			}
+			if (node.children.length > 0) {
+				traverse(node.children);
+			}
+		}
+	};
+
+	traverse(tree);
+	return { critical, warnings, noIssues };
+}
+
+/**
+ * Get issue label for display
+ */
+function getIssueLabel(issue: string): string {
+	const labels: Record<string, string> = {
+		empty: "Empty Heading",
+		short: "Short Heading",
+		long: "Long Heading",
+		skip: "Skipped Level",
+		orphan: "Orphaned Heading",
+		"multiple-h1": "Multiple H1 Tags",
+		"missing-h1": "Missing H1 Tag",
+	};
+	return labels[issue] || issue;
+}
+
+/**
+ * Generate tree structure as text
+ */
+function generateStructureText(
+	nodes: HeadingNode[],
+	depth: number,
+	ancestors: boolean[],
+	options: ExportOptions,
+): string {
+	return nodes
+		.map((node, index) => {
+			const isLast = index === nodes.length - 1;
+			const prefix = ancestors
+				.map((isAncestorLast) => (isAncestorLast ? "   " : "│  "))
+				.join("");
+			const connector = isLast ? "└─ " : "├─ ";
+
+			// Show heading level with arrow format for skip issues
+			const headingLevel =
+				node.targetLevel !== undefined && node.targetLevel !== node.level
+					? `H${node.level} → H${node.targetLevel}`
+					: `H${node.level}`;
+
+			// Include issues if enabled
+			const issuesText =
+				options.includeIssues && node.issues.length > 0
+					? ` [${node.issues.map((i) => getIssueLabel(i)).join(", ")}]`
+					: "";
+
+			// Include selector if enabled
+			const selectorText =
+				options.includeSelectors && node.selector
+					? ` (${node.selector})`
+					: "";
+
+			const line = `${prefix}${connector}${headingLevel}: ${node.content || "(Empty)"}${issuesText}${selectorText}`;
+
+			if (node.children.length > 0) {
+				return (
+					line +
+					"\n" +
+					generateStructureText(
+						node.children,
+						depth + 1,
+						[...ancestors, isLast],
+						options,
+					)
+				);
+			}
+
+			return line;
+		})
+		.join("\n");
+}
+
+/**
+ * Generate full text report
+ */
+export function generateFullReport(context: ExportContext): string {
+	const { tree, totalHeadings, pageUrl, options } = context;
+	const counts = calculateIssueCounts(tree);
+
+	const lines: string[] = [
+		"═══════════════════════════",
+		"HEADING STRUCTURE REPORT",
+		"═══════════════════════════",
+		`Generated: ${new Date().toLocaleString()}`,
+		`URL: ${pageUrl || "Unknown"}`,
+		"",
+	];
+
+	// Add summary section if enabled
+	if (options.includeSummary !== false) {
+		lines.push("───────────────────────────");
+		lines.push("SUMMARY");
+		lines.push("───────────────────────────");
+		lines.push(`  Total Headings:   ${totalHeadings}`);
+		lines.push(`  Critical Issues:  ${counts.critical}`);
+		lines.push(`  Warnings:         ${counts.warnings}`);
+		lines.push(`  No Issues:        ${counts.noIssues}`);
+		lines.push("");
+	}
+
+	// Add issue legend if issues are enabled
+	if (options.includeIssues !== false) {
+		lines.push("───────────────────────────");
+		lines.push("ISSUE LEGEND");
+		lines.push("───────────────────────────");
+		lines.push("  [1] Empty Heading - Heading has no text content");
+		lines.push("  [2] Short Heading - Heading is too short (< 10 chars)");
+		lines.push("  [3] Long Heading - Heading is too long (> 70 chars)");
+		lines.push("  [4] Skipped Level - Heading levels should not skip");
+		lines.push("  [5] Orphaned Heading - Heading appears before H1");
+		lines.push("  [6] Multiple H1 - Only one H1 per page recommended");
+		lines.push("");
+	}
+
+	lines.push("───────────────────────────");
+	lines.push("HEADING TREE");
+	lines.push("───────────────────────────");
+	lines.push("");
+
+	// Add the tree structure
+	const treeText = generateStructureText(tree, 0, [], options);
+	if (treeText) {
+		lines.push(treeText);
+	} else {
+		lines.push("  (No headings found on this page)");
+	}
+
+	lines.push("");
+	lines.push("═══════════════════════════");
+	lines.push("Generated by WebClarity.ai");
+	lines.push("═══════════════════════════");
+
+	return lines.join("\n");
+}
+
+/**
+ * Generate filename for export
+ */
+export function generateExportFilename(): string {
+	const date = new Date().toISOString().split("T")[0];
+	return `heading-structure-${date}.txt`;
+}

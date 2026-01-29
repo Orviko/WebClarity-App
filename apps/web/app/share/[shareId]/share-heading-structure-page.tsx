@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
 import { Badge } from "@ui/components/badge";
-import { ColorModeToggle } from "@shared/components/ColorModeToggle";
 import {
 	Accordion,
 	AccordionContent,
@@ -23,8 +22,18 @@ import {
 	DialogTitle,
 } from "@ui/components/dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { ChevronRightIcon, CheckIcon, XIcon } from "lucide-react";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@ui/components/dropdown-menu";
+import { Button } from "@ui/components/button";
+import { ChevronRightIcon, CheckIcon, XIcon, FilterIcon } from "lucide-react";
 import { cn } from "@ui/lib";
+import { AIFixModal } from "./components/AIFixModal";
+import { ExportModal } from "./components/ExportModal";
+import { FloatingActionBar } from "./components/FloatingActionBar";
 
 interface HeadingNode {
 	level: number;
@@ -67,6 +76,15 @@ export interface HeadingStructureShareData {
 interface ShareHeadingStructurePageProps {
 	data: HeadingStructureShareData;
 }
+
+type HeadingFilterType =
+	| "all"
+	| "empty"
+	| "short"
+	| "long"
+	| "skip"
+	| "orphan"
+	| "multiple-h1";
 
 // Helper functions for issue handling
 function getIssueTypeNumber(issue: HeadingNode["issues"][number]): number {
@@ -619,6 +637,10 @@ export function ShareHeadingStructurePage({
 }: ShareHeadingStructurePageProps) {
 	const t = useTranslations();
 	const [modalOpen, setModalOpen] = useState(false);
+	const [aiFixModalOpen, setAiFixModalOpen] = useState(false);
+	const [exportModalOpen, setExportModalOpen] = useState(false);
+	const [activeFilter, setActiveFilter] = useState<HeadingFilterType>("all");
+
 	const calculateIssueCounts = (
 		tree: HeadingNode[],
 	): {
@@ -655,6 +677,78 @@ export function ShareHeadingStructurePage({
 		traverse(tree);
 		return { critical, warnings, noIssues };
 	};
+
+	// Calculate filter issue counts
+	const calculateFilterIssueCounts = () => {
+		const counts = {
+			empty: 0,
+			short: 0,
+			long: 0,
+			skip: 0,
+			orphan: 0,
+			multipleH1: 0,
+		};
+
+		const countInNode = (node: HeadingNode) => {
+			if (node.issues) {
+				if (node.issues.includes("empty")) counts.empty++;
+				if (node.issues.includes("short")) counts.short++;
+				if (node.issues.includes("long")) counts.long++;
+				if (node.issues.includes("skip")) counts.skip++;
+				if (node.issues.includes("orphan")) counts.orphan++;
+				if (node.issues.includes("multiple-h1")) counts.multipleH1++;
+			}
+			if (node.children) {
+				node.children.forEach(countInNode);
+			}
+		};
+
+		data.treeData.tree.forEach(countInNode);
+		return counts;
+	};
+
+	// Get filtered headings based on active filter
+	const getFilteredHeadings = (tree: HeadingNode[]): HeadingNode[] => {
+		if (activeFilter === "all") {
+			return tree;
+		}
+
+		const filterNodes = (nodes: HeadingNode[]): HeadingNode[] => {
+			return nodes
+				.map((node) => {
+					const matches =
+						node.issues && node.issues.includes(activeFilter);
+					const filteredChildren = node.children
+						? filterNodes(node.children)
+						: [];
+
+					if (matches || filteredChildren.length > 0) {
+						return {
+							...node,
+							children:
+								filteredChildren.length > 0
+									? filteredChildren
+									: node.children,
+						};
+					}
+
+					return null;
+				})
+				.filter((node): node is HeadingNode => node !== null);
+		};
+
+		return filterNodes(tree);
+	};
+
+	const filteredTree = useMemo(
+		() => getFilteredHeadings(data.treeData.tree),
+		[activeFilter, data.treeData.tree],
+	);
+
+	const filterCounts = useMemo(
+		() => calculateFilterIssueCounts(),
+		[data.treeData.tree],
+	);
 
 	const renderTree = (
 		nodes: HeadingNode[],
@@ -794,33 +888,32 @@ export function ShareHeadingStructurePage({
 	const counts = calculateIssueCounts(data.treeData.tree);
 	const { tree, totalHeadings } = data.treeData;
 
-	// Separate orphaned headings from proper H1 trees
-	const orphanedHeadings = tree.filter((node) => node.level !== 1);
-	const h1Trees = tree.filter((node) => node.level === 1);
+	// Separate orphaned headings from proper H1 trees - use filtered tree
+	const orphanedHeadings = filteredTree.filter((node) => node.level !== 1);
+	const h1Trees = filteredTree.filter((node) => node.level === 1);
+
+	const hasIssues = counts.critical > 0 || counts.warnings > 0;
 
 	return (
-		<div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
+		<div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8 pb-24">
 			<div className="max-w-7xl mx-auto">
 				{/* Header */}
 				<div className="mb-8">
-					<div className="flex items-center justify-between mb-4">
-						<div>
-							<h1 className="text-3xl font-bold tracking-tight">
-								{t("share.headingStructure.title")}
-							</h1>
-							<p className="text-muted-foreground mt-1">
-								{t("share.headingStructure.sharedFrom")}{" "}
-								<a
-									href={`https://${data.websiteUrl}`}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="text-primary hover:underline font-medium"
-								>
-									{data.websiteUrl}
-								</a>
-							</p>
-						</div>
-						<ColorModeToggle />
+					<div className="mb-4">
+						<h1 className="text-3xl font-bold tracking-tight">
+							{t("share.headingStructure.title")}
+						</h1>
+						<p className="text-muted-foreground mt-1">
+							{t("share.headingStructure.sharedFrom")}{" "}
+							<a
+								href={`https://${data.websiteUrl}`}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="text-primary hover:underline font-medium"
+							>
+								{data.websiteUrl}
+							</a>
+						</p>
 					</div>
 					<div className="flex items-center gap-2 text-sm text-muted-foreground">
 						<Badge status="info">
@@ -888,9 +981,94 @@ export function ShareHeadingStructurePage({
 				{/* Heading Tree */}
 				<Card className="mb-8">
 					<CardHeader>
-						<CardTitle>
-							{t("share.headingStructure.hierarchy.title")}
-						</CardTitle>
+						<div className="flex items-center justify-between">
+							<CardTitle>
+								{t("share.headingStructure.hierarchy.title")} (
+								{filteredTree.length})
+							</CardTitle>
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button variant="outline" size="sm">
+										<FilterIcon className="size-4 mr-2" />
+										{activeFilter === "all"
+											? t(
+													"share.headingStructure.filters.all",
+												)
+											: t(
+													`share.headingStructure.filters.${activeFilter}`,
+												)}
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="end">
+									<DropdownMenuItem
+										onClick={() => setActiveFilter("all")}
+									>
+										{t(
+											"share.headingStructure.filters.all",
+										)}{" "}
+										({data.treeData.totalHeadings})
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={() => setActiveFilter("empty")}
+										disabled={filterCounts.empty === 0}
+									>
+										{t(
+											"share.headingStructure.filters.empty",
+										)}{" "}
+										({filterCounts.empty})
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={() => setActiveFilter("short")}
+										disabled={filterCounts.short === 0}
+									>
+										{t(
+											"share.headingStructure.filters.short",
+										)}{" "}
+										({filterCounts.short})
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={() => setActiveFilter("long")}
+										disabled={filterCounts.long === 0}
+									>
+										{t(
+											"share.headingStructure.filters.long",
+										)}{" "}
+										({filterCounts.long})
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={() => setActiveFilter("skip")}
+										disabled={filterCounts.skip === 0}
+									>
+										{t(
+											"share.headingStructure.filters.skip",
+										)}{" "}
+										({filterCounts.skip})
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={() =>
+											setActiveFilter("orphan")
+										}
+										disabled={filterCounts.orphan === 0}
+									>
+										{t(
+											"share.headingStructure.filters.orphan",
+										)}{" "}
+										({filterCounts.orphan})
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={() =>
+											setActiveFilter("multiple-h1")
+										}
+										disabled={filterCounts.multipleH1 === 0}
+									>
+										{t(
+											"share.headingStructure.filters.multipleH1",
+										)}{" "}
+										({filterCounts.multipleH1})
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
+						</div>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						{orphanedHeadings.length > 0 && (
@@ -1002,8 +1180,29 @@ export function ShareHeadingStructurePage({
 							</div>
 						) : orphanedHeadings.length === 0 ? (
 							<div className="text-muted-foreground text-center py-8">
-								{t(
-									"share.headingStructure.hierarchy.noHeadingsFound",
+								{activeFilter === "all" ? (
+									<div>
+										<CheckIcon className="size-12 mx-auto mb-3 text-green-500" />
+										<p>
+											{t(
+												"share.headingStructure.hierarchy.noHeadingsFound",
+											)}
+										</p>
+									</div>
+								) : (
+									<div>
+										<CheckIcon className="size-12 mx-auto mb-3 text-green-500" />
+										<p className="font-medium">
+											{t(
+												"share.headingStructure.filters.noIssuesFound",
+											)}
+										</p>
+										<p className="text-sm mt-1">
+											{t(
+												"share.headingStructure.filters.noIssuesDescription",
+											)}
+										</p>
+									</div>
 								)}
 							</div>
 						) : null}
@@ -1110,6 +1309,34 @@ export function ShareHeadingStructurePage({
 				open={modalOpen}
 				onOpenChange={setModalOpen}
 				t={t}
+			/>
+
+			{/* AI Fix Modal */}
+			<AIFixModal
+				open={aiFixModalOpen}
+				onOpenChange={setAiFixModalOpen}
+				tree={data.treeData.tree}
+				totalHeadings={data.treeData.totalHeadings}
+				h1Count={data.treeData.h1Count}
+				pageUrl={data.websiteUrl}
+			/>
+
+			{/* Export Modal */}
+			<ExportModal
+				open={exportModalOpen}
+				onOpenChange={setExportModalOpen}
+				tree={data.treeData.tree}
+				totalHeadings={data.treeData.totalHeadings}
+				issuesCount={data.treeData.issuesCount}
+				h1Count={data.treeData.h1Count}
+				pageUrl={data.websiteUrl}
+			/>
+
+			{/* Floating Action Bar */}
+			<FloatingActionBar
+				onFixWithAI={() => setAiFixModalOpen(true)}
+				onExport={() => setExportModalOpen(true)}
+				hasIssues={hasIssues}
 			/>
 		</div>
 	);
