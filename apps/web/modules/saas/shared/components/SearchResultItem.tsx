@@ -11,7 +11,12 @@ type Share = {
 	websiteUrl: string;
 	viewCount: number;
 	isExpired: boolean;
-	type: "STYLE_GUIDE" | "HEADING_STRUCTURE";
+	type:
+		| "STYLE_GUIDE"
+		| "HEADING_STRUCTURE"
+		| "QUICK_SEO"
+		| "IMAGES_ALT"
+		| "SOCIAL_VIEW";
 	shareOgImageUrl: string | null;
 	user: {
 		id: string;
@@ -37,13 +42,25 @@ export function SearchResultItem({ share }: SearchResultItemProps) {
 					status={
 						share.type === "STYLE_GUIDE"
 							? "info"
-							: "warning"
+							: share.type === "HEADING_STRUCTURE"
+								? "warning"
+								: share.type === "QUICK_SEO"
+									? "success"
+									: share.type === "IMAGES_ALT"
+										? "info"
+										: "warning"
 					}
 					className="text-xs shrink-0"
 				>
 					{share.type === "STYLE_GUIDE"
 						? t("shares.styleGuide")
-						: t("shares.headingStructure")}
+						: share.type === "HEADING_STRUCTURE"
+							? t("shares.headingStructure")
+							: share.type === "QUICK_SEO"
+								? t("shares.quickSeo")
+								: share.type === "IMAGES_ALT"
+									? t("shares.imagesAlt")
+									: t("shares.socialView")}
 				</Badge>
 				{share.isExpired && (
 					<Badge status="error" className="text-xs shrink-0">
@@ -59,4 +76,3 @@ export function SearchResultItem({ share }: SearchResultItemProps) {
 		</>
 	);
 }
-

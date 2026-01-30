@@ -1089,6 +1089,9 @@
 		"createdBy": "Created by {name}",
 		"styleGuide": "Style Guide",
 		"headingStructure": "Heading Structure",
+		"quickSeo": "Quick SEO",
+		"imagesAlt": "Images Alt",
+		"socialView": "Social View",
 		"searchPlaceholder": "Search shares...",
 		"searchTabs": {
 			"all": "All",

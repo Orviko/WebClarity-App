@@ -37,7 +37,12 @@ type Share = {
 	isExpired: boolean;
 	expiresAt: Date;
 	shareOgImageUrl: string | null;
-	type: "STYLE_GUIDE" | "HEADING_STRUCTURE";
+	type:
+		| "STYLE_GUIDE"
+		| "HEADING_STRUCTURE"
+		| "QUICK_SEO"
+		| "IMAGES_ALT"
+		| "SOCIAL_VIEW";
 	shareUrl: string; // Added: URL from backend (includes custom domain if enabled)
 	user: {
 		id: string;

@@ -2,9 +2,15 @@ import { orpcClient } from "@shared/lib/orpc-client";
 
 export const sharesApi = {
 	listWorkspaceShares: async (
-		organizationId: string, 
+		organizationId: string,
 		filter: "all" | "my" = "all",
-		type: "all" | "STYLE_GUIDE" | "HEADING_STRUCTURE" = "all"
+		type:
+			| "all"
+			| "STYLE_GUIDE"
+			| "HEADING_STRUCTURE"
+			| "QUICK_SEO"
+			| "IMAGES_ALT"
+			| "SOCIAL_VIEW" = "all",
 	) => {
 		return orpcClient.shares.listWorkspaceShares({
 			organizationId,
@@ -45,4 +51,3 @@ export const sharesApi = {
 		});
 	},
 };
-

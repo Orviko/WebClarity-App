@@ -219,6 +219,8 @@ enum ShareType {
   STYLE_GUIDE
   HEADING_STRUCTURE
   QUICK_SEO
+  IMAGES_ALT
+  SOCIAL_VIEW
 }
 
 model Share {
@@ -240,9 +242,13 @@ model Share {
   styleGuideDataId       String?               @unique
   headingStructureDataId String?               @unique
   quickSeoDataId         String?               @unique
+  imagesAltDataId        String?               @unique
+  socialViewDataId       String?               @unique
   styleGuideData         StyleGuideData?       @relation(fields: [styleGuideDataId], references: [id], onDelete: Cascade)
   headingStructureData   HeadingStructureData? @relation(fields: [headingStructureDataId], references: [id], onDelete: Cascade)
   quickSeoData           QuickSEOData?         @relation(fields: [quickSeoDataId], references: [id], onDelete: Cascade)
+  imagesAltData          ImagesAltData?        @relation(fields: [imagesAltDataId], references: [id], onDelete: Cascade)
+  socialViewData         SocialViewData?       @relation(fields: [socialViewDataId], references: [id], onDelete: Cascade)
 
   @@index([shareId])
   @@index([expiresAt])
@@ -282,6 +288,26 @@ model QuickSEOData {
   share         Share?
 
   @@map("quickSeoData")
+}
+
+model ImagesAltData {
+  id            String   @id @default(cuid())
+  imagesData    Json
+  exportOptions Json
+  createdAt     DateTime @default(now())
+  share         Share?
+
+  @@map("imagesAltData")
+}
+
+model SocialViewData {
+  id            String   @id @default(cuid())
+  socialData    Json
+  exportOptions Json
+  createdAt     DateTime @default(now())
+  share         Share?
+
+  @@map("socialViewData")
 }
 
 model UsageMetric {

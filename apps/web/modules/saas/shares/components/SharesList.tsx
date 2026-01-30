@@ -23,7 +23,12 @@ export function SharesList({ organizationId }: SharesListProps) {
 	const t = useTranslations();
 	const [filter, setFilter] = useState<"all" | "my">("all");
 	const [typeFilter, setTypeFilter] = useState<
-		"all" | "STYLE_GUIDE" | "HEADING_STRUCTURE"
+		| "all"
+		| "STYLE_GUIDE"
+		| "HEADING_STRUCTURE"
+		| "QUICK_SEO"
+		| "IMAGES_ALT"
+		| "SOCIAL_VIEW"
 	>("all");
 
 	// Fetch shares
@@ -65,7 +70,10 @@ export function SharesList({ organizationId }: SharesListProps) {
 								v as
 									| "all"
 									| "STYLE_GUIDE"
-									| "HEADING_STRUCTURE",
+									| "HEADING_STRUCTURE"
+									| "QUICK_SEO"
+									| "IMAGES_ALT"
+									| "SOCIAL_VIEW",
 							)
 						}
 					>
@@ -81,6 +89,15 @@ export function SharesList({ organizationId }: SharesListProps) {
 							</SelectItem>
 							<SelectItem value="HEADING_STRUCTURE">
 								{t("shares.headingStructure")}
+							</SelectItem>
+							<SelectItem value="QUICK_SEO">
+								{t("shares.quickSeo")}
+							</SelectItem>
+							<SelectItem value="IMAGES_ALT">
+								{t("shares.imagesAlt")}
+							</SelectItem>
+							<SelectItem value="SOCIAL_VIEW">
+								{t("shares.socialView")}
 							</SelectItem>
 						</SelectContent>
 					</Select>
@@ -118,7 +135,13 @@ export function SharesList({ organizationId }: SharesListProps) {
 					value={typeFilter}
 					onValueChange={(v) =>
 						setTypeFilter(
-							v as "all" | "STYLE_GUIDE" | "HEADING_STRUCTURE",
+							v as
+								| "all"
+								| "STYLE_GUIDE"
+								| "HEADING_STRUCTURE"
+								| "QUICK_SEO"
+								| "IMAGES_ALT"
+								| "SOCIAL_VIEW",
 						)
 					}
 				>
@@ -134,6 +157,15 @@ export function SharesList({ organizationId }: SharesListProps) {
 						</SelectItem>
 						<SelectItem value="HEADING_STRUCTURE">
 							{t("shares.headingStructure")}
+						</SelectItem>
+						<SelectItem value="QUICK_SEO">
+							{t("shares.quickSeo")}
+						</SelectItem>
+						<SelectItem value="IMAGES_ALT">
+							{t("shares.imagesAlt")}
+						</SelectItem>
+						<SelectItem value="SOCIAL_VIEW">
+							{t("shares.socialView")}
 						</SelectItem>
 					</SelectContent>
 				</Select>

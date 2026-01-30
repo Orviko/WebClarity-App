@@ -9,7 +9,14 @@ const listWorkspaceSharesSchema = z.object({
 	organizationId: z.string(),
 	filter: z.enum(["all", "my"]).default("all"),
 	type: z
-		.enum(["all", "STYLE_GUIDE", "HEADING_STRUCTURE"])
+		.enum([
+			"all",
+			"STYLE_GUIDE",
+			"HEADING_STRUCTURE",
+			"QUICK_SEO",
+			"IMAGES_ALT",
+			"SOCIAL_VIEW",
+		])
 		.optional()
 		.default("all"),
 });
@@ -23,7 +30,7 @@ export const listWorkspaceShares = protectedProcedure
 		// Verify user is member of the workspace
 		const membership = await verifyOrganizationMembership(
 			organizationId,
-			userId
+			userId,
 		);
 
 		if (!membership) {

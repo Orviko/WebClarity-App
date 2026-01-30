@@ -136,10 +136,7 @@ function StatusBadge({ status, label }: { status: SEOStatus; label: string }) {
 	};
 
 	return (
-		<Badge
-			variant="secondary"
-			className={cn("font-medium", colorMap[status])}
-		>
+		<Badge status="info" className={cn("font-medium", colorMap[status])}>
 			{label}
 		</Badge>
 	);
@@ -199,7 +196,7 @@ export function ShareQuickSEOPage({ data }: ShareQuickSEOPageProps) {
 						</p>
 					</div>
 					<div className="flex items-center gap-2 text-sm text-muted-foreground">
-						<Badge variant="secondary">
+						<Badge status="info">
 							Expires{" "}
 							{new Date(data.expiresAt).toLocaleDateString()}
 						</Badge>

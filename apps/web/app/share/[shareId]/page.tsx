@@ -6,6 +6,10 @@ import { ShareHeadingStructurePage } from "./share-heading-structure-page";
 import type { HeadingStructureShareData } from "./share-heading-structure-page";
 import { ShareQuickSEOPage } from "./share-quick-seo-page";
 import type { QuickSEOShareData } from "./share-quick-seo-page";
+import { ShareImagesAltPage } from "./share-images-alt-page";
+import type { ImagesAltShareData } from "./share-images-alt-page";
+import { ShareSocialViewPage } from "./share-social-view-page";
+import type { SocialViewShareData } from "./share-social-view-page";
 import { ShareType } from "@repo/database/prisma/generated/enums";
 import { ExpiredShareView } from "./expired-share-view";
 import { auth } from "@repo/auth";
@@ -39,8 +43,20 @@ export async function generateMetadata({
 			});
 			shareOgImageUrl = data.shareOgImageUrl;
 			websiteUrl = data.websiteUrl;
-		} else {
+		} else if (shareType.type === ShareType.QUICK_SEO) {
 			const data = await orpcClient.quickSeo.getShare({
+				shareId,
+			});
+			shareOgImageUrl = data.shareOgImageUrl;
+			websiteUrl = data.websiteUrl;
+		} else if (shareType.type === ShareType.IMAGES_ALT) {
+			const data = await orpcClient.imagesAlt.getShare({
+				shareId,
+			});
+			shareOgImageUrl = data.shareOgImageUrl;
+			websiteUrl = data.websiteUrl;
+		} else if (shareType.type === ShareType.SOCIAL_VIEW) {
+			const data = await orpcClient.socialView.getShare({
 				shareId,
 			});
 			shareOgImageUrl = data.shareOgImageUrl;
@@ -52,14 +68,22 @@ export async function generateMetadata({
 				? `Style Guide - ${websiteUrl || shareId}`
 				: shareType.type === ShareType.HEADING_STRUCTURE
 					? `Heading Structure Analysis - ${websiteUrl || shareId}`
-					: `SEO Analysis - ${websiteUrl || shareId}`;
+					: shareType.type === ShareType.QUICK_SEO
+						? `SEO Analysis - ${websiteUrl || shareId}`
+						: shareType.type === ShareType.IMAGES_ALT
+							? `Images Alt Report - ${websiteUrl || shareId}`
+							: `Social Media Preview - ${websiteUrl || shareId}`;
 
 		const description =
 			shareType.type === ShareType.STYLE_GUIDE
 				? `Explore the style guide for ${websiteUrl} - colors, typography, and design tokens`
 				: shareType.type === ShareType.HEADING_STRUCTURE
 					? `Analyze the heading structure for ${websiteUrl} - SEO and accessibility insights`
-					: `Quick SEO analysis for ${websiteUrl} - comprehensive SEO audit and recommendations`;
+					: shareType.type === ShareType.QUICK_SEO
+						? `Quick SEO analysis for ${websiteUrl} - comprehensive SEO audit and recommendations`
+						: shareType.type === ShareType.IMAGES_ALT
+							? `Image alt text analysis for ${websiteUrl} - improve accessibility and SEO`
+							: `Social media preview analysis for ${websiteUrl} - Open Graph and Twitter Cards`;
 
 		return {
 			title,
@@ -210,6 +234,26 @@ export default async function SharePage({
 			return (
 				<ShareQuickSEOPage
 					data={shareData as unknown as QuickSEOShareData}
+				/>
+			);
+		} else if (shareType.type === ShareType.IMAGES_ALT) {
+			const shareData = await orpcClient.imagesAlt.getShare({
+				shareId,
+			});
+
+			return (
+				<ShareImagesAltPage
+					data={shareData as unknown as ImagesAltShareData}
+				/>
+			);
+		} else if (shareType.type === ShareType.SOCIAL_VIEW) {
+			const shareData = await orpcClient.socialView.getShare({
+				shareId,
+			});
+
+			return (
+				<ShareSocialViewPage
+					data={shareData as unknown as SocialViewShareData}
 				/>
 			);
 		} else {
