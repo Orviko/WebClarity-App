@@ -154,6 +154,7 @@ model Organization {
   usageMetrics       UsageMetric[]
 
   @@unique([slug])
+  @@unique([customDomain])
   @@index([customDomain])
   @@map("organization")
 }
@@ -217,6 +218,7 @@ model Purchase {
 enum ShareType {
   STYLE_GUIDE
   HEADING_STRUCTURE
+  QUICK_SEO
 }
 
 model Share {
@@ -237,8 +239,10 @@ model Share {
   organization           Organization?         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   styleGuideDataId       String?               @unique
   headingStructureDataId String?               @unique
+  quickSeoDataId         String?               @unique
   styleGuideData         StyleGuideData?       @relation(fields: [styleGuideDataId], references: [id], onDelete: Cascade)
   headingStructureData   HeadingStructureData? @relation(fields: [headingStructureDataId], references: [id], onDelete: Cascade)
+  quickSeoData           QuickSEOData?         @relation(fields: [quickSeoDataId], references: [id], onDelete: Cascade)
 
   @@index([shareId])
   @@index([expiresAt])
@@ -268,6 +272,16 @@ model HeadingStructureData {
   share         Share?
 
   @@map("headingStructureData")
+}
+
+model QuickSEOData {
+  id            String   @id @default(cuid())
+  seoData       Json
+  exportOptions Json
+  createdAt     DateTime @default(now())
+  share         Share?
+
+  @@map("quickSeoData")
 }
 
 model UsageMetric {

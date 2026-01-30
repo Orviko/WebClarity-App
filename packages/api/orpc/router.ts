@@ -5,6 +5,7 @@ import { organizationsRouter } from "../modules/organizations/router";
 import { paymentsRouter } from "../modules/payments/router";
 import { styleGuideRouter } from "../modules/style-guide/router";
 import { headingStructureRouter } from "../modules/heading-structure/router";
+import { quickSeoRouter } from "../modules/quick-seo/router";
 import { sharedRouter } from "../modules/shared/router";
 import { usersRouter } from "../modules/users/router";
 import { sharesRouter } from "../modules/shares/router";
@@ -18,6 +19,7 @@ export const router = publicProcedure.router({
 	payments: paymentsRouter,
 	styleGuide: styleGuideRouter,
 	headingStructure: headingStructureRouter,
+	quickSeo: quickSeoRouter,
 	shared: sharedRouter,
 	shares: sharesRouter,
 	usage: usageRouter,

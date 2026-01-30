@@ -60,7 +60,7 @@ export const app = new Hono()
 			exposeHeaders: ["Content-Length"],
 			maxAge: 600,
 			credentials: true,
-		})
+		}),
 	)
 	// Auth handler
 	.on(["POST", "GET"], "/auth/**", (c) => auth.handler(c.req.raw))
@@ -74,14 +74,12 @@ export const app = new Hono()
 			const body = await c.req.json();
 
 			// Import schema from separate file to avoid circular dependencies
-			const { shareDataSchema } = await import(
-				"./modules/style-guide/schema"
-			);
+			const { shareDataSchema } =
+				await import("./modules/style-guide/schema");
 
 			// Import handler separately
-			const { createShareHandler } = await import(
-				"./modules/style-guide/procedures/create-share"
-			);
+			const { createShareHandler } =
+				await import("./modules/style-guide/procedures/create-share");
 
 			// Validate input using the schema
 			const parsed = shareDataSchema.parse(body);
@@ -105,7 +103,7 @@ export const app = new Hono()
 							data: { issues: error.issues },
 						},
 					},
-					400
+					400,
 				);
 			}
 
@@ -156,7 +154,7 @@ export const app = new Hono()
 						message: errorMessage,
 					},
 				},
-				statusCode as any
+				statusCode as any,
 			);
 		}
 	})
@@ -166,14 +164,12 @@ export const app = new Hono()
 			const body = await c.req.json();
 
 			// Import schema from separate file to avoid circular dependencies
-			const { shareDataSchema } = await import(
-				"./modules/heading-structure/schema"
-			);
+			const { shareDataSchema } =
+				await import("./modules/heading-structure/schema");
 
 			// Import handler separately
-			const { createShareHandler } = await import(
-				"./modules/heading-structure/procedures/create-share"
-			);
+			const { createShareHandler } =
+				await import("./modules/heading-structure/procedures/create-share");
 
 			// Validate input using the schema
 			const parsed = shareDataSchema.parse(body);
@@ -197,7 +193,7 @@ export const app = new Hono()
 							data: { issues: error.issues },
 						},
 					},
-					400
+					400,
 				);
 			}
 
@@ -248,7 +244,97 @@ export const app = new Hono()
 						message: errorMessage,
 					},
 				},
-				statusCode as any
+				statusCode as any,
+			);
+		}
+	})
+	// Quick SEO share endpoint (direct route for extension compatibility)
+	.post("/rpc/quick-seo/create-share", async (c) => {
+		try {
+			const body = await c.req.json();
+
+			// Import schema from separate file to avoid circular dependencies
+			const { shareDataSchema } =
+				await import("./modules/quick-seo/schema");
+
+			// Import handler separately
+			const { createShareHandler } =
+				await import("./modules/quick-seo/procedures/create-share");
+
+			// Validate input using the schema
+			const parsed = shareDataSchema.parse(body);
+
+			// Call handler
+			const result = await createShareHandler(parsed);
+
+			return c.json(result);
+		} catch (error: any) {
+			logger.error("Error creating Quick SEO share:", error);
+
+			// Handle Zod validation errors
+			if (error?.issues) {
+				return c.json(
+					{
+						json: {
+							defined: false,
+							code: "BAD_REQUEST",
+							status: 400,
+							message: "Input validation failed",
+							data: { issues: error.issues },
+						},
+					},
+					400,
+				);
+			}
+
+			// Handle ORPCError - it may have nested structure
+			let errorCode: string;
+			let errorMessage: string;
+			let statusCode = 500;
+
+			if (error?.code) {
+				// Check if code is nested (object) or direct (string)
+				if (typeof error.code === "object" && error.code.code) {
+					errorCode = error.code.code;
+					errorMessage = error.code.message || String(errorCode);
+				} else if (typeof error.code === "string") {
+					errorCode = error.code;
+					errorMessage = error.message || String(errorCode);
+				} else {
+					errorCode = "BAD_REQUEST";
+					errorMessage = error.message || "Bad request";
+				}
+
+				// Map error codes to HTTP status codes
+				if (errorCode === "BAD_REQUEST") {
+					statusCode = 400;
+				} else if (errorCode === "NOT_FOUND") {
+					statusCode = 404;
+				} else if (errorCode === "UNAUTHORIZED") {
+					statusCode = 401;
+				} else if (errorCode === "FORBIDDEN") {
+					statusCode = 403;
+				} else if (errorCode === "TOO_MANY_REQUESTS") {
+					statusCode = 429;
+				}
+			} else if (error instanceof Error) {
+				errorCode = "INTERNAL_SERVER_ERROR";
+				errorMessage = error.message || "Internal server error";
+			} else {
+				errorCode = "INTERNAL_SERVER_ERROR";
+				errorMessage = String(error) || "Internal server error";
+			}
+
+			return c.json(
+				{
+					json: {
+						defined: false,
+						code: errorCode,
+						status: statusCode,
+						message: errorMessage,
+					},
+				},
+				statusCode as any,
 			);
 		}
 	})
@@ -320,7 +406,10 @@ export const app = new Hono()
 						defined: false,
 						code: "INTERNAL_SERVER_ERROR",
 						status: 500,
-						message: error instanceof Error ? error.message : "Internal server error",
+						message:
+							error instanceof Error
+								? error.message
+								: "Internal server error",
 					},
 				},
 				500,

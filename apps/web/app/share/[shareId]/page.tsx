@@ -4,6 +4,8 @@ import { ShareStyleGuidePage } from "./share-style-guide-page";
 import type { ShareData } from "./share-style-guide-page";
 import { ShareHeadingStructurePage } from "./share-heading-structure-page";
 import type { HeadingStructureShareData } from "./share-heading-structure-page";
+import { ShareQuickSEOPage } from "./share-quick-seo-page";
+import type { QuickSEOShareData } from "./share-quick-seo-page";
 import { ShareType } from "@repo/database/prisma/generated/enums";
 import { ExpiredShareView } from "./expired-share-view";
 import { auth } from "@repo/auth";
@@ -31,8 +33,14 @@ export async function generateMetadata({
 			const data = await orpcClient.styleGuide.getShare({ shareId });
 			shareOgImageUrl = data.shareOgImageUrl;
 			websiteUrl = data.websiteUrl;
-		} else {
+		} else if (shareType.type === ShareType.HEADING_STRUCTURE) {
 			const data = await orpcClient.headingStructure.getShare({
+				shareId,
+			});
+			shareOgImageUrl = data.shareOgImageUrl;
+			websiteUrl = data.websiteUrl;
+		} else {
+			const data = await orpcClient.quickSeo.getShare({
 				shareId,
 			});
 			shareOgImageUrl = data.shareOgImageUrl;
@@ -42,12 +50,16 @@ export async function generateMetadata({
 		const title =
 			shareType.type === ShareType.STYLE_GUIDE
 				? `Style Guide - ${websiteUrl || shareId}`
-				: `Heading Structure Analysis - ${websiteUrl || shareId}`;
+				: shareType.type === ShareType.HEADING_STRUCTURE
+					? `Heading Structure Analysis - ${websiteUrl || shareId}`
+					: `SEO Analysis - ${websiteUrl || shareId}`;
 
 		const description =
 			shareType.type === ShareType.STYLE_GUIDE
 				? `Explore the style guide for ${websiteUrl} - colors, typography, and design tokens`
-				: `Analyze the heading structure for ${websiteUrl} - SEO and accessibility insights`;
+				: shareType.type === ShareType.HEADING_STRUCTURE
+					? `Analyze the heading structure for ${websiteUrl} - SEO and accessibility insights`
+					: `Quick SEO analysis for ${websiteUrl} - comprehensive SEO audit and recommendations`;
 
 		return {
 			title,
@@ -188,6 +200,16 @@ export default async function SharePage({
 			return (
 				<ShareHeadingStructurePage
 					data={shareData as unknown as HeadingStructureShareData}
+				/>
+			);
+		} else if (shareType.type === ShareType.QUICK_SEO) {
+			const shareData = await orpcClient.quickSeo.getShare({
+				shareId,
+			});
+
+			return (
+				<ShareQuickSEOPage
+					data={shareData as unknown as QuickSEOShareData}
 				/>
 			);
 		} else {
