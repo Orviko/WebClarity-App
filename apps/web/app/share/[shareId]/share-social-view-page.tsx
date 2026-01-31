@@ -4,11 +4,19 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
 import { Badge } from "@ui/components/badge";
+import { Tabs, TabsList, TabsTrigger } from "@ui/components/tabs";
 import { CheckIcon, XIcon, AlertTriangleIcon } from "lucide-react";
 import { cn } from "@ui/lib";
 import { FloatingActionBar } from "./components/FloatingActionBar";
 import { SocialViewAIFixModal } from "./components/SocialViewAIFixModal";
 import { SocialViewExportModal } from "./components/SocialViewExportModal";
+import {
+	FacebookPreview,
+	WhatsAppPreview,
+	XPreview,
+	LinkedInPreview,
+	DiscordPreview,
+} from "./components/SocialPreviewCards";
 
 type SEOStatus = "pass" | "warning" | "fail" | "info";
 
@@ -54,6 +62,8 @@ interface SocialData {
 	openGraph: OpenGraphData;
 	twitter: TwitterData;
 }
+
+export type { SocialData };
 
 export interface SocialViewShareData {
 	socialData: SocialData;
@@ -120,401 +130,426 @@ export function ShareSocialViewPage({ data }: Props) {
 	};
 
 	return (
-		<div className="min-h-screen bg-gray-50">
-			<div className="container mx-auto px-4 py-8 max-w-6xl">
+		<div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8 pb-24">
+			<div className="max-w-7xl mx-auto">
 				{/* Header */}
-				<div className="mb-6">
-					<div className="flex items-center justify-between mb-2">
-						<h1 className="text-3xl font-bold">
-							Social Media Preview Report
+				<div className="mb-8">
+					<div className="mb-4">
+						<h1 className="text-3xl font-bold tracking-tight">
+							Social Media Preview
 						</h1>
-						<Badge status="info">{websiteUrl}</Badge>
+						<p className="text-muted-foreground mt-1">
+							Shared from{" "}
+							<a
+								href={`https://${websiteUrl}`}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="text-primary hover:underline font-medium"
+							>
+								{websiteUrl}
+							</a>
+						</p>
 					</div>
-					<p className="text-gray-600">
-						Open Graph and Twitter Card validation for social media
-						optimization
-					</p>
+					<div className="flex items-center gap-2 text-sm text-muted-foreground">
+						<Badge status="info">
+							Expires{" "}
+							{new Date(data.expiresAt).toLocaleDateString()}
+						</Badge>
+					</div>
 				</div>
 
 				{/* Summary Cards */}
 				{exportOptions.includeSummary !== false && (
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-						<Card>
-							<CardContent className="pt-6">
-								<div className="text-center">
-									<div className="text-3xl font-bold text-green-600">
-										{summary.passing}
-									</div>
-									<div className="text-sm text-gray-600 mt-1">
+					<Card className="mb-8">
+						<CardHeader>
+							<CardTitle>Summary</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+								<div>
+									<div className="text-sm text-muted-foreground mb-1">
 										Passing
 									</div>
-								</div>
-							</CardContent>
-						</Card>
-						<Card>
-							<CardContent className="pt-6">
-								<div className="text-center">
-									<div className="text-3xl font-bold text-yellow-600">
-										{summary.warnings}
+									<div className="text-2xl font-bold text-green-600">
+										{summary.passing}
 									</div>
-									<div className="text-sm text-gray-600 mt-1">
+								</div>
+								<div>
+									<div className="text-sm text-muted-foreground mb-1">
 										Warnings
 									</div>
-								</div>
-							</CardContent>
-						</Card>
-						<Card>
-							<CardContent className="pt-6">
-								<div className="text-center">
-									<div className="text-3xl font-bold text-red-600">
-										{summary.failures}
+									<div className="text-2xl font-bold text-yellow-600">
+										{summary.warnings}
 									</div>
-									<div className="text-sm text-gray-600 mt-1">
+								</div>
+								<div>
+									<div className="text-sm text-muted-foreground mb-1">
 										Failures
 									</div>
+									<div className="text-2xl font-bold text-red-600">
+										{summary.failures}
+									</div>
 								</div>
-							</CardContent>
-						</Card>
-					</div>
+							</div>
+						</CardContent>
+					</Card>
 				)}
 
 				{/* Tabs */}
-				<div className="mb-6 border-b">
-					<div className="flex gap-4">
-						<button
-							onClick={() => setActiveTab("details")}
-							className={cn(
-								"px-4 py-2 font-medium transition-colors border-b-2",
-								activeTab === "details"
-									? "border-blue-600 text-blue-600"
-									: "border-transparent text-gray-600 hover:text-gray-900",
-							)}
+				<Card className="mb-8">
+					<CardHeader>
+						<Tabs
+							value={activeTab}
+							onValueChange={(v) =>
+								setActiveTab(v as "details" | "preview")
+							}
 						>
-							Details
-						</button>
-						<button
-							onClick={() => setActiveTab("preview")}
-							className={cn(
-								"px-4 py-2 font-medium transition-colors border-b-2",
-								activeTab === "preview"
-									? "border-blue-600 text-blue-600"
-									: "border-transparent text-gray-600 hover:text-gray-900",
-							)}
-						>
-							Preview
-						</button>
-					</div>
-				</div>
-
-				{/* Details Tab */}
-				{activeTab === "details" && (
-					<div className="space-y-6">
-						{/* Open Graph Section */}
-						{exportOptions.includeOpenGraph !== false && (
-							<Card>
-								<CardHeader>
-									<CardTitle>Open Graph Meta Tags</CardTitle>
-								</CardHeader>
-								<CardContent className="space-y-4">
-									<div className="flex items-start gap-3">
-										{getStatusIcon(
-											openGraph.status.hasTitle,
-										)}
-										<div className="flex-1">
-											<p className="font-medium">Title</p>
-											<p className="text-sm text-gray-600">
-												{openGraph.title || (
-													<span className="text-red-600">
-														Not set
-													</span>
+							<TabsList>
+								<TabsTrigger value="details">
+									Details
+								</TabsTrigger>
+								<TabsTrigger value="preview">
+									Preview
+								</TabsTrigger>
+							</TabsList>
+						</Tabs>
+					</CardHeader>
+					<CardContent>
+						{/* Details Tab */}
+						{activeTab === "details" && (
+							<div className="space-y-6">
+								{/* Open Graph Section */}
+								{exportOptions.includeOpenGraph !== false && (
+									<div>
+										<h3 className="text-lg font-semibold mb-4">
+											Open Graph Meta Tags
+										</h3>
+										<div className="space-y-4">
+											<div className="flex items-start gap-3">
+												{getStatusIcon(
+													openGraph.status.hasTitle,
 												)}
-											</p>
-										</div>
-									</div>
-									<div className="flex items-start gap-3">
-										{getStatusIcon(
-											openGraph.status.hasDescription,
-										)}
-										<div className="flex-1">
-											<p className="font-medium">
-												Description
-											</p>
-											<p className="text-sm text-gray-600">
-												{openGraph.description || (
-													<span className="text-red-600">
-														Not set
-													</span>
-												)}
-											</p>
-										</div>
-									</div>
-									<div className="flex items-start gap-3">
-										{getStatusIcon(
-											openGraph.status.hasImage &&
-												openGraph.status.imageValid,
-										)}
-										<div className="flex-1">
-											<p className="font-medium">Image</p>
-											{openGraph.image ? (
-												<div>
-													<img
-														src={openGraph.image}
-														alt="Open Graph preview"
-														className="mt-2 rounded-lg border max-w-md"
-														onError={(e) => {
-															e.currentTarget.style.display =
-																"none";
-														}}
-													/>
-													<p className="text-xs text-gray-500 mt-1">
-														{openGraph.image}
+												<div className="flex-1">
+													<p className="font-medium text-sm">
+														Title
 													</p>
-													{openGraph.imageWidth &&
-														openGraph.imageHeight && (
-															<p className="text-xs text-gray-500">
-																Dimensions:{" "}
-																{
-																	openGraph.imageWidth
-																}
-																×
-																{
-																	openGraph.imageHeight
-																}
-																{openGraph
-																	.status
-																	.imageDimensionStatus ===
-																	"warning" && (
-																	<span className="text-yellow-600 ml-2">
-																		(Recommended:
-																		1200×630)
-																	</span>
-																)}
-															</p>
-														)}
-												</div>
-											) : (
-												<span className="text-red-600 text-sm">
-													Not set
-												</span>
-											)}
-										</div>
-									</div>
-									{openGraph.url && (
-										<div className="flex items-start gap-3">
-											<CheckIcon className="w-4 h-4 text-green-600" />
-											<div className="flex-1">
-												<p className="font-medium">
-													URL
-												</p>
-												<p className="text-sm text-gray-600">
-													{openGraph.url}
-												</p>
-											</div>
-										</div>
-									)}
-									{openGraph.type && (
-										<div className="flex items-start gap-3">
-											<CheckIcon className="w-4 h-4 text-green-600" />
-											<div className="flex-1">
-												<p className="font-medium">
-													Type
-												</p>
-												<p className="text-sm text-gray-600">
-													{openGraph.type}
-												</p>
-											</div>
-										</div>
-									)}
-									{openGraph.siteName && (
-										<div className="flex items-start gap-3">
-											<CheckIcon className="w-4 h-4 text-green-600" />
-											<div className="flex-1">
-												<p className="font-medium">
-													Site Name
-												</p>
-												<p className="text-sm text-gray-600">
-													{openGraph.siteName}
-												</p>
-											</div>
-										</div>
-									)}
-								</CardContent>
-							</Card>
-						)}
-
-						{/* Twitter Section */}
-						{exportOptions.includeTwitter !== false && (
-							<Card>
-								<CardHeader>
-									<CardTitle>
-										Twitter Card Meta Tags
-									</CardTitle>
-								</CardHeader>
-								<CardContent className="space-y-4">
-									<div className="flex items-start gap-3">
-										{getStatusIcon(
-											twitter.status.hasCard &&
-												twitter.status.cardValid,
-										)}
-										<div className="flex-1">
-											<p className="font-medium">
-												Card Type
-											</p>
-											<p className="text-sm text-gray-600">
-												{twitter.card || (
-													<span className="text-red-600">
-														Not set
-													</span>
-												)}
-											</p>
-										</div>
-									</div>
-									<div className="flex items-start gap-3">
-										{getStatusIcon(twitter.status.hasTitle)}
-										<div className="flex-1">
-											<p className="font-medium">Title</p>
-											<p className="text-sm text-gray-600">
-												{twitter.title ||
-													openGraph.title || (
-														<span className="text-red-600">
-															Not set
-														</span>
-													)}
-												{!twitter.title &&
-													openGraph.title && (
-														<span className="text-gray-500 text-xs ml-2">
-															(Fallback from OG)
-														</span>
-													)}
-											</p>
-										</div>
-									</div>
-									<div className="flex items-start gap-3">
-										{getStatusIcon(
-											twitter.status.hasDescription,
-										)}
-										<div className="flex-1">
-											<p className="font-medium">
-												Description
-											</p>
-											<p className="text-sm text-gray-600">
-												{twitter.description ||
-													openGraph.description || (
-														<span className="text-red-600">
-															Not set
-														</span>
-													)}
-												{!twitter.description &&
-													openGraph.description && (
-														<span className="text-gray-500 text-xs ml-2">
-															(Fallback from OG)
-														</span>
-													)}
-											</p>
-										</div>
-									</div>
-									<div className="flex items-start gap-3">
-										{getStatusIcon(twitter.status.hasImage)}
-										<div className="flex-1">
-											<p className="font-medium">Image</p>
-											{twitter.image ||
-											openGraph.image ? (
-												<div>
-													<img
-														src={
-															twitter.image ||
-															openGraph.image ||
-															""
-														}
-														alt="Twitter Card preview"
-														className="mt-2 rounded-lg border max-w-md"
-														onError={(e) => {
-															e.currentTarget.style.display =
-																"none";
-														}}
-													/>
-													<p className="text-xs text-gray-500 mt-1">
-														{twitter.image ||
-															openGraph.image}
-													</p>
-													{!twitter.image &&
-														openGraph.image && (
-															<span className="text-gray-500 text-xs">
-																(Fallback from
-																OG)
+													<p className="text-sm text-muted-foreground">
+														{openGraph.title || (
+															<span className="text-destructive">
+																Not set
 															</span>
 														)}
+													</p>
 												</div>
-											) : (
-												<span className="text-red-600 text-sm">
-													Not set
-												</span>
+											</div>
+											<div className="flex items-start gap-3">
+												{getStatusIcon(
+													openGraph.status
+														.hasDescription,
+												)}
+												<div className="flex-1">
+													<p className="font-medium text-sm">
+														Description
+													</p>
+													<p className="text-sm text-muted-foreground">
+														{openGraph.description || (
+															<span className="text-destructive">
+																Not set
+															</span>
+														)}
+													</p>
+												</div>
+											</div>
+											<div className="flex items-start gap-3">
+												{getStatusIcon(
+													openGraph.status.hasImage &&
+														openGraph.status
+															.imageValid,
+												)}
+												<div className="flex-1">
+													<p className="font-medium text-sm">
+														Image
+													</p>
+													{openGraph.image ? (
+														<div>
+															<img
+																src={
+																	openGraph.image
+																}
+																alt="Open Graph preview"
+																className="mt-2 rounded-lg border max-w-md"
+																onError={(
+																	e,
+																) => {
+																	e.currentTarget.style.display =
+																		"none";
+																}}
+															/>
+															<p className="text-xs text-muted-foreground mt-1 font-mono">
+																{
+																	openGraph.image
+																}
+															</p>
+															{openGraph.imageWidth &&
+																openGraph.imageHeight && (
+																	<p className="text-xs text-muted-foreground">
+																		Dimensions:{" "}
+																		{
+																			openGraph.imageWidth
+																		}
+																		×
+																		{
+																			openGraph.imageHeight
+																		}
+																		{openGraph
+																			.status
+																			.imageDimensionStatus ===
+																			"warning" && (
+																			<span className="text-yellow-600 ml-2">
+																				(Recommended:
+																				1200×630)
+																			</span>
+																		)}
+																	</p>
+																)}
+														</div>
+													) : (
+														<span className="text-destructive text-sm">
+															Not set
+														</span>
+													)}
+												</div>
+											</div>
+											{openGraph.url && (
+												<div className="flex items-start gap-3">
+													<CheckIcon className="w-4 h-4 text-green-600" />
+													<div className="flex-1">
+														<p className="font-medium text-sm">
+															URL
+														</p>
+														<p className="text-sm text-muted-foreground">
+															{openGraph.url}
+														</p>
+													</div>
+												</div>
+											)}
+											{openGraph.type && (
+												<div className="flex items-start gap-3">
+													<CheckIcon className="w-4 h-4 text-green-600" />
+													<div className="flex-1">
+														<p className="font-medium text-sm">
+															Type
+														</p>
+														<p className="text-sm text-muted-foreground">
+															{openGraph.type}
+														</p>
+													</div>
+												</div>
+											)}
+											{openGraph.siteName && (
+												<div className="flex items-start gap-3">
+													<CheckIcon className="w-4 h-4 text-green-600" />
+													<div className="flex-1">
+														<p className="font-medium text-sm">
+															Site Name
+														</p>
+														<p className="text-sm text-muted-foreground">
+															{openGraph.siteName}
+														</p>
+													</div>
+												</div>
 											)}
 										</div>
 									</div>
-									{twitter.site && (
-										<div className="flex items-start gap-3">
-											<CheckIcon className="w-4 h-4 text-green-600" />
-											<div className="flex-1">
-												<p className="font-medium">
-													Site Handle
-												</p>
-												<p className="text-sm text-gray-600">
-													{twitter.site}
-												</p>
-											</div>
-										</div>
-									)}
-									{twitter.creator && (
-										<div className="flex items-start gap-3">
-											<CheckIcon className="w-4 h-4 text-green-600" />
-											<div className="flex-1">
-												<p className="font-medium">
-													Creator Handle
-												</p>
-												<p className="text-sm text-gray-600">
-													{twitter.creator}
-												</p>
-											</div>
-										</div>
-									)}
-								</CardContent>
-							</Card>
-						)}
-					</div>
-				)}
+								)}
 
-				{/* Preview Tab */}
-				{activeTab === "preview" &&
-					exportOptions.includePreview !== false && (
-						<Card>
-							<CardHeader>
-								<CardTitle>Social Media Previews</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<div className="space-y-6">
-									{/* Note: Preview components would be rendered here */}
-									<div className="text-center py-12 text-gray-500">
-										<p>
-											Platform preview components coming
-											soon
-										</p>
-										<p className="text-sm mt-2">
-											Facebook, WhatsApp, Twitter/X,
-											LinkedIn, and Discord previews
-										</p>
+								{/* Divider */}
+								{exportOptions.includeOpenGraph !== false &&
+									exportOptions.includeTwitter !== false && (
+										<div className="border-t border-border my-6" />
+									)}
+
+								{/* Twitter Section */}
+								{exportOptions.includeTwitter !== false && (
+									<div>
+										<h3 className="text-lg font-semibold mb-4">
+											Twitter Card Meta Tags
+										</h3>
+										<div className="space-y-4">
+											<div className="flex items-start gap-3">
+												{getStatusIcon(
+													twitter.status.hasCard &&
+														twitter.status
+															.cardValid,
+												)}
+												<div className="flex-1">
+													<p className="font-medium text-sm">
+														Card Type
+													</p>
+													<p className="text-sm text-muted-foreground">
+														{twitter.card || (
+															<span className="text-destructive">
+																Not set
+															</span>
+														)}
+													</p>
+												</div>
+											</div>
+											<div className="flex items-start gap-3">
+												{getStatusIcon(
+													twitter.status.hasTitle,
+												)}
+												<div className="flex-1">
+													<p className="font-medium text-sm">
+														Title
+													</p>
+													<p className="text-sm text-muted-foreground">
+														{twitter.title ||
+															openGraph.title || (
+																<span className="text-destructive">
+																	Not set
+																</span>
+															)}
+														{!twitter.title &&
+															openGraph.title && (
+																<span className="text-muted-foreground text-xs ml-2">
+																	(Fallback
+																	from OG)
+																</span>
+															)}
+													</p>
+												</div>
+											</div>
+											<div className="flex items-start gap-3">
+												{getStatusIcon(
+													twitter.status
+														.hasDescription,
+												)}
+												<div className="flex-1">
+													<p className="font-medium text-sm">
+														Description
+													</p>
+													<p className="text-sm text-muted-foreground">
+														{twitter.description ||
+															openGraph.description || (
+																<span className="text-destructive">
+																	Not set
+																</span>
+															)}
+														{!twitter.description &&
+															openGraph.description && (
+																<span className="text-muted-foreground text-xs ml-2">
+																	(Fallback
+																	from OG)
+																</span>
+															)}
+													</p>
+												</div>
+											</div>
+											<div className="flex items-start gap-3">
+												{getStatusIcon(
+													twitter.status.hasImage,
+												)}
+												<div className="flex-1">
+													<p className="font-medium text-sm">
+														Image
+													</p>
+													{twitter.image ||
+													openGraph.image ? (
+														<div>
+															<img
+																src={
+																	twitter.image ||
+																	openGraph.image ||
+																	""
+																}
+																alt="Twitter Card preview"
+																className="mt-2 rounded-lg border max-w-md"
+																onError={(
+																	e,
+																) => {
+																	e.currentTarget.style.display =
+																		"none";
+																}}
+															/>
+															<p className="text-xs text-muted-foreground mt-1 font-mono">
+																{twitter.image ||
+																	openGraph.image}
+															</p>
+															{!twitter.image &&
+																openGraph.image && (
+																	<span className="text-muted-foreground text-xs">
+																		(Fallback
+																		from OG)
+																	</span>
+																)}
+														</div>
+													) : (
+														<span className="text-destructive text-sm">
+															Not set
+														</span>
+													)}
+												</div>
+											</div>
+											{twitter.site && (
+												<div className="flex items-start gap-3">
+													<CheckIcon className="w-4 h-4 text-green-600" />
+													<div className="flex-1">
+														<p className="font-medium text-sm">
+															Site Handle
+														</p>
+														<p className="text-sm text-muted-foreground">
+															{twitter.site}
+														</p>
+													</div>
+												</div>
+											)}
+											{twitter.creator && (
+												<div className="flex items-start gap-3">
+													<CheckIcon className="w-4 h-4 text-green-600" />
+													<div className="flex-1">
+														<p className="font-medium text-sm">
+															Creator Handle
+														</p>
+														<p className="text-sm text-muted-foreground">
+															{twitter.creator}
+														</p>
+													</div>
+												</div>
+											)}
+										</div>
 									</div>
+								)}
+							</div>
+						)}
+
+						{/* Preview Tab */}
+						{activeTab === "preview" &&
+							exportOptions.includePreview !== false && (
+								<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+									<FacebookPreview data={socialData} />
+									<WhatsAppPreview data={socialData} />
+									<XPreview data={socialData} />
+									<LinkedInPreview data={socialData} />
+									<DiscordPreview data={socialData} />
 								</div>
-							</CardContent>
-						</Card>
-					)}
+							)}
+					</CardContent>
+				</Card>
 
 				{/* Footer */}
-				<div className="mt-8 text-center text-sm text-gray-500">
-					<p>
-						Powered by <strong>WebClarity</strong> • Created:{" "}
-						{new Date(data.createdAt).toLocaleDateString()}
-					</p>
+				<div className="mt-12 pt-8 border-t border-border">
+					<div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+						<div>© {new Date().getFullYear()} WebClarity</div>
+						<a
+							href="https://webclarity.ai"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="hover:text-foreground transition-colors font-medium"
+						>
+							webclarity.ai
+						</a>
+					</div>
 				</div>
 			</div>
 
@@ -526,18 +561,16 @@ export function ShareSocialViewPage({ data }: Props) {
 			/>
 
 			{/* Modals */}
-			{showAIFixModal && (
-				<SocialViewAIFixModal
-					onClose={() => setShowAIFixModal(false)}
-					data={data}
-				/>
-			)}
-			{showExportModal && (
-				<SocialViewExportModal
-					onClose={() => setShowExportModal(false)}
-					data={data}
-				/>
-			)}
+			<SocialViewAIFixModal
+				open={showAIFixModal}
+				onOpenChange={setShowAIFixModal}
+				data={data}
+			/>
+			<SocialViewExportModal
+				open={showExportModal}
+				onOpenChange={setShowExportModal}
+				data={data}
+			/>
 		</div>
 	);
 }

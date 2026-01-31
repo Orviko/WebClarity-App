@@ -4,7 +4,20 @@ import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/card";
 import { Badge } from "@ui/components/badge";
-import { AlertTriangleIcon, CheckIcon, ImageIcon, XIcon } from "lucide-react";
+import {
+	AlertTriangleIcon,
+	CheckIcon,
+	ImageIcon,
+	XIcon,
+	FilterIcon,
+} from "lucide-react";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@ui/components/dropdown-menu";
+import { Button } from "@ui/components/button";
 import { cn } from "@ui/lib";
 import { FloatingActionBar } from "./components/FloatingActionBar";
 import { ImagesAltAIFixModal } from "./components/ImagesAltAIFixModal";
@@ -72,21 +85,21 @@ export function ShareImagesAltPage({ data }: Props) {
 		switch (status) {
 			case "with-alt":
 				return (
-					<Badge className="gap-1 bg-green-50 text-green-700 border-green-200">
+					<Badge className="shrink-0 flex items-center gap-1 bg-green-50 text-green-700 border-green-200">
 						<CheckIcon className="h-3 w-3" />
 						Has Alt Text
 					</Badge>
 				);
 			case "missing-alt":
 				return (
-					<Badge className="gap-1 bg-red-50 text-red-700 border-red-200">
+					<Badge className="shrink-0 flex items-center gap-1 bg-red-50 text-red-700 border-red-200">
 						<XIcon className="h-3 w-3" />
 						Missing Alt
 					</Badge>
 				);
 			case "empty-alt":
 				return (
-					<Badge className="gap-1 bg-yellow-50 text-yellow-700 border-yellow-200">
+					<Badge className="shrink-0 flex items-center gap-1 bg-yellow-50 text-yellow-700 border-yellow-200">
 						<AlertTriangleIcon className="h-3 w-3" />
 						Empty Alt
 					</Badge>
@@ -106,137 +119,132 @@ export function ShareImagesAltPage({ data }: Props) {
 	};
 
 	return (
-		<div className="min-h-screen bg-gray-50">
-			<div className="container mx-auto px-4 py-8 max-w-6xl">
+		<div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8 pb-24">
+			<div className="max-w-7xl mx-auto">
 				{/* Header */}
-				<div className="mb-6">
-					<div className="flex items-center justify-between mb-2">
-						<h1 className="text-3xl font-bold">
-							Images Alt Report
+				<div className="mb-8">
+					<div className="mb-4">
+						<h1 className="text-3xl font-bold tracking-tight">
+							Image Alt Report
 						</h1>
-						<Badge status="info">{websiteUrl}</Badge>
+						<p className="text-muted-foreground mt-1">
+							Shared from{" "}
+							<a
+								href={`https://${websiteUrl}`}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="text-primary hover:underline font-medium"
+							>
+								{websiteUrl}
+							</a>
+						</p>
 					</div>
-					<p className="text-gray-600">
-						Comprehensive analysis of image alt attributes for SEO
-						and accessibility
-					</p>
+					<div className="flex items-center gap-2 text-sm text-muted-foreground">
+						<Badge status="info">
+							Expires{" "}
+							{new Date(data.expiresAt).toLocaleDateString()}
+						</Badge>
+					</div>
 				</div>
 
 				{/* Summary Cards */}
 				{exportOptions.includeSummary !== false && (
-					<div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-						<Card>
-							<CardContent className="pt-6">
-								<div className="text-center">
-									<div className="text-3xl font-bold">
-										{summary.total}
-									</div>
-									<div className="text-sm text-gray-600 mt-1">
+					<Card className="mb-8">
+						<CardHeader>
+							<CardTitle>Summary</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+								<div>
+									<div className="text-sm text-muted-foreground mb-1">
 										Total Images
 									</div>
-								</div>
-							</CardContent>
-						</Card>
-						<Card>
-							<CardContent className="pt-6">
-								<div className="text-center">
-									<div className="text-3xl font-bold text-green-600">
-										{summary.withAlt}
+									<div className="text-2xl font-bold">
+										{summary.total}
 									</div>
-									<div className="text-sm text-gray-600 mt-1">
+								</div>
+								<div>
+									<div className="text-sm text-muted-foreground mb-1">
 										With Alt Text
 									</div>
-								</div>
-							</CardContent>
-						</Card>
-						<Card>
-							<CardContent className="pt-6">
-								<div className="text-center">
-									<div className="text-3xl font-bold text-red-600">
-										{summary.missingAlt}
+									<div className="text-2xl font-bold text-green-600">
+										{summary.withAlt}
 									</div>
-									<div className="text-sm text-gray-600 mt-1">
+								</div>
+								<div>
+									<div className="text-sm text-muted-foreground mb-1">
 										Missing Alt
 									</div>
-								</div>
-							</CardContent>
-						</Card>
-						<Card>
-							<CardContent className="pt-6">
-								<div className="text-center">
-									<div className="text-3xl font-bold text-yellow-600">
-										{summary.emptyAlt}
+									<div className="text-2xl font-bold text-red-600">
+										{summary.missingAlt}
 									</div>
-									<div className="text-sm text-gray-600 mt-1">
+								</div>
+								<div>
+									<div className="text-sm text-muted-foreground mb-1">
 										Empty Alt
 									</div>
+									<div className="text-2xl font-bold text-yellow-600">
+										{summary.emptyAlt}
+									</div>
 								</div>
-							</CardContent>
-						</Card>
-					</div>
+							</div>
+						</CardContent>
+					</Card>
 				)}
 
-				{/* Filter */}
-				<Card className="mb-6">
-					<CardContent className="pt-6">
-						<div className="flex gap-2 flex-wrap">
-							<button
-								onClick={() => setFilterStatus("all")}
-								className={cn(
-									"px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-									filterStatus === "all"
-										? "bg-blue-600 text-white"
-										: "bg-gray-100 text-gray-700 hover:bg-gray-200",
-								)}
-							>
-								All ({images.length})
-							</button>
-							<button
-								onClick={() => setFilterStatus("with-alt")}
-								className={cn(
-									"px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-									filterStatus === "with-alt"
-										? "bg-green-600 text-white"
-										: "bg-gray-100 text-gray-700 hover:bg-gray-200",
-								)}
-							>
-								With Alt ({summary.withAlt})
-							</button>
-							<button
-								onClick={() => setFilterStatus("missing-alt")}
-								className={cn(
-									"px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-									filterStatus === "missing-alt"
-										? "bg-red-600 text-white"
-										: "bg-gray-100 text-gray-700 hover:bg-gray-200",
-								)}
-							>
-								Missing Alt ({summary.missingAlt})
-							</button>
-							<button
-								onClick={() => setFilterStatus("empty-alt")}
-								className={cn(
-									"px-4 py-2 rounded-lg text-sm font-medium transition-colors",
-									filterStatus === "empty-alt"
-										? "bg-yellow-600 text-white"
-										: "bg-gray-100 text-gray-700 hover:bg-gray-200",
-								)}
-							>
-								Empty Alt ({summary.emptyAlt})
-							</button>
-						</div>
-					</CardContent>
-				</Card>
-
-				{/* Images List */}
-				<Card>
+				{/* Images List with Filter */}
+				<Card className="mb-8">
 					<CardHeader>
-						<CardTitle>
-							{filterStatus === "all"
-								? "All Images"
-								: `${filterStatus} Images`}{" "}
-							({filteredImages.length})
-						</CardTitle>
+						<div className="flex items-center justify-between">
+							<CardTitle>
+								Images ({filteredImages.length})
+							</CardTitle>
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button variant="outline" size="sm">
+										<FilterIcon className="size-4 mr-2" />
+										{filterStatus === "all"
+											? "All Images"
+											: filterStatus === "with-alt"
+												? "With Alt"
+												: filterStatus === "missing-alt"
+													? "Missing Alt"
+													: "Empty Alt"}
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="end">
+									<DropdownMenuItem
+										onClick={() => setFilterStatus("all")}
+									>
+										All Images ({summary.total})
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={() =>
+											setFilterStatus("with-alt")
+										}
+										disabled={summary.withAlt === 0}
+									>
+										With Alt ({summary.withAlt})
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={() =>
+											setFilterStatus("missing-alt")
+										}
+										disabled={summary.missingAlt === 0}
+									>
+										Missing Alt ({summary.missingAlt})
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={() =>
+											setFilterStatus("empty-alt")
+										}
+										disabled={summary.emptyAlt === 0}
+									>
+										Empty Alt ({summary.emptyAlt})
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
+						</div>
 					</CardHeader>
 					<CardContent>
 						<div className="space-y-4">
@@ -244,13 +252,17 @@ export function ShareImagesAltPage({ data }: Props) {
 								<div
 									key={index}
 									className={cn(
-										"p-4 rounded-lg border-2",
-										getStatusColor(image.status),
+										"p-4 rounded-lg border-2 transition-all",
+										image.status === "with-alt"
+											? "border-l-4 border-l-green-500 bg-card"
+											: image.status === "missing-alt"
+												? "border-l-4 border-l-red-500 bg-card"
+												: "border-l-4 border-l-yellow-500 bg-card",
 									)}
 								>
 									<div className="flex gap-4">
 										{/* Image Thumbnail */}
-										<div className="flex-shrink-0 w-24 h-24 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+										<div className="shrink-0 w-24 h-24 bg-muted rounded-lg overflow-hidden flex items-center justify-center border">
 											{image.url ? (
 												<img
 													src={image.url}
@@ -259,17 +271,22 @@ export function ShareImagesAltPage({ data }: Props) {
 													onError={(e) => {
 														e.currentTarget.style.display =
 															"none";
-														e.currentTarget.parentElement!.innerHTML = `
-															<div class="text-gray-400">
+														const parent =
+															e.currentTarget
+																.parentElement;
+														if (parent) {
+															parent.innerHTML = `
+															<div class="text-muted-foreground flex items-center justify-center w-full h-full">
 																<svg class="w-12 h-12" fill="currentColor" viewBox="0 0 24 24">
 																	<path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
 																</svg>
 															</div>
 														`;
+														}
 													}}
 												/>
 											) : (
-												<ImageIcon className="w-12 h-12 text-gray-400" />
+												<ImageIcon className="w-12 h-12 text-muted-foreground" />
 											)}
 										</div>
 
@@ -277,7 +294,7 @@ export function ShareImagesAltPage({ data }: Props) {
 										<div className="flex-1 min-w-0">
 											<div className="flex items-start justify-between gap-2 mb-2">
 												<div className="flex-1 min-w-0">
-													<p className="text-sm font-medium text-gray-900 truncate">
+													<p className="text-sm font-medium truncate">
 														{image.url}
 													</p>
 												</div>
@@ -286,15 +303,15 @@ export function ShareImagesAltPage({ data }: Props) {
 
 											{/* Alt Text */}
 											<div className="mb-2">
-												<p className="text-xs text-gray-500 mb-1">
+												<p className="text-xs text-muted-foreground mb-1">
 													Alt Text:
 												</p>
 												{image.alt ? (
-													<p className="text-sm text-gray-700">
+													<p className="text-sm">
 														{image.alt}
 													</p>
 												) : (
-													<p className="text-sm text-red-600 italic">
+													<p className="text-sm text-destructive italic">
 														No alt text provided
 													</p>
 												)}
@@ -305,7 +322,7 @@ export function ShareImagesAltPage({ data }: Props) {
 												(image.width ||
 													image.height) && (
 													<div className="mb-2">
-														<p className="text-xs text-gray-500">
+														<p className="text-xs text-muted-foreground">
 															Dimensions:{" "}
 															{image.width}×
 															{image.height}
@@ -317,10 +334,10 @@ export function ShareImagesAltPage({ data }: Props) {
 											{exportOptions.includeSelectors &&
 												image.selector && (
 													<details className="mt-2">
-														<summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-700">
+														<summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground">
 															CSS Selector
 														</summary>
-														<code className="text-xs bg-gray-100 p-2 rounded block mt-1 overflow-x-auto">
+														<code className="text-xs bg-muted p-2 rounded block mt-1 overflow-x-auto font-mono">
 															{image.selector}
 														</code>
 													</details>
@@ -331,8 +348,14 @@ export function ShareImagesAltPage({ data }: Props) {
 							))}
 
 							{filteredImages.length === 0 && (
-								<div className="text-center py-12 text-gray-500">
-									No images found with {filterStatus} status
+								<div className="text-center py-12 text-muted-foreground">
+									<CheckIcon className="size-12 mx-auto mb-3 text-green-500" />
+									<p className="font-medium">
+										No images found with this filter
+									</p>
+									<p className="text-sm mt-1">
+										Try selecting a different filter option
+									</p>
 								</div>
 							)}
 						</div>
@@ -340,11 +363,18 @@ export function ShareImagesAltPage({ data }: Props) {
 				</Card>
 
 				{/* Footer */}
-				<div className="mt-8 text-center text-sm text-gray-500">
-					<p>
-						Powered by <strong>WebClarity</strong> • Created:{" "}
-						{new Date(data.createdAt).toLocaleDateString()}
-					</p>
+				<div className="mt-12 pt-8 border-t border-border">
+					<div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+						<div>© {new Date().getFullYear()} WebClarity</div>
+						<a
+							href="https://webclarity.ai"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="hover:text-foreground transition-colors font-medium"
+						>
+							webclarity.ai
+						</a>
+					</div>
 				</div>
 			</div>
 
@@ -356,18 +386,16 @@ export function ShareImagesAltPage({ data }: Props) {
 			/>
 
 			{/* Modals */}
-			{showAIFixModal && (
-				<ImagesAltAIFixModal
-					onClose={() => setShowAIFixModal(false)}
-					data={data}
-				/>
-			)}
-			{showExportModal && (
-				<ImagesAltExportModal
-					onClose={() => setShowExportModal(false)}
-					data={data}
-				/>
-			)}
+			<ImagesAltAIFixModal
+				open={showAIFixModal}
+				onOpenChange={setShowAIFixModal}
+				data={data}
+			/>
+			<ImagesAltExportModal
+				open={showExportModal}
+				onOpenChange={setShowExportModal}
+				data={data}
+			/>
 		</div>
 	);
 }

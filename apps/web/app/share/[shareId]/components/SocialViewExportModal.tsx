@@ -1,45 +1,73 @@
+"use client";
+
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "@ui/components/dialog";
+import { Button } from "@ui/components/button";
+import { DownloadIcon } from "lucide-react";
+import { toast } from "sonner";
 import { SocialViewShareData } from "../share-social-view-page";
 
 interface Props {
-	onClose: () => void;
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
 	data: SocialViewShareData;
 }
 
-export function SocialViewExportModal({ onClose, data }: Props) {
+export function SocialViewExportModal({ open, onOpenChange, data }: Props) {
 	const handleExport = () => {
-		const content = JSON.stringify(data, null, 2);
-		const blob = new Blob([content], { type: "application/json" });
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement("a");
-		a.href = url;
-		a.download = `social-view-report-${data.websiteUrl}.json`;
-		a.click();
-		URL.revokeObjectURL(url);
-		onClose();
+		try {
+			const content = JSON.stringify(data, null, 2);
+			const blob = new Blob([content], { type: "application/json" });
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement("a");
+			a.href = url;
+			a.download = `social-view-report-${data.websiteUrl}.json`;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+
+			// Close dialog first, then show toast
+			onOpenChange(false);
+
+			setTimeout(() => {
+				toast.success("Report downloaded successfully!");
+			}, 100);
+		} catch (error) {
+			console.error("Failed to export:", error);
+			toast.error("Failed to export report");
+		}
 	};
 
 	return (
-		<div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-			<div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-				<h3 className="text-lg font-semibold mb-4">Export Report</h3>
-				<p className="text-gray-600 mb-4">
-					Download this report as a JSON file for your records.
-				</p>
-				<div className="flex gap-2">
-					<button
-						onClick={onClose}
-						className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+		<Dialog open={open} onOpenChange={onOpenChange}>
+			<DialogContent className="max-w-md">
+				<DialogHeader>
+					<DialogTitle>Export Report</DialogTitle>
+					<DialogDescription>
+						Download this report as a JSON file for your records.
+					</DialogDescription>
+				</DialogHeader>
+
+				<div className="flex gap-3 pt-4">
+					<Button
+						onClick={() => onOpenChange(false)}
+						variant="outline"
+						className="flex-1"
 					>
 						Cancel
-					</button>
-					<button
-						onClick={handleExport}
-						className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-					>
+					</Button>
+					<Button onClick={handleExport} className="flex-1">
+						<DownloadIcon className="size-4 mr-2" />
 						Export JSON
-					</button>
+					</Button>
 				</div>
-			</div>
-		</div>
+			</DialogContent>
+		</Dialog>
 	);
 }

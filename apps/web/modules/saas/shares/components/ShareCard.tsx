@@ -84,10 +84,30 @@ export function ShareCard({ share, onUpdate }: ShareCardProps) {
 
 	// Use the actual title from database - no prefix logic, just show what's stored
 	const displayTitle = share.title || share.websiteUrl;
+
+	// Determine report type label
 	const reportTypeLabel =
 		share.type === "STYLE_GUIDE"
 			? t("shares.styleGuide")
-			: t("shares.headingStructure");
+			: share.type === "HEADING_STRUCTURE"
+				? t("shares.headingStructure")
+				: share.type === "QUICK_SEO"
+					? t("shares.quickSeo")
+					: share.type === "IMAGES_ALT"
+						? t("shares.imagesAlt")
+						: t("shares.socialView");
+
+	// Determine badge color based on type
+	const badgeStatus =
+		share.type === "STYLE_GUIDE"
+			? "info"
+			: share.type === "HEADING_STRUCTURE"
+				? "warning"
+				: share.type === "QUICK_SEO"
+					? "success"
+					: share.type === "IMAGES_ALT"
+						? "info"
+						: "warning"; // SOCIAL_VIEW
 
 	return (
 		<>
@@ -174,11 +194,7 @@ export function ShareCard({ share, onUpdate }: ShareCardProps) {
 
 								{/* Report Type Badge */}
 								<Badge
-									status={
-										share.type === "STYLE_GUIDE"
-											? "info"
-											: "warning"
-									}
+									status={badgeStatus}
 									className="whitespace-nowrap"
 								>
 									{reportTypeLabel}

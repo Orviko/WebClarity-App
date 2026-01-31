@@ -75,9 +75,9 @@ export async function createShareHandler(
 		expiresAt.setHours(expiresAt.getHours() + 24);
 	}
 
-	// Default title format: "SEO Analysis - {websiteUrl}"
+	// Default title format: "Quick SEO Analysis - {websiteUrl}"
 	// This is the full title that will be stored and editable by users
-	const title = `SEO Analysis - ${validated.websiteUrl}`;
+	const title = `Quick SEO Analysis - ${validated.websiteUrl}`;
 
 	// Create Quick SEO data and share in a transaction
 	const result = await db.$transaction(async (tx) => {
