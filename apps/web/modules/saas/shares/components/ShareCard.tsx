@@ -119,7 +119,7 @@ export function ShareCard({ share, onUpdate }: ShareCardProps) {
 			>
 				{/* Thumbnail - OG images are 1200x630 (aspect ratio 1.9:1) */}
 				{share.shareOgImageUrl ? (
-					<div className="relative w-48 aspect-[1.9/1] flex-shrink-0 overflow-hidden rounded-lg border">
+					<div className="relative w-48 aspect-[1.9/1] shrink-0 overflow-hidden rounded-lg border">
 						<Image
 							src={share.shareOgImageUrl}
 							alt={displayTitle}
@@ -129,7 +129,7 @@ export function ShareCard({ share, onUpdate }: ShareCardProps) {
 						/>
 					</div>
 				) : (
-					<div className="w-48 aspect-[1.9/1] flex-shrink-0 rounded-lg border bg-muted flex items-center justify-center">
+					<div className="w-48 aspect-[1.9/1] shrink-0 rounded-lg border bg-muted flex items-center justify-center">
 						<span className="text-xs text-muted-foreground">
 							No image
 						</span>
@@ -204,7 +204,7 @@ export function ShareCard({ share, onUpdate }: ShareCardProps) {
 					</div>
 
 					{/* Actions - Right Side */}
-					<div className="flex items-center gap-2 flex-shrink-0">
+					<div className="flex items-center gap-2 shrink-0">
 						{/* View Button */}
 						<Button
 							variant="outline"
